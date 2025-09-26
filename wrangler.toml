@@ -1,0 +1,106 @@
+name = "blazesportsintel"
+compatibility_date = "2024-09-26"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "."
+
+# Main production environment
+[env.production]
+name = "blazesportsintel-prod"
+route = "blazesportsintel.com/*"
+zone_id = "a12cb329d84130460eed99b816e4d0d3"
+
+# Staging environment for testing
+[env.staging]
+name = "blazesportsintel-staging"
+route = "staging.blazesportsintel.com/*"
+
+# Development environment
+[env.development]
+name = "blazesportsintel-dev"
+
+# R2 Storage Configuration
+[[r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "blazesportsintel-media"
+preview_bucket_name = "blazesportsintel-media-preview"
+
+[[r2_buckets]]
+binding = "DATA_BUCKET"
+bucket_name = "blazesportsintel-data"
+preview_bucket_name = "blazesportsintel-data-preview"
+
+[[r2_buckets]]
+binding = "ANALYTICS_BUCKET"
+bucket_name = "blazesportsintel-analytics"
+preview_bucket_name = "blazesportsintel-analytics-preview"
+
+# KV Namespaces for Caching
+[[kv_namespaces]]
+binding = "CACHE"
+id = "blazesportsintel_cache_prod"
+preview_id = "blazesportsintel_cache_preview"
+
+[[kv_namespaces]]
+binding = "ANALYTICS_KV"
+id = "blazesportsintel_analytics_prod"
+preview_id = "blazesportsintel_analytics_preview"
+
+[[kv_namespaces]]
+binding = "CONFIG"
+id = "blazesportsintel_config_prod"
+preview_id = "blazesportsintel_config_preview"
+
+# D1 Database Configuration
+[[d1_databases]]
+binding = "DB"
+database_name = "blazesportsintel-production"
+database_id = "blazesportsintel-prod-db"
+
+# Durable Objects
+[[durable_objects.bindings]]
+name = "MONTE_CARLO_ENGINE"
+class_name = "MonteCarloEngine"
+script_name = "monte-carlo-engine"
+
+[[durable_objects.bindings]]
+name = "CHAMPIONSHIP_ANALYTICS"
+class_name = "ChampionshipAnalytics"
+script_name = "championship-analytics"
+
+# Queue Configuration for Real-time Processing
+[[queues.producers]]
+binding = "SPORTS_DATA_QUEUE"
+queue = "sports-data-processing"
+
+[[queues.producers]]
+binding = "ANALYTICS_QUEUE"
+queue = "analytics-processing"
+
+# Environment Variables
+[vars]
+ENVIRONMENT = "production"
+API_VERSION = "v1"
+CDN_URL = "https://cdn.blazesportsintel.com"
+ANALYTICS_ENDPOINT = "https://analytics.blazesportsintel.com"
+MONITORING_ENDPOINT = "https://monitoring.blazesportsintel.com"
+
+# Build Configuration
+[build]
+command = "npm run build:production"
+cwd = "."
+watch_dir = ["src", "public", "css", "js", "data"]
+
+# Triggers for Auto-deployment
+[[triggers]]
+crons = ["0 */6 * * *"]  # Every 6 hours for data refresh
+
+# Upload Rules for Asset Optimization
+[upload]
+format = "modules"
+dir = "."
+main = "./index.html"
+rules = [
+  { type = "ESModule", globs = ["**/*.js"], fallthrough = true },
+  { type = "Text", globs = ["**/*.html", "**/*.css", "**/*.json", "**/*.md"] },
+  { type = "Data", globs = ["**/*.wasm", "**/*.bin"] }
+]

@@ -1,0 +1,57 @@
+{
+  "name": "blaze-sports-intel-bsi",
+  "version": "2.1.0",
+  "description": "🔥 Blaze Sports Intel - Biomechanics Vision System & Championship Intelligence Platform",
+  "main": "index-enhanced-full.html",
+  "scripts": {
+    "start": "python3 main.py",
+    "dev": "python3 -m http.server 8000",
+    "serve": "python3 -m http.server 8000",
+    "build": "echo 'Build complete - BSI platform ready'",
+    "deploy": "./deploy-blazesportsintel.sh",
+    "deploy:staging": "wrangler pages deploy --env staging",
+    "deploy:production": "wrangler pages deploy --env production",
+    "test": "python3 -m pytest test_biomech.py -v",
+    "biomech": "python3 pose.py",
+    "monte-carlo": "python3 monte_carlo.py",
+    "vision": "python3 main.py --vision-mode",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose build",
+    "format": "black *.py && prettier --write *.html *.js",
+    "lint": "flake8 *.py && eslint *.js",
+    "install": "pip install -r requirements.txt"
+  },
+  "keywords": [
+    "sports-analytics",
+    "biomechanics",
+    "computer-vision",
+    "3d-pose",
+    "championship-intelligence",
+    "deep-south-sports",
+    "machine-learning",
+    "performance-analysis"
+  ],
+  "author": "Austin Humphrey <austin@blazesportsintel.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ahump20/BSI.git"
+  },
+  "homepage": "https://blazesportsintel.com",
+  "bugs": {
+    "url": "https://github.com/ahump20/BSI/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "python": ">=3.9.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0"
+  },
+  "dependencies": {
+    "three": "^0.155.0",
+    "gsap": "^3.12.2"
+  }
+}
