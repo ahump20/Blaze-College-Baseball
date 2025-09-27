@@ -1,0 +1,14 @@
+# Cloudflare Pages Redirects Configuration
+# blazesportsintel.com
+
+# Redirect www to apex domain
+https://www.blazesportsintel.com/* https://blazesportsintel.com/:splat 301
+
+# Clean URLs - Remove .html extension
+/*.html /:splat 301
+
+# API Routes handled by Workers
+/api/* /api/:splat 200
+
+# SPA Fallback for client-side routing
+/* /index.html 200

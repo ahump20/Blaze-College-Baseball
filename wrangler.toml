@@ -42,6 +42,10 @@ id = "blazesportsintel_analytics_prod"
 binding = "CONFIG"
 id = "blazesportsintel_config_prod"
 
+[[env.production.kv_namespaces]]
+binding = "DRIFT_KV"
+id = "blazesportsintel_drift_prod"
+
 # D1 Database - Structured Data Storage
 [[env.production.d1_databases]]
 binding = "DB"
@@ -151,31 +155,25 @@ exclude = ["node_modules", "*.md", "*.sh", ".git", ".env*", "*.log", "*.pyc", "_
 [[triggers]]
 crons = ["*/30 * * * *"]  # Every 30 minutes for data refresh
 
+[[triggers]]
+crons = ["0 8 * * *"]  # 2 AM CT daily for drift monitoring
+
+[[triggers]]
+crons = ["*/15 * * * *"]  # Every 15 minutes for real-time drift checks
+
 # ==================== OBSERVABILITY ====================
 [observability]
 enabled = true
 
-[logpush]
-enabled = true
+logpush = true
 
 [tail]
 enabled = true
 sample_rate = 0.1
 
 # ==================== RULES & REDIRECTS ====================
-[rules]
-# Redirect www to non-www
-[[rules]]
-hostname = "www.blazesportsintel.com"
-request_path = "/*"
-dest = "https://blazesportsintel.com/$1"
-status = 301
-
-# Handle clean URLs (remove .html extension)
-[[rules]]
-request_path = "*.html"
-dest = "/$1"
-status = 301
+# Rules are handled in _redirects file for Cloudflare Pages
+# See _redirects for www to non-www and clean URL handling
 
 # ==================== ADVANCED FEATURES ====================
 # WebAssembly Support
@@ -192,6 +190,10 @@ dataset = "sports_performance"
 binding = "USER_ANALYTICS"
 dataset = "user_behavior"
 
+[[analytics_engine_datasets]]
+binding = "DRIFT_ANALYTICS"
+dataset = "drift_metrics"
+
 # Rate Limiting
 [[ratelimit]]
 binding = "API_LIMITER"
@@ -199,7 +201,7 @@ namespace_id = "blazesportsintel_ratelimit"
 simple = { limit = 100, period = 60 }
 
 # Browser Rendering for Dynamic Content
-[[browser]]
+[browser]
 binding = "BROWSER"
 
 # Vectorize for ML Models

@@ -4,8 +4,7 @@
  * Cloudflare Functions API for real-time sports intelligence
  */
 
-export async function onRequest(context) {
-  const { request, env } = context;
+export async function onRequestGet({ request, env, ctx }) {
 
   // CORS headers for blazesportsintel.com
   const corsHeaders = {
@@ -15,9 +14,6 @@ export async function onRequest(context) {
     'Cache-Control': 'public, max-age=300', // 5 minute cache
   };
 
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
 
   try {
     // Championship data for Deep South teams
@@ -206,4 +202,14 @@ export async function onRequest(context) {
       }
     );
   }
+}
+
+export async function onRequestOptions() {
+  return new Response(null, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
 }

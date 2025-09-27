@@ -1,0 +1,215 @@
+name: Blaze Intelligence Data Drift Monitoring
+
+on:
+  schedule:
+    # Run nightly at 2 AM CT (8 AM UTC)
+    - cron: '0 8 * * *'
+  push:
+    branches: [ main ]
+    paths:
+      - 'data/**'
+      - 'api/**'
+      - 'models/**'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      override_drift:
+        description: 'Override drift failures'
+        required: false
+        default: 'false'
+      generate_report:
+        description: 'Generate full drift report'
+        required: false
+        default: 'true'
+
+env:
+  TZ: America/Chicago
+  BLAZE_ENV: production
+
+jobs:
+  drift-detection:
+    name: Data Drift Detection
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🏈 Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for baseline comparisons
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: 📦 Install Dependencies
+      run: |
+        pip install -r observability/drift/requirements.txt
+        pip install pandas numpy scipy pyyaml redis plotly jinja2
+
+    - name: 🔧 Setup Node.js (for Cloudflare)
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: ☁️ Install Wrangler
+      run: npm install -g wrangler
+
+    - name: 💾 Restore Baseline Cache
+      uses: actions/cache@v3
+      with:
+        path: observability/drift/baselines
+        key: drift-baselines-${{ runner.os }}-${{ hashFiles('observability/drift/config/drift-config.yaml') }}
+        restore-keys: |
+          drift-baselines-${{ runner.os }}-
+
+    - name: 🔍 Run Schema Drift Detection
+      id: schema_drift
+      run: |
+        python observability/drift/drift_detector.py --schema-only
+      continue-on-error: true
+
+    - name: 📊 Run Statistical Drift Detection
+      id: statistical_drift
+      env:
+        CACHE_BASELINES: true
+        DRIFT_OVERRIDE: ${{ github.event.inputs.override_drift }}
+      run: |
+        ./observability/drift/ci_drift_gate.sh
+      continue-on-error: true
+
+    - name: 📈 Generate Drift Report
+      if: github.event.inputs.generate_report == 'true' || github.event_name == 'schedule'
+      run: |
+        python observability/drift/drift_detector.py --generate-report
+
+    - name: 📝 Create GitHub Issues for Critical Drift
+      if: steps.statistical_drift.outcome == 'failure'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const driftResults = JSON.parse(fs.readFileSync('observability/drift/ci/drift_results.json', 'utf8'));
+
+          for (const result of driftResults) {
+            if (result.severity === 'CRITICAL') {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `[DRIFT] Critical drift in ${result.dataset}.${result.column}`,
+                body: `## 🚨 Critical Data Drift Detected\n\n` +
+                      `**Dataset:** ${result.dataset}\n` +
+                      `**Column:** ${result.column}\n` +
+                      `**Test:** ${result.test_type}\n` +
+                      `**Statistic:** ${result.statistic.toFixed(4)}\n` +
+                      `**Threshold:** ${result.threshold.toFixed(4)}\n\n` +
+                      `[View Full Report](https://blazesportsintel.com/observability/drift/reports/)`,
+                labels: ['drift-detection', 'data-quality', 'critical'],
+                assignees: ['ahump20']
+              });
+            }
+          }
+
+    - name: 📤 Upload Drift Reports to Cloudflare R2
+      if: always()
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      run: |
+        # Upload reports to R2
+        if [ -d "observability/drift/reports" ]; then
+          wrangler r2 object put blaze-drift-reports/$(date +%Y%m%d)/ \
+            --file=observability/drift/reports/ \
+            --recursive
+        fi
+
+    - name: 📊 Update Cloudflare Analytics
+      if: always()
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      run: |
+        # Send drift metrics to Cloudflare Analytics Engine
+        python << EOF
+        import json
+        import requests
+        from datetime import datetime
+
+        with open('observability/drift/ci/ci_gate.json') as f:
+            ci_data = json.load(f)
+
+        metrics = {
+            'timestamp': datetime.now().isoformat(),
+            'dataset': 'blazesportsintel',
+            'metrics': {
+                'drift_critical_count': ci_data['critical_drifts'],
+                'schema_critical_count': ci_data['critical_schema_changes'],
+                'ci_gate_passed': ci_data['pass']
+            }
+        }
+
+        # Send to Cloudflare Analytics Engine
+        response = requests.post(
+            'https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/analytics_engine/sql',
+            headers={'Authorization': 'Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}'},
+            json=metrics
+        )
+        EOF
+
+    - name: 💾 Save Baseline Cache
+      if: success() && github.event_name == 'schedule'
+      uses: actions/cache@v3
+      with:
+        path: observability/drift/baselines
+        key: drift-baselines-${{ runner.os }}-${{ hashFiles('observability/drift/config/drift-config.yaml') }}-${{ github.sha }}
+
+    - name: 📦 Upload Artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: drift-reports-${{ github.run_number }}
+        path: |
+          observability/drift/reports/
+          observability/drift/ci/
+          observability/drift/logs/
+
+    - name: 🏁 CI Gate Decision
+      if: github.event_name == 'pull_request'
+      run: |
+        if [ "${{ steps.statistical_drift.outcome }}" == "failure" ] && [ "${{ github.event.inputs.override_drift }}" != "true" ]; then
+          echo "❌ Critical drift detected - blocking PR merge"
+          echo "Review drift report at: https://blazesportsintel.com/observability/drift/reports/"
+          exit 1
+        fi
+        echo "✅ Drift checks passed - PR can proceed"
+
+  notification:
+    name: Send Notifications
+    needs: drift-detection
+    if: failure()
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📧 Send Email Alert
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: '🚨 Blaze Intelligence - Critical Data Drift Detected'
+        to: ahump20@outlook.com
+        from: Blaze Intelligence Monitoring
+        body: |
+          Critical data drift has been detected in the Blaze Intelligence platform.
+
+          Affected Datasets:
+          - Cardinals Analytics
+          - Titans Performance
+          - Longhorns Rankings
+          - Perfect Game Youth Data
+
+          View full report: https://blazesportsintel.com/observability/drift/reports/
+
+          This is an automated alert from the championship-caliber monitoring system.

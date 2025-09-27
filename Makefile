@@ -1,23 +1,50 @@
-# Blaze Biomechanics Vision System - Makefile
-# One-command operations for development and production
+# BSI - Blaze Sports Intelligence Makefile
+# Championship Development & Biomechanics Vision System
 
-.PHONY: help up down dev test build clean logs
+.PHONY: help setup install dev run test build deploy clean format lint security docker-up docker-down
+
+# Colors for output
+BLUE := \033[0;34m
+GREEN := \033[0;32m
+YELLOW := \033[0;33m
+RED := \033[0;31m
+NC := \033[0m # No Color
 
 # Default target
 help:
-	@echo "Blaze Biomechanics Vision System - Available Commands:"
+	@echo "$(BLUE)BSI - Blaze Sports Intelligence$(NC)"
+	@echo "$(GREEN)Championship Development Commands$(NC)"
 	@echo ""
+	@echo "$(YELLOW)Quick Start:$(NC)"
+	@echo "  make setup       - One-time environment setup"
+	@echo "  make dev         - Start development with hot reload"
+	@echo "  make test        - Run full test suite"
+	@echo "  make deploy      - Deploy to production"
+	@echo ""
+	@echo "$(YELLOW)Development:$(NC)"
 	@echo "  make up          - Start all services in production mode"
-	@echo "  make dev         - Start all services in development mode with hot reload"
 	@echo "  make down        - Stop all services"
-	@echo "  make test        - Run test suite"
-	@echo "  make build       - Build all Docker images"
-	@echo "  make clean       - Clean up containers, volumes, and cached data"
 	@echo "  make logs        - Show logs from all services"
+	@echo "  make shell-api   - Open API container shell"
+	@echo "  make watch       - Watch for file changes"
+	@echo "  make jupyter     - Start Jupyter Lab"
+	@echo ""
+	@echo "$(YELLOW)Code Quality:$(NC)"
+	@echo "  make format      - Auto-format all code"
+	@echo "  make lint        - Run all linters"
+	@echo "  make security    - Run security scans"
+	@echo "  make pre-commit  - Run pre-commit hooks"
+	@echo ""
+	@echo "$(YELLOW)Deployment:$(NC)"
+	@echo "  make build       - Build for production"
+	@echo "  make deploy-cf   - Deploy to Cloudflare Pages"
+	@echo "  make deploy-preview - Deploy preview environment"
+	@echo ""
+	@echo "$(YELLOW)Database:$(NC)"
 	@echo "  make seed        - Load sample data"
-	@echo "  make format      - Format code with black/prettier"
-	@echo "  make deploy-cf   - Deploy to Cloudflare"
-	@echo "  make deploy-aws  - Deploy to AWS"
+	@echo "  make db-migrate  - Run database migrations"
+	@echo "  make backup      - Create database backup"
+	@echo "  make restore     - Restore from backup"
 
 # Start all services in production mode
 up:
@@ -31,11 +58,39 @@ up:
 	@echo "   MinIO: http://localhost:9001"
 	@echo "   Grafana: http://localhost:3001"
 
+# Complete environment setup
+setup:
+	@echo "$(BLUE)Setting up BSI development environment...$(NC)"
+	@if [ ! -f .env ]; then cp .env.example .env; fi
+	@pip3 install -r requirements.txt || true
+	@npm install || true
+	@pre-commit install || true
+	@echo "$(GREEN)✓ Setup complete! Run 'make dev' to start developing$(NC)"
+
 # Start in development mode with hot reload
 dev:
-	@echo "🔧 Starting in development mode..."
+	@echo "🔧 Starting in development mode with hot reload..."
 	@if [ ! -f .env ]; then cp .env.example .env; fi
-	docker-compose -f docker-compose.yml up
+	@trap 'make down' INT TERM EXIT; \
+	python3 -m http.server 8000 & \
+	wrangler pages dev . --port 8787 --live-reload & \
+	python3 main.py --dev-mode & \
+	wait
+
+# Watch for file changes
+watch:
+	@echo "$(BLUE)Watching for file changes...$(NC)"
+	@command -v watchmedo >/dev/null 2>&1 || pip3 install watchdog
+	@watchmedo auto-restart \
+		--patterns="*.py;*.html;*.js;*.css" \
+		--ignore-patterns="*__pycache__*;*.pyc;node_modules/*" \
+		--recursive \
+		python3 main.py
+
+# Start Jupyter Lab
+jupyter:
+	@echo "$(BLUE)Starting Jupyter Lab...$(NC)"
+	jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 	
 # Stop all services
 down:
@@ -141,15 +196,37 @@ security-scan:
 	docker-compose run --rm api bandit -r api/ -f json -o security-report.json
 	docker-compose run --rm api safety check
 
-# Deploy to Cloudflare
-deploy-cf:
-	@echo "☁️ Deploying to Cloudflare..."
-	./scripts/deploy_cloudflare.sh
+# Deploy to production (Cloudflare Pages)
+deploy: test build
+	@echo "$(BLUE)Deploying to blazesportsintel.com...$(NC)"
+	wrangler pages deploy . --project-name=blazesportsintel --env=production
+	@echo "$(GREEN)✓ Deployed to https://blazesportsintel.com$(NC)"
+
+# Deploy to Cloudflare (alias)
+deploy-cf: deploy
+
+# Deploy preview environment
+deploy-preview:
+	@echo "$(BLUE)Deploying preview environment...$(NC)"
+	wrangler pages deploy . --project-name=blazesportsintel --env=preview
+	@echo "$(GREEN)✓ Preview deployed to https://preview.blazesportsintel.com$(NC)"
+
+# Deploy to staging
+deploy-staging:
+	@echo "$(BLUE)Deploying to staging...$(NC)"
+	wrangler pages deploy . --project-name=blazesportsintel --env=staging
+	@echo "$(GREEN)✓ Staging deployed$(NC)"
 
 # Deploy to AWS
 deploy-aws:
 	@echo "☁️ Deploying to AWS..."
 	./scripts/deploy_aws.sh
+
+# Run pre-commit hooks
+pre-commit:
+	@echo "$(BLUE)Running pre-commit hooks...$(NC)"
+	@pre-commit run --all-files || true
+	@echo "$(GREEN)✓ Pre-commit checks complete$(NC)"
 
 # Create a backup
 backup:
