@@ -7,7 +7,7 @@ logging:
   level: "INFO"
 
 database:
-  url: "postgresql+psycopg2://postgres:postgres@localhost:5432/blaze_nil"
+  url: "sqlite+pysqlite:///storage/blaze_nil.db"
   echo: false
 
 storage:

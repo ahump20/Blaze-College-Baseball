@@ -5,9 +5,12 @@ from __future__ import annotations
 import contextlib
 import logging
 import os
+from pathlib import Path
 from typing import Iterator
 
 from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
+from sqlalchemy.engine.url import make_url
 from sqlalchemy.orm import Session, sessionmaker
 
 from bsi_nil.config import load_config
@@ -21,9 +24,22 @@ _SESSION_FACTORY = None
 def _create_engine():
     config = load_config()
     database_url = os.getenv("DATABASE_URL", config["database"]["url"])
-    echo = config["database"].get("echo", False)
+    echo = bool(config["database"].get("echo", False))
 
-    engine = create_engine(database_url, echo=echo, future=True)
+    url: URL = make_url(database_url)
+    connect_args: dict[str, object] = {}
+
+    if url.drivername.startswith("sqlite"):
+        database = url.database or ""
+        if database not in {"", ":memory:"}:
+            db_path = Path(database).expanduser()
+            if not db_path.is_absolute():
+                db_path = Path.cwd() / db_path
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+            url = url.set(database=str(db_path))
+        connect_args["check_same_thread"] = False
+
+    engine = create_engine(url, echo=echo, future=True, connect_args=connect_args)
     return engine
 
 
