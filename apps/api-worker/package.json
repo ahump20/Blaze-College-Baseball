@@ -1,0 +1,9 @@
+{
+  "name": "@bsi/api-worker",
+  "private": true,
+  "type": "module",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
+}
