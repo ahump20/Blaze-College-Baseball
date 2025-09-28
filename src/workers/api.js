@@ -337,8 +337,8 @@ const rateLimiter = async (c, next) => {
   const value = await c.env.CACHE.get(key);
   const count = value ? Number.parseInt(value, 10) : 0;
   if (Number.isNaN(count)) {
-    await c.env.CACHE.put(key, '1', { expirationTtl: 3600 });
-    return next();
+    // If the cached value is not a valid number, treat as rate limit violation
+    return c.json({ error: 'Rate limit exceeded (invalid counter)' }, 429);
   }
   if (count >= 100) {
     return c.json({ error: 'Rate limit exceeded' }, 429);
