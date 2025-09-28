@@ -14,7 +14,7 @@ vars = { ENVIRONMENT = "production" }
 [[kv_namespaces]]
 binding = "CACHE"
 id = "REPLACE_WITH_KV_NAMESPACE_ID"
-preview_id = "REPLACE_WITH_PREVIEW_KV_ID"
+preview_id = "${PREVIEW_KV_ID}"
 
 [[r2_buckets]]
 binding = "STORAGE"
