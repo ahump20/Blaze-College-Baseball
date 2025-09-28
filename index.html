@@ -2166,6 +2166,82 @@
                 break-inside: avoid;
             }
         }
+
+        /* ==================== FIX FOR ANALYTICS DASHBOARD OVERLAP ==================== */
+        /* Critical fix for overlapping white cards in Analytics Dashboard */
+
+        #analytics-dashboard .dashboard-card,
+        #analytics-dashboard .chart-card,
+        .dashboard-grid > div,
+        .analytics-grid > div,
+        .analytics-card {
+            position: relative !important;
+            margin-bottom: 1.5rem !important;
+            top: auto !important;
+            left: auto !important;
+            right: auto !important;
+            bottom: auto !important;
+            transform: none !important;
+        }
+
+        /* Ensure proper grid layout without overlaps */
+        .dashboard-grid,
+        .analytics-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+            gap: 2rem !important;
+            padding: 1rem !important;
+            position: relative !important;
+        }
+
+        /* Fix white background overlapping issues */
+        .dashboard-card,
+        .chart-card,
+        .analytics-card {
+            position: relative !important;
+            background: var(--glass-medium, rgba(17, 17, 26, 0.85)) !important;
+            border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1)) !important;
+            margin: 0 !important;
+            z-index: 1 !important;
+        }
+
+        /* Prevent absolute positioning causing stacking */
+        #dashboardGrid > *,
+        .analytics-container > div:not(.analytics-grid) {
+            position: relative !important;
+            display: block !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Fix z-index stacking context */
+        .dashboard-section,
+        .analytics-section {
+            position: relative;
+            z-index: 1;
+            isolation: isolate;
+        }
+
+        /* Clear any transform that might cause overlap */
+        .dashboard-card:hover,
+        .chart-card:hover {
+            transform: translateY(-4px) !important;
+            z-index: 10 !important;
+        }
+
+        /* Mobile responsive fix */
+        @media (max-width: 768px) {
+            .dashboard-grid,
+            .analytics-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+
+            .dashboard-card,
+            .chart-card {
+                margin-bottom: 1rem !important;
+            }
+        }
     </style>
 </head>
 <body>
