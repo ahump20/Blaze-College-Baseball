@@ -1,0 +1,103 @@
+name: CI - API Changes Only
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  check-ui-frozen:
+    name: Verify No UI Changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check for UI/Design changes
+        run: |
+          chmod +x scripts/check-tokens.sh
+          ./scripts/check-tokens.sh
+
+      - name: Label PR if UI changes detected
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['ui-change', 'needs-design-review']
+            })
+
+  test-api:
+    name: Test API Layer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Run API tests
+        run: |
+          npm test -- lib/api/
+          npm test -- lib/adapters/
+
+  dom-contract-tests:
+    name: DOM Contract Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Playwright
+        run: |
+          npm install -D @playwright/test
+          npx playwright install chromium
+
+      - name: Run DOM contract tests
+        run: npx playwright test tests/ui.dom.spec.ts
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report/
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [check-ui-frozen]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Build
+        run: npm run build || echo "No build step configured"
+
+      - name: Verify API endpoints exist
+        run: |
+          ls -la functions/api/
+          ls -la lib/api/
+          ls -la lib/adapters/
