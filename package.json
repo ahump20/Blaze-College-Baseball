@@ -3,6 +3,7 @@
   "version": "2.1.0",
   "description": "🔥 Blaze Sports Intel - Biomechanics Vision System & Championship Intelligence Platform",
   "main": "index-enhanced-full.html",
+  "type": "module",
   "scripts": {
     "start": "python3 main.py",
     "dev": "python3 -m http.server 8000",
@@ -20,7 +21,22 @@
     "docker:build": "docker-compose build",
     "format": "black *.py && prettier --write *.html *.js",
     "lint": "flake8 *.py && eslint *.js",
-    "install": "pip install -r requirements.txt"
+    "install": "pip install -r requirements.txt",
+    "setup:db": "node scripts/setup-database.js",
+    "setup:all": "npm run setup:db && npm run train:models",
+    "ml:train": "node scripts/train-models.js",
+    "ml:predict": "node scripts/run-predictions.js",
+    "ml:health": "node scripts/check-ml-health.js",
+    "api:start": "node api/server.js",
+    "api:dev": "node --watch api/server.js",
+    "api:test": "node api/test/run-tests.js",
+    "real:setup": "node setup-real-database.js",
+    "real:api": "node api/real-server.js",
+    "real:test": "open http://localhost:3000/api/docs && node api/real-server.js",
+    "real:verify": "node test-real-implementation.js",
+    "health": "node scripts/health-check.js",
+    "migrate": "node scripts/run-migrations.js",
+    "seed": "node scripts/seed-data.js"
   },
   "keywords": [
     "sports-analytics",
@@ -53,7 +69,20 @@
     "wrangler": "^4.40.2"
   },
   "dependencies": {
+    "@tensorflow/tfjs": "^4.10.0",
+    "@tensorflow/tfjs-node": "^4.10.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "express-rate-limit": "^6.11.2",
     "gsap": "^3.12.2",
-    "three": "^0.155.0"
+    "helmet": "^7.2.0",
+    "joi": "^17.10.2",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.16.3",
+    "redis": "^4.6.10",
+    "three": "^0.155.0",
+    "winston": "^3.10.0"
   }
 }
