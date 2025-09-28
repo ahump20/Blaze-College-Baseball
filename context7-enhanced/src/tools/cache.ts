@@ -2,7 +2,7 @@
 import { z } from "zod";
 
 export const CacheStatsInput = z.object({
-  scope: z.enum(["docs","context"]).optional()
+  scope: z.enum(["docs", "context"]).optional()
 });
 export const CacheStatsOutput = z.object({
   scope: z.string(),
@@ -14,7 +14,7 @@ export const CacheStatsOutput = z.object({
 export const InvalidateCacheInput = z.object({
   key: z.string().optional(),
   pattern: z.string().optional()
-}).refine(v => !!(v.key || v.pattern), { message: "Provide key or pattern." });
+}).refine((value) => !!(value.key || value.pattern), { message: "Provide key or pattern." });
 
 export const InvalidateCacheOutput = z.object({
   ok: z.boolean(),

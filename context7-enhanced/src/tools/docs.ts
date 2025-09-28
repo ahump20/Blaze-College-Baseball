@@ -5,9 +5,9 @@ export const ResolveLibraryIdInput = z.object({
   libraryName: z.string().min(2)
 });
 export const ResolveLibraryIdOutput = z.object({
-  id: z.string(),           // e.g., "/mrdoob/three.js"
+  id: z.string(), // e.g., "/mrdoob/three.js"
   name: z.string(),
-  source: z.enum(["official","mirror","community"]).optional()
+  source: z.enum(["official", "mirror", "community"]).optional()
 });
 
 export const GetLibraryDocsInput = z.object({
@@ -16,7 +16,7 @@ export const GetLibraryDocsInput = z.object({
   tokens: z.number().int().min(500).max(5000).default(3000)
 });
 export const GetLibraryDocsOutput = z.object({
-  docs: z.string(),         // authoritative snippet (deterministic)
+  docs: z.string(), // authoritative snippet (deterministic)
   meta: z.object({
     libraryID: z.string(),
     topic: z.string(),
