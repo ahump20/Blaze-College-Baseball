@@ -231,7 +231,7 @@ namespace BSI.Unity.Context7
             {
                 if (!string.IsNullOrEmpty(responses[i]))
                 {
-                    results[libraryId[i]] = responses[i];
+                    results[libraryIds[i]] = responses[i];
                 }
             }
 
