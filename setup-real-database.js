@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 
 /**
- * REAL Database Setup - Actually creates and populates a database
- * This is not a placeholder - it really sets up PostgreSQL
+ * REAL PostgreSQL Database Setup
+ *
+ * ChatGPT 5 was correct - the existing code only has basic user/subscription CRUD
+ * This script creates the ACTUAL tables needed for sports data
  */
 
-import pkg from 'pg';
-const { Client } = pkg;
+import pg from 'pg';
+const { Client } = pg;
 import dotenv from 'dotenv';
 
-// Load environment variables
 dotenv.config();
 
 class RealDatabaseSetup {
   constructor() {
-    // Use environment variables or defaults
     this.config = {
       host: process.env.DB_HOST || 'localhost',
       port: process.env.DB_PORT || 5432,
@@ -25,10 +25,9 @@ class RealDatabaseSetup {
   }
 
   async createDatabase() {
-    // Connect to postgres database to create our database
     const client = new Client({
       ...this.config,
-      database: 'postgres' // Connect to default postgres DB
+      database: 'postgres' // Connect to default database first
     });
 
     try {
@@ -36,21 +35,20 @@ class RealDatabaseSetup {
       console.log('✅ Connected to PostgreSQL');
 
       // Check if database exists
-      const checkDB = await client.query(
-        `SELECT 1 FROM pg_database WHERE datname = '${this.config.database}'`
+      const result = await client.query(
+        `SELECT 1 FROM pg_database WHERE datname = $1`,
+        [this.config.database]
       );
 
-      if (checkDB.rows.length === 0) {
-        // Create database
+      if (result.rows.length === 0) {
         await client.query(`CREATE DATABASE ${this.config.database}`);
         console.log(`✅ Created database: ${this.config.database}`);
       } else {
         console.log(`ℹ️  Database ${this.config.database} already exists`);
       }
     } catch (error) {
-      console.error('❌ Database creation failed:', error.message);
-      console.log('Make sure PostgreSQL is installed and running');
-      process.exit(1);
+      console.error('❌ Error creating database:', error.message);
+      throw error;
     } finally {
       await client.end();
     }
@@ -61,17 +59,25 @@ class RealDatabaseSetup {
 
     try {
       await client.connect();
-      console.log('✅ Connected to blazesportsintel database');
+      console.log(`✅ Connected to ${this.config.database} database`);
 
       // Create teams table
       await client.query(`
         CREATE TABLE IF NOT EXISTS teams (
           id SERIAL PRIMARY KEY,
           external_id VARCHAR(50) UNIQUE NOT NULL,
-          name VARCHAR(100) NOT NULL,
+          name VARCHAR(200) NOT NULL,
+          abbreviation VARCHAR(10),
+          sport VARCHAR(50) NOT NULL,
+          league VARCHAR(50) NOT NULL,
+          division VARCHAR(100),
+          conference VARCHAR(100),
+          venue_name VARCHAR(200),
           city VARCHAR(100),
-          sport VARCHAR(20) NOT NULL,
-          league VARCHAR(50),
+          state VARCHAR(50),
+          logo_url TEXT,
+          primary_color VARCHAR(7),
+          secondary_color VARCHAR(7),
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
@@ -82,52 +88,67 @@ class RealDatabaseSetup {
       await client.query(`
         CREATE TABLE IF NOT EXISTS games (
           id SERIAL PRIMARY KEY,
-          external_id VARCHAR(100) UNIQUE NOT NULL,
+          external_game_id VARCHAR(100) UNIQUE NOT NULL,
+          sport VARCHAR(50) NOT NULL,
           home_team_id INTEGER REFERENCES teams(id),
           away_team_id INTEGER REFERENCES teams(id),
           game_date TIMESTAMP NOT NULL,
-          home_score INTEGER DEFAULT 0,
-          away_score INTEGER DEFAULT 0,
-          status VARCHAR(20) DEFAULT 'scheduled',
-          sport VARCHAR(20) NOT NULL,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          home_score INTEGER,
+          away_score INTEGER,
+          status VARCHAR(50),
+          venue VARCHAR(200),
+          attendance INTEGER,
+          weather_conditions JSONB,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `);
       console.log('✅ Created games table');
 
-      // Create analytics table
+      // Create analytics table for calculations
       await client.query(`
         CREATE TABLE IF NOT EXISTS analytics (
           id SERIAL PRIMARY KEY,
           team_id INTEGER REFERENCES teams(id),
           season INTEGER NOT NULL,
-          wins INTEGER DEFAULT 0,
-          losses INTEGER DEFAULT 0,
-          pythagorean_wins DECIMAL(5,2),
-          elo_rating INTEGER DEFAULT 1500,
-          strength_of_schedule DECIMAL(4,3),
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          UNIQUE(team_id, season)
+          metric_type VARCHAR(100) NOT NULL,
+          metric_value DECIMAL(10, 4),
+          metric_data JSONB,
+          calculation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          data_source VARCHAR(200),
+          UNIQUE(team_id, season, metric_type)
         )
       `);
       console.log('✅ Created analytics table');
 
-      // Create api_cache table for caching external API calls
+      // Create api_cache table for caching external API responses
       await client.query(`
         CREATE TABLE IF NOT EXISTS api_cache (
           id SERIAL PRIMARY KEY,
-          endpoint VARCHAR(255) NOT NULL,
+          cache_key VARCHAR(500) UNIQUE NOT NULL,
           response_data JSONB NOT NULL,
-          cached_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          api_source VARCHAR(200) NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           expires_at TIMESTAMP NOT NULL,
-          UNIQUE(endpoint)
+          hit_count INTEGER DEFAULT 0
         )
       `);
       console.log('✅ Created api_cache table');
 
+      // Create indexes for performance
+      await client.query(`
+        CREATE INDEX IF NOT EXISTS idx_teams_sport ON teams(sport);
+        CREATE INDEX IF NOT EXISTS idx_teams_league ON teams(league);
+        CREATE INDEX IF NOT EXISTS idx_games_date ON games(game_date);
+        CREATE INDEX IF NOT EXISTS idx_games_teams ON games(home_team_id, away_team_id);
+        CREATE INDEX IF NOT EXISTS idx_analytics_team_season ON analytics(team_id, season);
+        CREATE INDEX IF NOT EXISTS idx_api_cache_expires ON api_cache(expires_at);
+      `);
+      console.log('✅ Created performance indexes');
+
     } catch (error) {
-      console.error('❌ Table creation failed:', error.message);
-      process.exit(1);
+      console.error('❌ Error creating tables:', error.message);
+      throw error;
     } finally {
       await client.end();
     }
@@ -140,89 +161,101 @@ class RealDatabaseSetup {
       await client.connect();
       console.log('ℹ️  Inserting sample data...');
 
-      // Insert sample teams
-      const teams = [
-        { external_id: 'STL', name: 'St. Louis Cardinals', city: 'St. Louis', sport: 'MLB', league: 'NL Central' },
-        { external_id: 'TEN', name: 'Tennessee Titans', city: 'Nashville', sport: 'NFL', league: 'AFC South' },
-        { external_id: 'MEM', name: 'Memphis Grizzlies', city: 'Memphis', sport: 'NBA', league: 'Western' },
-        { external_id: 'TEX', name: 'Texas Longhorns', city: 'Austin', sport: 'NCAA', league: 'SEC' }
-      ];
+      // Insert Cardinals
+      await client.query(`
+        INSERT INTO teams (external_id, name, abbreviation, sport, league, division, venue_name, city, state, primary_color)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        ON CONFLICT (external_id) DO NOTHING
+      `, ['138', 'St. Louis Cardinals', 'STL', 'MLB', 'National League', 'NL Central', 'Busch Stadium', 'St. Louis', 'MO', '#C41E3A']);
 
-      for (const team of teams) {
-        await client.query(`
-          INSERT INTO teams (external_id, name, city, sport, league)
-          VALUES ($1, $2, $3, $4, $5)
-          ON CONFLICT (external_id) DO UPDATE
-          SET name = EXCLUDED.name, updated_at = CURRENT_TIMESTAMP
-        `, [team.external_id, team.name, team.city, team.sport, team.league]);
-      }
+      // Insert Titans
+      await client.query(`
+        INSERT INTO teams (external_id, name, abbreviation, sport, league, division, venue_name, city, state, primary_color)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        ON CONFLICT (external_id) DO NOTHING
+      `, ['10', 'Tennessee Titans', 'TEN', 'NFL', 'AFC', 'AFC South', 'Nissan Stadium', 'Nashville', 'TN', '#4B92DB']);
+
+      // Insert Grizzlies
+      await client.query(`
+        INSERT INTO teams (external_id, name, abbreviation, sport, league, division, venue_name, city, state, primary_color)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        ON CONFLICT (external_id) DO NOTHING
+      `, ['29', 'Memphis Grizzlies', 'MEM', 'NBA', 'Western Conference', 'Southwest Division', 'FedExForum', 'Memphis', 'TN', '#5D76A9']);
+
+      // Insert Longhorns
+      await client.query(`
+        INSERT INTO teams (external_id, name, abbreviation, sport, league, conference, venue_name, city, state, primary_color)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        ON CONFLICT (external_id) DO NOTHING
+      `, ['251', 'Texas Longhorns', 'TEX', 'NCAA Football', 'FBS', 'Big 12', 'Darrell K Royal Stadium', 'Austin', 'TX', '#BF5700']);
+
       console.log('✅ Inserted sample teams');
 
-      // Insert sample analytics
-      const teamIds = await client.query('SELECT id, external_id FROM teams');
-      for (const team of teamIds.rows) {
+      // Insert initial analytics records
+      const teams = await client.query('SELECT id, name FROM teams');
+      for (const team of teams.rows) {
         await client.query(`
-          INSERT INTO analytics (team_id, season, wins, losses)
-          VALUES ($1, 2024, 0, 0)
-          ON CONFLICT (team_id, season) DO NOTHING
-        `, [team.id]);
+          INSERT INTO analytics (team_id, season, metric_type, metric_value, data_source)
+          VALUES ($1, $2, $3, $4, $5)
+          ON CONFLICT (team_id, season, metric_type) DO NOTHING
+        `, [team.id, 2024, 'elo_rating', 1500, 'Initial Setup']);
       }
       console.log('✅ Inserted initial analytics records');
 
     } catch (error) {
-      console.error('❌ Sample data insertion failed:', error.message);
+      console.error('❌ Error inserting sample data:', error.message);
+      // Don't throw - sample data is optional
     } finally {
       await client.end();
     }
   }
 
-  async testConnection() {
+  async verifyDatabase() {
     const client = new Client(this.config);
 
     try {
       await client.connect();
-      const result = await client.query('SELECT COUNT(*) FROM teams');
+
+      const result = await client.query(`
+        SELECT COUNT(*) as count FROM teams
+      `);
+
       console.log(`\n✅ Database test successful!`);
       console.log(`   Teams in database: ${result.rows[0].count}`);
 
-      // Show connection info
-      console.log(`\n📊 Database Connection Info:`);
-      console.log(`   Host: ${this.config.host}`);
-      console.log(`   Port: ${this.config.port}`);
-      console.log(`   Database: ${this.config.database}`);
-      console.log(`   User: ${this.config.user}`);
-
     } catch (error) {
-      console.error('❌ Database test failed:', error.message);
-      return false;
+      console.error('❌ Database verification failed:', error.message);
+      throw error;
     } finally {
       await client.end();
     }
-    return true;
   }
 
   async run() {
     console.log('🚀 Setting up REAL PostgreSQL database for Blaze Sports Intel');
     console.log('================================================\n');
 
-    // Step 1: Create database
-    await this.createDatabase();
+    try {
+      await this.createDatabase();
+      await this.createTables();
+      await this.insertSampleData();
+      await this.verifyDatabase();
 
-    // Step 2: Create tables
-    await this.createTables();
+      console.log('\n📊 Database Connection Info:');
+      console.log(`   Host: ${this.config.host}`);
+      console.log(`   Port: ${this.config.port}`);
+      console.log(`   Database: ${this.config.database}`);
+      console.log(`   User: ${this.config.user}`);
 
-    // Step 3: Insert sample data
-    await this.insertSampleData();
-
-    // Step 4: Test connection
-    const success = await this.testConnection();
-
-    if (success) {
       console.log('\n🎉 Database setup complete!');
       console.log('\nNext steps:');
       console.log('1. Update .env with your database credentials');
       console.log('2. Run: npm run api:start');
       console.log('3. Test: curl http://localhost:3000/api/teams');
+
+    } catch (error) {
+      console.error('\n❌ Setup failed:', error.message);
+      process.exit(1);
     }
   }
 }
@@ -230,10 +263,5 @@ class RealDatabaseSetup {
 // Run if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   const setup = new RealDatabaseSetup();
-  setup.run().catch(error => {
-    console.error('Fatal error:', error);
-    process.exit(1);
-  });
+  setup.run();
 }
-
-export default RealDatabaseSetup;
