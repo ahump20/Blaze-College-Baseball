@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using BSI.Unity.SportsAnalytics;
+using BSI.Unity.Context7;
 using System.Collections;
 
 namespace BSI.Unity.UI
@@ -23,9 +24,14 @@ namespace BSI.Unity.UI
 
         [Header("Configuration")]
         public float updateInterval = 0.5f;
-        public Color improvingColor = Color.green;
-        public Color decliningColor = Color.red;
-        public Color neutralColor = Color.yellow;
+        
+        [Header("UI Brand Colors - DO NOT MODIFY WITHOUT DESIGN REVIEW")]
+        [SerializeField] private Color improvingColor = new Color(0f, 0.8f, 0f, 1f); // Blaze Green
+        [SerializeField] private Color decliningColor = new Color(1f, 0.2f, 0.2f, 1f); // Blaze Red  
+        [SerializeField] private Color neutralColor = new Color(1f, 0.8f, 0f, 1f); // Blaze Yellow
+        
+        [Header("Context7 Integration")]
+        [SerializeField] private bool enableDocumentationHelp = true;
 
         private SportsDataManager dataManager;
         private PerformanceMetrics lastMetrics;
@@ -151,10 +157,20 @@ namespace BSI.Unity.UI
             }
         }
 
-        public void ShowDetailedView()
+        public async void ShowDetailedView()
         {
             // This would open a detailed analytics view
             Debug.Log("Opening detailed analytics view...");
+            
+            // Get Context7 documentation for detailed analytics
+            if (enableDocumentationHelp && Context7Service.Instance != null)
+            {
+                var docs = await Context7Service.Instance.GetSportsAnalyticsDocumentation("detailed-analytics");
+                if (docs.success)
+                {
+                    Debug.Log("📚 Context7 documentation loaded for detailed view");
+                }
+            }
         }
 
         void OnDestroy()

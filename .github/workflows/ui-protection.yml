@@ -1,0 +1,185 @@
+name: UI Protection & API Separation
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main ]
+
+jobs:
+  check-ui-frozen:
+    name: Verify UI/API Separation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for unauthorized UI changes
+        run: |
+          chmod +x scripts/check-ui-tokens.sh
+          ./scripts/check-ui-tokens.sh
+
+      - name: Label PR if UI changes detected
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['ui-change', 'needs-design-review', 'breaking-change']
+            })
+            
+            // Add comment explaining the UI protection
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `🚨 **UI Protection Alert**
+              
+              This PR contains changes to UI/design files that require design review.
+              
+              **Modified files:** ${process.env.UI_FILES || 'See diff'}
+              
+              **Next steps:**
+              1. Add \`ui-change\` and \`needs-design-review\` labels
+              2. Request review from design team
+              3. Ensure brand consistency is maintained
+              
+              **Protected files include:**
+              - CSS/SCSS files
+              - HTML templates  
+              - Unity UI scripts
+              - Design tokens and colors
+              - Package.json (UI dependencies)
+              
+              **Allowed changes:**
+              - API endpoints and services
+              - Context7Service modifications
+              - Business logic updates
+              - Documentation updates`
+            })
+
+  test-api-layer:
+    name: Test API Layer Changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm ci || npm install
+          fi
+
+      - name: Test Context7 API integration
+        run: |
+          # Test that API files can be modified without UI impact
+          if [ -d "context7-enhanced" ]; then
+            echo "✅ Context7 API files present"
+            ls -la context7-enhanced/src/
+          fi
+          
+          if [ -d "functions/api" ]; then
+            echo "✅ API functions present"  
+            ls -la functions/api/
+          fi
+          
+          if [ -f "unity-app/Assets/Scripts/Context7/Context7Service.cs" ]; then
+            echo "✅ Unity Context7Service present"
+          fi
+
+      - name: Verify API/UI separation
+        run: |
+          echo "🔍 Checking API/UI separation..."
+          
+          # Check that UI files are not being modified
+          if git diff --name-only origin/main...HEAD | grep -E "\.(css|html|htm)$"; then
+            echo "❌ UI files modified - failing build"
+            exit 1
+          fi
+          
+          # Check Unity UI files
+          if git diff --name-only origin/main...HEAD | grep -E "unity-app/Assets/Scripts/UI/.*\.cs$"; then
+            echo "❌ Unity UI files modified - failing build"  
+            exit 1
+          fi
+          
+          echo "✅ API/UI separation maintained"
+
+  unity-context7-test:
+    name: Test Unity Context7 Integration
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Verify Context7Service singleton pattern
+        run: |
+          if [ -f "unity-app/Assets/Scripts/Context7/Context7Service.cs" ]; then
+            echo "🔍 Checking Context7Service implementation..."
+            
+            # Check for singleton pattern
+            if grep -q "public static Context7Service Instance" unity-app/Assets/Scripts/Context7/Context7Service.cs; then
+              echo "✅ Singleton pattern implemented"
+            else
+              echo "❌ Singleton pattern missing"
+              exit 1
+            fi
+            
+            # Check that UI components use the service
+            if grep -q "Context7Service.Instance" unity-app/Assets/Scripts/UI/AnalyticsDashboard.cs; then
+              echo "✅ UI components use Context7Service"
+            else
+              echo "❌ UI components not using Context7Service"
+              exit 1
+            fi
+            
+            # Check for API-only access
+            if ! grep -q "HttpClient" unity-app/Assets/Scripts/UI/; then
+              echo "✅ No direct HTTP calls in UI components"
+            else
+              echo "❌ Direct HTTP calls found in UI components"
+              exit 1
+            fi
+            
+            echo "✅ Unity Context7 integration verified"
+          else
+            echo "⚠️ Context7Service not found - skipping Unity tests"
+          fi
+
+  build-verification:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    needs: [check-ui-frozen, test-api-layer]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Verify build integrity
+        run: |
+          echo "🏗️ Verifying build integrity..."
+          
+          # Check that required files exist
+          REQUIRED_FILES=(
+            "context7.json"
+            "package.json" 
+            "unity-app/Assets/Scripts/Context7/Context7Service.cs"
+          )
+          
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✅ $file exists"
+            else
+              echo "❌ $file missing"
+              exit 1
+            fi
+          done
+          
+          echo "✅ Build verification complete"

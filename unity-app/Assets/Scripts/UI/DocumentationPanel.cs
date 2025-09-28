@@ -2,205 +2,315 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using BSI.Unity.Context7;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace BSI.Unity.UI
 {
+    /// <summary>
+    /// UI Panel for displaying Context7 documentation.
+    /// This component should NEVER make direct API calls - it only uses Context7Service.
+    /// </summary>
     public class DocumentationPanel : MonoBehaviour
     {
         [Header("UI References")]
-        public GameObject panel;
         public TMP_InputField searchInput;
-        public TMP_Text documentationDisplay;
-        public Button searchButton;
-        public Button closeButton;
         public TMP_Dropdown libraryDropdown;
-        public ScrollRect scrollRect;
+        public TMP_InputField topicInput;
+        public Slider tokenSlider;
+        public TMP_Text tokenCountText;
+        public Button searchButton;
+        public ScrollRect contentScrollRect;
+        public TMP_Text contentText;
+        public Button clearButton;
         public TMP_Text statusText;
 
-        [Header("Configuration")]
-        public float searchDelay = 0.5f;
-        public int maxDisplayLength = 5000;
+        [Header("UI Brand Colors - DO NOT MODIFY WITHOUT DESIGN REVIEW")]
+        [SerializeField] private Color primaryColor = new Color(0f, 0.4f, 0.8f, 1f); // Blaze Blue
+        [SerializeField] private Color secondaryColor = new Color(0.2f, 0.2f, 0.2f, 1f); // Blaze Dark
+        [SerializeField] private Color accentColor = new Color(1f, 0.4f, 0f, 1f); // Blaze Orange
 
-        private DocumentationManager docManager;
-        private bool isSearching = false;
+        [Header("Configuration")]
+        [SerializeField] private int defaultTokens = 3000;
+        [SerializeField] private int maxTokens = 8000;
+        [SerializeField] private bool autoSearch = false;
+
+        private List<string> searchHistory = new List<string>();
+        private Context7Service context7Service;
 
         void Start()
         {
-            SetupUI();
-            docManager = FindObjectOfType<DocumentationManager>();
+            InitializeUI();
+            SetupEventListeners();
+            PopulateLibraryDropdown();
+            
+            // Get reference to Context7Service
+            context7Service = Context7Service.Instance;
+            if (context7Service == null)
+            {
+                Debug.LogError("❌ Context7Service not found! Please ensure it's in the scene.");
+                UpdateStatus("Context7Service not available", false);
+            }
+            else
+            {
+                UpdateStatus("Ready to search documentation", true);
+            }
         }
 
-        void SetupUI()
+        private void InitializeUI()
+        {
+            // Set up token slider
+            if (tokenSlider != null)
+            {
+                tokenSlider.minValue = 500;
+                tokenSlider.maxValue = maxTokens;
+                tokenSlider.value = defaultTokens;
+                UpdateTokenCount();
+            }
+
+            // Set up content text styling
+            if (contentText != null)
+            {
+                contentText.text = "Search for documentation using the controls above.";
+            }
+
+            // Apply brand colors to UI elements
+            ApplyBrandColors();
+        }
+
+        private void ApplyBrandColors()
+        {
+            // Apply brand colors to UI elements
+            if (searchButton != null)
+            {
+                var colors = searchButton.colors;
+                colors.normalColor = primaryColor;
+                colors.highlightedColor = Color.Lerp(primaryColor, Color.white, 0.1f);
+                searchButton.colors = colors;
+            }
+
+            if (clearButton != null)
+            {
+                var colors = clearButton.colors;
+                colors.normalColor = secondaryColor;
+                colors.highlightedColor = Color.Lerp(secondaryColor, Color.white, 0.1f);
+                clearButton.colors = colors;
+            }
+        }
+
+        private void SetupEventListeners()
         {
             if (searchButton != null)
                 searchButton.onClick.AddListener(OnSearchClicked);
             
-            if (closeButton != null)
-                closeButton.onClick.AddListener(OnCloseClicked);
+            if (clearButton != null)
+                clearButton.onClick.AddListener(OnClearClicked);
+            
+            if (tokenSlider != null)
+                tokenSlider.onValueChanged.AddListener(OnTokenSliderChanged);
             
             if (searchInput != null)
-                searchInput.onValueChanged.AddListener(OnSearchInputChanged);
-        }
-
-        void OnSearchInputChanged(string value)
-        {
-            if (isSearching) return;
-            
-            if (!string.IsNullOrEmpty(value))
             {
-                Invoke(nameof(PerformSearch), searchDelay);
+                searchInput.onEndEdit.AddListener(OnSearchInputEndEdit);
             }
         }
 
-        void OnSearchClicked()
+        private void PopulateLibraryDropdown()
         {
-            if (searchInput != null)
-                PerformSearch(searchInput.text);
-        }
+            if (libraryDropdown == null) return;
 
-        void OnCloseClicked()
-        {
-            if (panel != null)
-                panel.SetActive(false);
-        }
-
-        void PerformSearch()
-        {
-            if (searchInput == null || docManager == null) return;
+            libraryDropdown.ClearOptions();
             
-            string query = searchInput.text;
-            if (string.IsNullOrEmpty(query)) return;
-
-            StartCoroutine(SearchCoroutine(query));
+            var libraries = new List<string>
+            {
+                "Unity",
+                "Sports Analytics", 
+                "Python",
+                "Biomechanics",
+                "Machine Learning",
+                "Data Visualization"
+            };
+            
+            libraryDropdown.AddOptions(libraries);
         }
 
-        System.Collections.IEnumerator SearchCoroutine(string query)
+        private void OnSearchClicked()
         {
-            isSearching = true;
-            UpdateStatus("Searching...");
+            PerformSearch();
+        }
 
-            // Simulate search delay
-            yield return new WaitForSeconds(0.1f);
+        private void OnClearClicked()
+        {
+            ClearContent();
+        }
 
-            try
+        private void OnTokenSliderChanged(float value)
+        {
+            UpdateTokenCount();
+        }
+
+        private void OnSearchInputEndEdit(string text)
+        {
+            if (autoSearch && !string.IsNullOrEmpty(text))
             {
-                // This would normally call the actual search method
-                // For now, we'll simulate a response
-                string result = SimulateDocumentationSearch(query);
-                
-                if (documentationDisplay != null)
+                PerformSearch();
+            }
+        }
+
+        private void UpdateTokenCount()
+        {
+            if (tokenCountText != null && tokenSlider != null)
+            {
+                tokenCountText.text = $"Tokens: {Mathf.RoundToInt(tokenSlider.value)}";
+            }
+        }
+
+        private async void PerformSearch()
+        {
+            if (context7Service == null)
+            {
+                UpdateStatus("Context7Service not available", false);
+                return;
+            }
+
+            string searchTerm = searchInput?.text ?? "";
+            string library = GetSelectedLibrary();
+            string topic = topicInput?.text ?? "";
+            int tokens = Mathf.RoundToInt(tokenSlider?.value ?? defaultTokens);
+
+            if (string.IsNullOrEmpty(searchTerm))
+            {
+                UpdateStatus("Please enter a search term", false);
+                return;
+            }
+
+            UpdateStatus("Searching documentation...", true);
+            
+            // Add to search history
+            if (!searchHistory.Contains(searchTerm))
+            {
+                searchHistory.Add(searchTerm);
+                if (searchHistory.Count > 10) // Keep only last 10 searches
                 {
-                    documentationDisplay.text = result;
+                    searchHistory.RemoveAt(0);
                 }
-                
-                UpdateStatus("Search completed");
             }
-            catch (System.Exception e)
-            {
-                UpdateStatus($"Search failed: {e.Message}");
-                if (documentationDisplay != null)
-                    documentationDisplay.text = $"Error: {e.Message}";
-            }
-            finally
-            {
-                isSearching = false;
-            }
-        }
 
-        string SimulateDocumentationSearch(string query)
-        {
-            // Simulate different responses based on query
-            string lowerQuery = query.ToLower();
+            // Use Context7Service to get documentation
+            var response = await context7Service.GetLibraryDocumentation(library, topic, tokens);
             
-            if (lowerQuery.Contains("unity") || lowerQuery.Contains("gameobject"))
+            if (response.success)
             {
-                return @"Unity GameObject Documentation
-                
-A GameObject is the fundamental object in Unity scenes. Every object in your scene is a GameObject.
-
-Key Properties:
-- Transform: Position, rotation, and scale
-- Components: Scripts and built-in components
-- Tag: Identifier for grouping objects
-- Layer: Used for rendering and physics
-
-Common Methods:
-- GameObject.Find(string name)
-- GameObject.Instantiate(GameObject prefab)
-- gameObject.SetActive(bool active)
-- gameObject.GetComponent<T>()
-
-Example Usage:
-```csharp
-// Create a new GameObject
-GameObject newObject = new GameObject("MyObject");
-
-// Add a component
-Rigidbody rb = newObject.AddComponent<Rigidbody>();
-
-// Set position
-newObject.transform.position = Vector3.zero;
-```";
-            }
-            else if (lowerQuery.Contains("sports") || lowerQuery.Contains("biomechanics"))
-            {
-                return @"Sports Analytics & Biomechanics Documentation
-                
-Biomechanical analysis in sports involves measuring and analyzing human movement patterns to improve performance and reduce injury risk.
-
-Key Metrics:
-- Hip-Shoulder Separation: Critical for power generation
-- Elbow Valgus Angle: Injury risk indicator
-- Pelvis Rotation Velocity: Energy transfer efficiency
-- Ground Contact Time: Load phase duration
-
-Data Processing Pipeline:
-1. Pose Detection (MediaPipe/OpenPose)
-2. Feature Extraction
-3. Biomechanical Analysis
-4. Performance Scoring
-5. Visualization
-
-Example Implementation:
-```csharp
-public class BiomechanicsAnalyzer : MonoBehaviour
-{
-    public float CalculateHipShoulderSeparation(Vector3 hip, Vector3 shoulder)
-    {
-        Vector3 separation = shoulder - hip;
-        return Vector3.Angle(separation, Vector3.forward);
-    }
-}
-```";
+                DisplayContent(response.content);
+                UpdateStatus($"Found documentation for: {searchTerm}", true);
             }
             else
             {
-                return $"Documentation search results for: '{query}'\n\nNo specific documentation found. Please try searching for:\n- Unity scripting\n- Sports analytics\n- Biomechanics\n- Machine learning\n- Computer vision";
+                DisplayContent($"Error: {response.error}");
+                UpdateStatus($"Search failed: {response.error}", false);
             }
         }
 
-        void UpdateStatus(string message)
+        private string GetSelectedLibrary()
+        {
+            if (libraryDropdown == null) return "/unity/unity";
+            
+            string selected = libraryDropdown.options[libraryDropdown.value].text;
+            
+            return selected switch
+            {
+                "Unity" => "/unity/unity",
+                "Sports Analytics" => "/sports/analytics",
+                "Python" => "/python/python",
+                "Biomechanics" => "/sports/biomechanics",
+                "Machine Learning" => "/ml/tensorflow",
+                "Data Visualization" => "/viz/chartjs",
+                _ => "/unity/unity"
+            };
+        }
+
+        private void DisplayContent(string content)
+        {
+            if (contentText != null)
+            {
+                // Format content with basic markdown-like styling
+                contentText.text = FormatContent(content);
+            }
+
+            // Scroll to top
+            if (contentScrollRect != null)
+            {
+                contentScrollRect.verticalNormalizedPosition = 1f;
+            }
+        }
+
+        private string FormatContent(string content)
+        {
+            // Basic formatting for better readability
+            content = content.Replace("\\n", "\n");
+            content = content.Replace("**", "<b>");
+            content = content.Replace("__", "<b>");
+            content = content.Replace("*", "<i>");
+            content = content.Replace("`", "<color=#ff6b00>");
+            
+            return content;
+        }
+
+        private void ClearContent()
+        {
+            if (contentText != null)
+            {
+                contentText.text = "Content cleared. Ready for new search.";
+            }
+            
+            UpdateStatus("Content cleared", true);
+        }
+
+        private void UpdateStatus(string message, bool isSuccess)
         {
             if (statusText != null)
+            {
                 statusText.text = message;
+                statusText.color = isSuccess ? Color.green : Color.red;
+            }
         }
 
-        public void ShowPanel()
+        // Public methods for external access
+        public void SetSearchTerm(string term)
         {
-            if (panel != null)
-                panel.SetActive(true);
+            if (searchInput != null)
+            {
+                searchInput.text = term;
+            }
         }
 
-        public void HidePanel()
+        public void SetLibrary(string library)
         {
-            if (panel != null)
-                panel.SetActive(false);
+            if (libraryDropdown != null)
+            {
+                for (int i = 0; i < libraryDropdown.options.Count; i++)
+                {
+                    if (libraryDropdown.options[i].text == library)
+                    {
+                        libraryDropdown.value = i;
+                        break;
+                    }
+                }
+            }
         }
 
-        public void TogglePanel()
+        public void SetTokenCount(int tokens)
         {
-            if (panel != null)
-                panel.SetActive(!panel.activeSelf);
+            if (tokenSlider != null)
+            {
+                tokenSlider.value = Mathf.Clamp(tokens, tokenSlider.minValue, tokenSlider.maxValue);
+                UpdateTokenCount();
+            }
+        }
+
+        public List<string> GetSearchHistory()
+        {
+            return new List<string>(searchHistory);
         }
     }
 }
