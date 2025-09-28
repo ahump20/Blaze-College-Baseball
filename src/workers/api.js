@@ -20,13 +20,18 @@ const cdtNow = () => {
     return acc;
   }, {});
 
-  let offset = '-05:00';
+  let offset;
   const tzName = parts.timeZoneName || '';
   if (tzName === 'CST') {
     offset = '-06:00';
+  } else if (tzName === 'CDT') {
+    offset = '-05:00';
   } else if (tzName.startsWith('GMT')) {
     const raw = tzName.replace('GMT', '');
     offset = raw.includes(':') ? raw : `${raw}:00`;
+  } else {
+    // Fallback: default to '-06:00' (CST) if unknown
+    offset = '-06:00';
   }
 
   return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}${offset}`;
