@@ -414,7 +414,7 @@ class DeepSouthSportsAnalytics:
                     y = group["performance_seconds"].iloc[start_idx:i+1].values
                     
                     # Skip if all NaN values
-                    if not np.any(np.isnan(y)):
+                    if not np.all(np.isnan(y)):
                         slope = np.polyfit(x, y, 1)[0]
                         # Apply direction based on event type
                         progression_rates[i] = -slope if is_running else slope
