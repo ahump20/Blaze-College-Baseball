@@ -1,19 +1,20 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.Text;
-using Newtonsoft.Json;
 
 namespace BSI.Unity.Context7
 {
+    /// <summary>
+    /// Legacy integration component - now delegates to Context7Service
+    /// This class is maintained for backward compatibility
+    /// </summary>
+    [System.Obsolete("Use Context7Service.Instance directly instead of Context7Integration")]
     public class Context7Integration : MonoBehaviour
     {
-        [Header("Context7 Configuration")]
-        public string mcpServerUrl = "http://localhost:8080";
-        public string apiKey = "ctx7sk-30e11e35-4b11-400c-9674-47d39d05aac5";
+        [Header("Context7 Configuration - Use Context7Service instead")]
+        [SerializeField] private string mcpServerUrl = "http://localhost:8080";
+        [SerializeField] private string apiKey = "ctx7sk-30e11e35-4b11-400c-9674-47d39d05aac5";
         
-        private static readonly HttpClient client = new HttpClient();
         private DocumentationManager docManager;
 
         void Start()
@@ -27,30 +28,16 @@ namespace BSI.Unity.Context7
 
         public async Task<string> GetLibraryDocs(string libraryId, string topic = "", int tokens = 5000)
         {
-            try
+            Debug.LogWarning("⚠️ Context7Integration is deprecated. Use Context7Service.Instance instead.");
+            
+            if (Context7Service.Instance != null)
             {
-                var requestData = new
-                {
-                    context7CompatibleLibraryID = libraryId,
-                    topic = topic,
-                    tokens = tokens
-                };
-
-                string json = JsonConvert.SerializeObject(requestData);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                
-                string url = $"{mcpServerUrl}/get-library-docs";
-                HttpResponseMessage response = await client.PostAsync(url, content);
-                response.EnsureSuccessStatusCode();
-                
-                string responseBody = await response.Content.ReadAsStringAsync();
-                Debug.Log($"Context7 Response: {responseBody}");
-                
-                return responseBody;
+                var response = await Context7Service.Instance.GetLibraryDocumentation(libraryId, topic, tokens);
+                return response.success ? response.content : response.error;
             }
-            catch (Exception e)
+            else
             {
-                Debug.LogError($"Error fetching documentation: {e.Message}");
+                Debug.LogError("❌ Context7Service not found! Please add Context7Service to the scene.");
                 return null;
             }
         }
