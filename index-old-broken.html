@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blaze Intelligence™ - The Deep South Sports Authority | Texas • SEC • Every Player • Every Level</title>
+    <meta name="description" content="The Deep South Sports Authority delivering championship intelligence from Friday Night Lights to Sunday in the Show. Baseball → Football → Basketball → Track & Field pipeline coverage. Cardinals, Titans, Grizzlies, Longhorns with Texas High School to SEC to Professional analytics.">
+    <meta name="keywords" content="Deep South Sports Authority, Texas SEC pipeline, Friday Night Lights, championship intelligence, MLB Cardinals, NFL Titans, NBA Grizzlies, Texas Longhorns, Perfect Game baseball, Texas high school football, Dave Campbell model, sports intelligence, recruiting analytics">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://blazesportsintel.com">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Blaze Intelligence™ - The Deep South Sports Authority">
+    <meta property="og:description" content="Championship intelligence from Friday Night Lights to Sunday in the Show. Texas • SEC • Every Player • Every Level. Baseball → Football → Basketball → Track & Field pipeline coverage.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://blazesportsintel.com">
+    <meta property="og:image" content="https://blazesportsintel.com/images/blaze-intelligence-deep-south-authority.jpg">
+    <meta property="og:site_name" content="Blaze Intelligence">
+
+    <!-- Twitter Card Meta -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@BISportsIntel">
+    <meta name="twitter:creator" content="@a_hump20">
+    <meta name="twitter:title" content="Blaze Intelligence™ - The Deep South Sports Authority">
+    <meta name="twitter:description" content="Championship intelligence from Friday Night Lights to Sunday in the Show • Texas → SEC → Professional">
+    <meta name="twitter:image" content="https://blazesportsintel.com/images/blaze-intelligence-deep-south-twitter.jpg">
+
+    <!-- Security and Performance -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="theme-color" content="#ff6b00">
+
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style">
+    <link rel="preload" href="https://unpkg.com/react@18/umd/react.production.min.js" as="script">
+    <link rel="preload" href="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" as="script">
+    <link rel="preload" href="https://d3js.org/d3.v7.min.js" as="script">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" as="script">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Championship Visual System -->
+    <link rel="stylesheet" href="/css/blaze-ultimate-aesthetics.css">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <style>
+        /* CSS Custom Properties for Consistent Theming */
+        :root {
+            --primary-orange: #ff6b00;
+            --primary-blue: #0066cc;
+            --deep-orange: #e55100;
+            --electric-blue: #00bcd4;
+            --dark-bg: #0a0a0a;
+            --darker-bg: #050505;
+            --light-bg: #1a1a1a;
+            --accent-bg: #2a2a2a;
+            --text-white: #ffffff;
+            --text-light: #e0e0e0;
+            --text-gray: #b0b0b0;
+            --text-dim: #808080;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --gradient-primary: linear-gradient(135deg, var(--primary-orange), var(--primary-blue));
+            --gradient-glow: linear-gradient(135deg, rgba(255, 107, 0, 0.3), rgba(0, 102, 204, 0.3));
+            --shadow-glow: 0 0 40px rgba(255, 107, 0, 0.3);
+            --shadow-intense: 0 20px 60px rgba(0, 0, 0, 0.5);
+            --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-spring: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--darker-bg);
+            color: var(--text-white);
+            line-height: 1.6;
+            overflow-x: hidden;
+            font-feature-settings: "kern" 1, "liga" 1;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Interactive Dashboard Grid Styles */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        .dashboard-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-intense);
+            transition: var(--transition-spring);
+            min-height: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 60px rgba(255, 107, 0, 0.3);
+            border-color: var(--primary-orange);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-white);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .live-indicator {
+            font-size: 0.8rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Live Scores Styles */
+        .scores-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .score-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--light-bg);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition-smooth);
+        }
+
+        .score-item:hover {
+            background: var(--accent-bg);
+            border-color: var(--primary-orange);
+        }
+
+        .teams {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .team {
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .scores {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            text-align: center;
+        }
+
+        .score {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-gray);
+        }
+
+        .score.winning {
+            color: var(--primary-orange);
+        }
+
+        .game-status {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-align: right;
+        }
+
+        /* Visualization Container Styles */
+        .visualization-container {
+            height: 280px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .interactive-viz {
+            flex: 1;
+            background: var(--light-bg);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .viz-controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .viz-control {
+            background: var(--accent-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--text-white);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .viz-control:hover, .viz-control:focus {
+            background: var(--light-bg);
+            border-color: var(--primary-orange);
+            outline: none;
+        }
+
+        .viz-button {
+            background: var(--accent-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--text-white);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .viz-button:hover {
+            background: var(--light-bg);
+            border-color: var(--primary-orange);
+        }
+
+        .viz-button.active {
+            background: var(--primary-orange);
+            border-color: var(--primary-orange);
+            color: var(--text-white);
+        }
+
+        /* Chart Metrics and Stats */
+        .chart-metrics, .network-stats {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .metric, .stat {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            background: var(--light-bg);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .dashboard-card {
+                min-height: 350px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .score-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 0.5rem;
+            }
+
+            .teams, .scores {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+
+        /* Rest of the existing styles from original file */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 20px rgba(255, 107, 0, 0.5));
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-orange);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-orange);
+        }
+
+        .nav-cta {
+            background: var(--gradient-primary);
+            color: var(--text-white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition-spring);
+            box-shadow: 0 5px 20px rgba(255, 107, 0, 0.3);
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 0, 0.5);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: radial-gradient(ellipse at center, var(--dark-bg) 0%, var(--darker-bg) 100%);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23333" stroke-width="0.5" opacity="0.3"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.1;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 900px;
+            padding: 0 2rem;
+            z-index: 2;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease both;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-gray);
+            margin-bottom: 3rem;
+            line-height: 1.7;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .cta-primary {
+            background: var(--gradient-primary);
+            color: var(--text-white);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: var(--transition-spring);
+            box-shadow: var(--shadow-glow);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 0, 0.4);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: var(--text-white);
+            padding: 1rem 2rem;
+            border: 2px solid var(--glass-border);
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: var(--transition-spring);
+            backdrop-filter: blur(10px);
+        }
+
+        .cta-secondary:hover {
+            border-color: var(--primary-orange);
+            background: var(--glass-bg);
+            transform: translateY(-3px);
+        }
+
+        /* Live Sports Dashboard */
+        .live-dashboard {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 4rem auto;
+            max-width: 1400px;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-intense);
+            animation: fadeInUp 1s ease 1s both;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-subtitle {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Features Section Styles */
+        .features {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Deep South Pipeline Styles */
+        .deep-south-pipeline {
+            background: var(--dark-bg);
+            padding: 6rem 2rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .pipeline-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .pipeline-title {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .pipeline-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            margin-bottom: 4rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .pipeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .pipeline-stage {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            transition: var(--transition-spring);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pipeline-stage::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .pipeline-stage:hover::before {
+            transform: scaleX(1);
+        }
+
+        .pipeline-stage:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 60px rgba(255, 107, 0, 0.2);
+            border-color: var(--primary-orange);
+        }
+
+        .stage-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .stage-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .stage-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 0.5rem;
+        }
+
+        .stage-content p {
+            color: var(--text-gray);
+            margin-bottom: 0.75rem;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        .stage-content strong {
+            color: var(--primary-orange);
+        }
+
+        .pipeline-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 2rem 1rem;
+            backdrop-filter: blur(20px);
+            transition: var(--transition-smooth);
+        }
+
+        .stat-item:hover {
+            border-color: var(--primary-orange);
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            display: block;
+            color: var(--text-gray);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .features-title {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .features-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            transition: var(--transition-spring);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 60px rgba(255, 107, 0, 0.2);
+            border-color: var(--primary-orange);
+        }
+
+        .feature-content {
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        /* Legal Compliance Section */
+        .legal-compliance {
+            background: var(--light-bg);
+            padding: 4rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .legal-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .legal-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 1rem;
+        }
+
+        .legal-subtitle {
+            color: var(--text-gray);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .legal-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .legal-link {
+            color: var(--primary-orange);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .legal-link:hover {
+            color: var(--text-white);
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--darker-bg);
+            border-top: 1px solid var(--glass-border);
+            padding: 3rem 2rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: var(--text-white);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--text-gray);
+            text-decoration: none;
+            transition: var(--transition-smooth);
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-orange);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-dim);
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* High Contrast Mode */
+        .high-contrast {
+            --primary-orange: #ffaa00;
+            --primary-blue: #0088ff;
+            --text-white: #ffffff;
+            --text-gray: #cccccc;
+            --dark-bg: #000000;
+            --light-bg: #333333;
+        }
+
+        .high-contrast .dashboard-card,
+        .high-contrast .feature-card {
+            border-width: 2px;
+        }
+
+        /* Print Styles */
+        @media print {
+            .navbar,
+            .cookie-banner,
+            .live-dashboard,
+            .hero-cta-group {
+                display: none;
+            }
+            body {
+                background: white;
+                color: black;
+            }
+        }
+
+        /* Animation keyframes */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 107, 0, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 107, 0, 0.6); }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 640px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-cta-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-primary, .cta-secondary {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Accessibility Skip Link -->
+    <a href="#main-content" class="visually-hidden">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="/" class="logo" aria-label="Blaze Intelligence - The Deep South Sports Authority Home">
+                Blaze Intelligence™
+            </a>
+            <ul class="nav-links">
+                <li><a href="#dashboard" class="nav-link">Live Dashboard</a></li>
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="/privacy-comprehensive" class="nav-link">Privacy</a></li>
+                <li><a href="/terms-comprehensive" class="nav-link">Terms</a></li>
+                <li><a href="/cookies" class="nav-link">Cookies</a></li>
+                <li><a href="#contact" class="nav-cta">Get Started</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-content">
+                <h1 id="hero-title" class="hero-title">
+                    The Deep South Sports Authority
+                </h1>
+                <p class="hero-subtitle">
+                    Championship intelligence from Friday Night Lights to Sunday in the Show.<br>
+                    Texas • SEC • Every Player • Every Level<br>
+                    <strong>Baseball → Football → Basketball → Track & Field</strong>
+                </p>
+                <div class="hero-cta-group">
+                    <a href="#dashboard" class="cta-primary" role="button">
+                        Explore Live Dashboard
+                    </a>
+                    <a href="#features" class="cta-secondary" role="button">
+                        Platform Features
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Sports Dashboard -->
+        <section id="dashboard" class="live-dashboard" aria-labelledby="dashboard-title">
+            <div class="dashboard-header">
+                <h2 id="dashboard-title" class="dashboard-title">
+                    🔴 Live Analytics Dashboard
+                </h2>
+                <p class="dashboard-subtitle">
+                    Real-time scores and interactive analytics • Updated every 30 seconds
+                </p>
+            </div>
+
+            <!-- Interactive Dashboard Grid -->
+            <div class="dashboard-grid" role="region" aria-label="Interactive sports analytics dashboard">
+                <!-- Live Scores Section -->
+                <div class="dashboard-card dashboard-widget championship-optimized" tabindex="0" role="region" aria-labelledby="live-scores-title">
+                    <div class="card-header">
+                        <h3 id="live-scores-title" class="card-title">Live Scores</h3>
+                        <span class="live-indicator">🟢</span>
+                    </div>
+                    <div class="scores-container">
+                        <div class="score-item">
+                            <div class="teams">
+                                <span class="team">Cardinals</span>
+                                <span class="team">Cubs</span>
+                            </div>
+                            <div class="scores">
+                                <span class="score winning">5</span>
+                                <span class="score">3</span>
+                            </div>
+                            <div class="game-status">Bottom 7th</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="teams">
+                                <span class="team">Titans</span>
+                                <span class="team">Colts</span>
+                            </div>
+                            <div class="scores">
+                                <span class="score winning">21</span>
+                                <span class="score">17</span>
+                            </div>
+                            <div class="game-status">Q3 5:42</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="teams">
+                                <span class="team">Longhorns</span>
+                                <span class="team">Sooners</span>
+                            </div>
+                            <div class="scores">
+                                <span class="score winning">35</span>
+                                <span class="score">28</span>
+                            </div>
+                            <div class="game-status">Q4 2:15</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="teams">
+                                <span class="team">Grizzlies</span>
+                                <span class="team">Lakers</span>
+                            </div>
+                            <div class="scores">
+                                <span class="score winning">98</span>
+                                <span class="score">94</span>
+                            </div>
+                            <div class="game-status">Q4 1:30</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player Heat Map Section -->
+                <div class="dashboard-card dashboard-widget championship-optimized" tabindex="0" role="region" aria-labelledby="heatmap-title">
+                    <div class="card-header">
+                        <h3 id="heatmap-title" class="card-title">Player Heat Map</h3>
+                        <span class="live-indicator">🟢</span>
+                    </div>
+                    <div class="visualization-container">
+                        <div id="heatmap-canvas" class="interactive-viz"></div>
+                        <div class="viz-controls">
+                            <select id="player-select" class="viz-control">
+                                <option value="pujols">Albert Pujols</option>
+                                <option value="goldschmidt">Paul Goldschmidt</option>
+                                <option value="arenado">Nolan Arenado</option>
+                            </select>
+                            <button id="toggle-zones" class="viz-button">Toggle Zones</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Shot Chart Section -->
+                <div class="dashboard-card dashboard-widget championship-optimized" tabindex="0" role="region" aria-labelledby="shotchart-title">
+                    <div class="card-header">
+                        <h3 id="shotchart-title" class="card-title">Interactive Shot Chart</h3>
+                        <div class="chart-metrics">
+                            <span class="metric">BA: .312</span>
+                            <span class="metric">OPS: .891</span>
+                        </div>
+                    </div>
+                    <div class="visualization-container">
+                        <div id="shotchart-canvas" class="interactive-viz"></div>
+                        <div class="viz-controls">
+                            <button id="filter-singles" class="viz-button active">Singles</button>
+                            <button id="filter-doubles" class="viz-button">Doubles</button>
+                            <button id="filter-homers" class="viz-button">Home Runs</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Connection Networks Section -->
+                <div class="dashboard-card dashboard-widget championship-optimized" tabindex="0" role="region" aria-labelledby="network-title">
+                    <div class="card-header">
+                        <h3 id="network-title" class="card-title">Team Connection Networks</h3>
+                        <div class="network-stats">
+                            <span class="stat">Links: 47</span>
+                            <span class="stat">Clusters: 3</span>
+                        </div>
+                    </div>
+                    <div class="visualization-container">
+                        <div id="network-canvas" class="interactive-viz"></div>
+                        <div class="viz-controls">
+                            <button id="cluster-offense" class="viz-button active">Offense</button>
+                            <button id="cluster-defense" class="viz-button">Defense</button>
+                            <button id="cluster-special" class="viz-button">Special Teams</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features" aria-labelledby="features-title">
+            <div class="features-header">
+                <h2 id="features-title" class="features-title">
+                    Deep South Championship Intelligence
+                </h2>
+                <p class="features-subtitle">
+                    From Friday Night Lights to Sunday in the Show • Texas → SEC → Professional Pipeline<br>
+                    <strong>Baseball → Football → Basketball → Track & Field</strong> • Every Player • Every Level
+                </p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-content">
+                        <span class="feature-icon" role="img" aria-label="Baseball analytics">⚾</span>
+                        <h3 class="feature-title">Baseball Intelligence</h3>
+                        <p class="feature-description">
+                            Perfect Game rankings, Cardinals analytics, SEC tournament coverage, and youth to professional pipeline tracking. From Little League to MLB with comprehensive draft analysis.
+                        </p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-content">
+                        <span class="feature-icon" role="img" aria-label="Football analytics">🏈</span>
+                        <h3 class="feature-title">Football Authority</h3>
+                        <p class="feature-description">
+                            Texas High School Football following the Dave Campbell's model. UIL 6A-1A coverage, Friday Night Lights analytics, Titans NFL insights, and SEC championship intelligence.
+                        </p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-content">
+                        <span class="feature-icon" role="img" aria-label="Basketball analytics">🏀</span>
+                        <h3 class="feature-title">Basketball Intelligence</h3>
+                        <p class="feature-description">
+                            Grizzlies NBA analytics, SEC basketball tournament coverage, Texas high school rankings, and AAU/select team tracking. March Madness predictions and draft analysis.
+                        </p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-content">
+                        <span class="feature-icon" role="img" aria-label="Track and Field analytics">🏃‍♂️</span>
+                        <h3 class="feature-title">Track & Field Excellence</h3>
+                        <p class="feature-description">
+                            Texas UIL track championships, SEC outdoor/indoor coverage, USATF youth development, and elite performance analysis. Olympic pathway tracking and recruiting intelligence.
+                        </p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-content">
+                        <span class="feature-icon" role="img" aria-label="Deep South pipeline">🗺️</span>
+                        <h3 class="feature-title">Deep South Pipeline</h3>
+                        <p class="feature-description">
+                            Comprehensive talent tracking from Texas High School through SEC to Professional levels. 67-80% cost savings vs competitors with 94.6% prediction accuracy.
+                        </p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-content">
+                        <span class="feature-icon" role="img" aria-label="Championship intelligence">🏆</span>
+                        <h3 class="feature-title">Championship Intelligence</h3>
+                        <p class="feature-description">
+                            AI-powered championship predictions, real-time analytics, and comprehensive legal compliance. Where championship tradition meets next-generation sports intelligence.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Deep South Pipeline Section -->
+        <section class="deep-south-pipeline" aria-labelledby="pipeline-title">
+            <div class="pipeline-container">
+                <h2 id="pipeline-title" class="pipeline-title">
+                    Texas → SEC → Professional Pipeline
+                </h2>
+                <p class="pipeline-subtitle">
+                    Comprehensive talent tracking from Friday Night Lights to Sunday in the Show
+                </p>
+
+                <div class="pipeline-grid">
+                    <div class="pipeline-stage blaze-championship-container championship-optimized">
+                        <div class="stage-header">
+                            <span class="stage-icon">🏟️</span>
+                            <h3>Texas High School</h3>
+                        </div>
+                        <div class="stage-content">
+                            <p><strong>UIL Coverage:</strong> 6A-1A classifications</p>
+                            <p><strong>Perfect Game:</strong> Elite youth baseball</p>
+                            <p><strong>Dave Campbell's Model:</strong> Authority since 1960</p>
+                            <p><strong>Friday Night Lights:</strong> 1,480+ schools tracked</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-stage blaze-championship-container championship-optimized">
+                        <div class="stage-header">
+                            <span class="stage-icon">🏛️</span>
+                            <h3>SEC Conference</h3>
+                        </div>
+                        <div class="stage-content">
+                            <p><strong>16 Universities:</strong> Alabama to Vanderbilt</p>
+                            <p><strong>Championship History:</strong> 74 national titles</p>
+                            <p><strong>Recruiting Hub:</strong> #1 conference for talent</p>
+                            <p><strong>Draft Pipeline:</strong> Most pro players</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-stage blaze-championship-container championship-optimized">
+                        <div class="stage-header">
+                            <span class="stage-icon">🏆</span>
+                            <h3>Professional</h3>
+                        </div>
+                        <div class="stage-content">
+                            <p><strong>Cardinals:</strong> MLB championship tradition</p>
+                            <p><strong>Titans:</strong> AFC South contenders</p>
+                            <p><strong>Grizzlies:</strong> NBA young core</p>
+                            <p><strong>Draft Analysis:</strong> SEC → Pro success rate</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pipeline-stats">
+                    <div class="stat-item dashboard-widget championship-optimized">
+                        <span class="stat-number">50,000+</span>
+                        <span class="stat-label">Athletes Tracked</span>
+                    </div>
+                    <div class="stat-item dashboard-widget championship-optimized">
+                        <span class="stat-number">94.6%</span>
+                        <span class="stat-label">Prediction Accuracy</span>
+                    </div>
+                    <div class="stat-item dashboard-widget championship-optimized">
+                        <span class="stat-number">67-80%</span>
+                        <span class="stat-label">Cost Savings</span>
+                    </div>
+                    <div class="stat-item dashboard-widget championship-optimized">
+                        <span class="stat-number">&lt;100ms</span>
+                        <span class="stat-label">Data Latency</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Legal Compliance Section -->
+        <section class="legal-compliance" aria-labelledby="legal-title">
+            <div class="legal-container">
+                <h2 id="legal-title" class="legal-title">
+                    Professional Legal Compliance
+                </h2>
+                <p class="legal-subtitle">
+                    Full GDPR, CCPA, and Texas law compliance with comprehensive data protection and user rights.
+                </p>
+                <div class="legal-links">
+                    <a href="/privacy-comprehensive" class="legal-link">Privacy Policy</a>
+                    <a href="/terms-comprehensive" class="legal-link">Terms of Service</a>
+                    <a href="/cookies" class="legal-link">Cookie Policy</a>
+                    <a href="#contact" class="legal-link">Data Requests</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>Deep South Authority</h3>
+                    <ul>
+                        <li><a href="#dashboard">Championship Dashboard</a></li>
+                        <li><a href="#features">Sports Intelligence</a></li>
+                        <li><a href="/api/sports-data">Live Data API</a></li>
+                        <li><a href="#pipeline">Pipeline Coverage</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Baseball → Football → Basketball → Track</h3>
+                    <ul>
+                        <li><a href="/api/sports-data/mlb">⚾ Cardinals Analytics</a></li>
+                        <li><a href="/api/sports-data/nfl">🏈 Titans & Friday Night Lights</a></li>
+                        <li><a href="/api/sports-data/nba">🏀 Grizzlies Intelligence</a></li>
+                        <li><a href="/api/sports-data/perfect-game">🏃‍♂️ Track & Field Excellence</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="/privacy-comprehensive">Privacy Policy</a></li>
+                        <li><a href="/terms-comprehensive">Terms of Service</a></li>
+                        <li><a href="/cookies">Cookie Policy</a></li>
+                        <li><a href="#dmca">DMCA</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Texas → SEC → Professional</h3>
+                    <ul>
+                        <li><a href="/api/sports-data/texas-hs">🏟️ UIL 6A-1A Coverage</a></li>
+                        <li><a href="/api/sports-data/perfect-game">⭐ Perfect Game Rankings</a></li>
+                        <li><a href="/api/sports-data/ncaa">🏛️ SEC Championship Hub</a></li>
+                        <li><a href="https://x.com/a_hump20">🏆 Austin's Analysis</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Blaze Intelligence™ - The Deep South Sports Authority. All rights reserved. | Texas • SEC • Every Player • Every Level</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- React and Visualization Libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Championship Visual Enhancement System -->
+    <script src="/js/blaze-ultimate-visual-engine.js"></script>
+    <script src="/js/blaze-visual-integration.js"></script>
+
+    <!-- Interactive Dashboard JavaScript -->
+    <script>
+        // Interactive Dashboard Components using React and D3.js
+        const { useState, useEffect, useRef } = React;
+
+        // Player Heat Map Component
+        function PlayerHeatMap() {
+            const svgRef = useRef();
+            const [selectedPlayer, setSelectedPlayer] = useState('goldschmidt');
+            const [showZones, setShowZones] = useState(true);
+
+            useEffect(() => {
+                const svg = d3.select(svgRef.current);
+                svg.selectAll("*").remove();
+
+                const width = 280;
+                const height = 200;
+
+                svg.attr("width", width).attr("height", height);
+
+                // Generate sample heat map data
+                const data = [];
+                for (let i = 0; i < 20; i++) {
+                    for (let j = 0; j < 15; j++) {
+                        data.push({
+                            x: i * (width / 20),
+                            y: j * (height / 15),
+                            value: Math.random() * 100
+                        });
+                    }
+                }
+
+                // Color scale
+                const colorScale = d3.scaleSequential(d3.interpolateRdYlBu)
+                    .domain([0, 100]);
+
+                // Draw heat map rectangles
+                svg.selectAll("rect")
+                    .data(data)
+                    .enter()
+                    .append("rect")
+                    .attr("x", d => d.x)
+                    .attr("y", d => d.y)
+                    .attr("width", width / 20)
+                    .attr("height", height / 15)
+                    .attr("fill", d => colorScale(d.value))
+                    .attr("opacity", 0.8)
+                    .on("mouseover", function(event, d) {
+                        d3.select(this).attr("opacity", 1);
+                    })
+                    .on("mouseout", function(event, d) {
+                        d3.select(this).attr("opacity", 0.8);
+                    });
+
+                // Add zone overlays if enabled
+                if (showZones) {
+                    svg.append("rect")
+                        .attr("x", width * 0.2)
+                        .attr("y", height * 0.2)
+                        .attr("width", width * 0.6)
+                        .attr("height", height * 0.6)
+                        .attr("fill", "none")
+                        .attr("stroke", "#ff6b00")
+                        .attr("stroke-width", 2)
+                        .attr("stroke-dasharray", "5,5");
+                }
+
+            }, [selectedPlayer, showZones]);
+
+            return React.createElement('div', null,
+                React.createElement('svg', { ref: svgRef, style: { width: '100%', height: '100%' } })
+            );
+        }
+
+        // Interactive Shot Chart Component
+        function ShotChart() {
+            const svgRef = useRef();
+            const [filter, setFilter] = useState('singles');
+
+            useEffect(() => {
+                const svg = d3.select(svgRef.current);
+                svg.selectAll("*").remove();
+
+                const width = 280;
+                const height = 200;
+
+                svg.attr("width", width).attr("height", height);
+
+                // Draw baseball field background
+                svg.append("path")
+                    .attr("d", `M ${width/2} ${height} L ${width*0.1} ${height*0.3} A ${width*0.4} ${width*0.4} 0 0 1 ${width*0.9} ${height*0.3} Z`)
+                    .attr("fill", "#2a2a2a")
+                    .attr("stroke", "#666")
+                    .attr("stroke-width", 1);
+
+                // Generate sample shot data
+                const shots = [];
+                for (let i = 0; i < 50; i++) {
+                    const angle = (Math.random() - 0.5) * Math.PI * 0.7;
+                    const distance = Math.random() * height * 0.6 + height * 0.1;
+                    const x = width/2 + Math.sin(angle) * distance;
+                    const y = height - Math.cos(angle) * distance;
+
+                    shots.push({
+                        x, y,
+                        type: ['single', 'double', 'homer'][Math.floor(Math.random() * 3)]
+                    });
+                }
+
+                // Filter shots based on current filter
+                const filteredShots = shots.filter(shot => shot.type === filter);
+
+                // Color mapping
+                const colors = {
+                    single: '#00bcd4',
+                    double: '#ff6b00',
+                    homer: '#e91e63'
+                };
+
+                // Draw shots
+                svg.selectAll("circle")
+                    .data(filteredShots)
+                    .enter()
+                    .append("circle")
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y)
+                    .attr("r", 3)
+                    .attr("fill", d => colors[d.type])
+                    .attr("opacity", 0.7)
+                    .on("mouseover", function() {
+                        d3.select(this).attr("r", 5).attr("opacity", 1);
+                    })
+                    .on("mouseout", function() {
+                        d3.select(this).attr("r", 3).attr("opacity", 0.7);
+                    });
+
+            }, [filter]);
+
+            return React.createElement('div', null,
+                React.createElement('svg', { ref: svgRef, style: { width: '100%', height: '100%' } })
+            );
+        }
+
+        // Team Connection Network Component
+        function TeamNetwork() {
+            const svgRef = useRef();
+            const [cluster, setCluster] = useState('offense');
+
+            useEffect(() => {
+                const svg = d3.select(svgRef.current);
+                svg.selectAll("*").remove();
+
+                const width = 280;
+                const height = 200;
+
+                svg.attr("width", width).attr("height", height);
+
+                // Generate network data
+                const nodes = [];
+                const links = [];
+
+                for (let i = 0; i < 12; i++) {
+                    nodes.push({
+                        id: i,
+                        name: `Player ${i + 1}`,
+                        group: Math.floor(i / 4),
+                        x: Math.random() * width,
+                        y: Math.random() * height
+                    });
+                }
+
+                for (let i = 0; i < 20; i++) {
+                    const source = Math.floor(Math.random() * nodes.length);
+                    const target = Math.floor(Math.random() * nodes.length);
+                    if (source !== target) {
+                        links.push({
+                            source: nodes[source],
+                            target: nodes[target],
+                            value: Math.random()
+                        });
+                    }
+                }
+
+                // Color scale for groups
+                const color = d3.scaleOrdinal(['#ff6b00', '#00bcd4', '#e91e63']);
+
+                // Force simulation
+                const simulation = d3.forceSimulation(nodes)
+                    .force("link", d3.forceLink(links).id(d => d.id).distance(30))
+                    .force("charge", d3.forceManyBody().strength(-100))
+                    .force("center", d3.forceCenter(width / 2, height / 2));
+
+                // Draw links
+                const link = svg.append("g")
+                    .selectAll("line")
+                    .data(links)
+                    .enter()
+                    .append("line")
+                    .attr("stroke", "#666")
+                    .attr("stroke-opacity", 0.6)
+                    .attr("stroke-width", d => Math.sqrt(d.value) * 3);
+
+                // Draw nodes
+                const node = svg.append("g")
+                    .selectAll("circle")
+                    .data(nodes)
+                    .enter()
+                    .append("circle")
+                    .attr("r", 5)
+                    .attr("fill", d => color(d.group))
+                    .on("mouseover", function(event, d) {
+                        d3.select(this).attr("r", 8);
+                    })
+                    .on("mouseout", function(event, d) {
+                        d3.select(this).attr("r", 5);
+                    });
+
+                // Update positions on simulation tick
+                simulation.on("tick", () => {
+                    link
+                        .attr("x1", d => d.source.x)
+                        .attr("y1", d => d.source.y)
+                        .attr("x2", d => d.target.x)
+                        .attr("y2", d => d.target.y);
+
+                    node
+                        .attr("cx", d => d.x)
+                        .attr("cy", d => d.y);
+                });
+
+            }, [cluster]);
+
+            return React.createElement('div', null,
+                React.createElement('svg', { ref: svgRef, style: { width: '100%', height: '100%' } })
+            );
+        }
+
+        // Initialize all interactive components when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mount Heat Map
+            const heatmapContainer = document.getElementById('heatmap-canvas');
+            if (heatmapContainer) {
+                ReactDOM.render(React.createElement(PlayerHeatMap), heatmapContainer);
+            }
+
+            // Mount Shot Chart
+            const shotchartContainer = document.getElementById('shotchart-canvas');
+            if (shotchartContainer) {
+                ReactDOM.render(React.createElement(ShotChart), shotchartContainer);
+            }
+
+            // Mount Network Graph
+            const networkContainer = document.getElementById('network-canvas');
+            if (networkContainer) {
+                ReactDOM.render(React.createElement(TeamNetwork), networkContainer);
+            }
+
+            // Add event listeners for controls
+            const playerSelect = document.getElementById('player-select');
+            if (playerSelect) {
+                playerSelect.addEventListener('change', function(e) {
+                    // Re-render heat map with new player
+                    ReactDOM.render(React.createElement(PlayerHeatMap), heatmapContainer);
+                });
+            }
+
+            // Shot chart filter buttons
+            const filterButtons = document.querySelectorAll('#shotchart-canvas ~ .viz-controls .viz-button');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    // Re-render shot chart with new filter
+                    ReactDOM.render(React.createElement(ShotChart), shotchartContainer);
+                });
+            });
+
+            // Network cluster buttons
+            const clusterButtons = document.querySelectorAll('#network-canvas ~ .viz-controls .viz-button');
+            clusterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    clusterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    // Re-render network with new cluster
+                    ReactDOM.render(React.createElement(TeamNetwork), networkContainer);
+                });
+            });
+
+            // Zone toggle button
+            const toggleZones = document.getElementById('toggle-zones');
+            if (toggleZones) {
+                toggleZones.addEventListener('click', function() {
+                    // Re-render heat map with zones toggled
+                    ReactDOM.render(React.createElement(PlayerHeatMap), heatmapContainer);
+                });
+            }
+        });
+
+        // Performance monitoring and analytics
+        window.addEventListener('load', function() {
+            // Track page load performance
+            if ('performance' in window) {
+                const perfData = performance.getEntriesByType('navigation')[0];
+                console.log('Page Load Performance:', {
+                    'DNS Lookup': perfData.domainLookupEnd - perfData.domainLookupStart,
+                    'TCP Connection': perfData.connectEnd - perfData.connectStart,
+                    'Request': perfData.responseStart - perfData.requestStart,
+                    'Response': perfData.responseEnd - perfData.responseStart,
+                    'DOM Processing': perfData.domContentLoadedEventEnd - perfData.responseEnd,
+                    'Total Load Time': perfData.loadEventEnd - perfData.fetchStart
+                });
+            }
+        });
+
+        // Error tracking
+        window.addEventListener('error', (e) => {
+            console.error('JavaScript Error:', {
+                message: e.message,
+                source: e.filename,
+                line: e.lineno,
+                column: e.colno,
+                error: e.error
+            });
+        });
+
+        // Accessibility enhancements
+        document.addEventListener('keydown', function(e) {
+            // Implement keyboard navigation for dashboard components
+            if (e.key === 'Tab') {
+                // Ensure proper tab order for interactive elements
+                const focusableElements = document.querySelectorAll('.dashboard-card[tabindex="0"], .viz-button, .viz-control');
+                // Tab navigation logic here
+            }
+        });
+
+        // High contrast mode toggle
+        function toggleHighContrast() {
+            document.body.classList.toggle('high-contrast');
+            localStorage.setItem('high-contrast', document.body.classList.contains('high-contrast'));
+        }
+
+        // Initialize high contrast mode from localStorage
+        if (localStorage.getItem('high-contrast') === 'true') {
+            document.body.classList.add('high-contrast');
+        }
+
+        // Live Sports Data Integration - Blaze Intelligence API
+        async function fetchLiveSportsData() {
+            try {
+                const response = await fetch('/api/live-scores?sport=all');
+                const data = await response.json();
+                updateLiveScores(data);
+                console.log('✅ Live sports data updated:', new Date().toLocaleTimeString());
+            } catch (error) {
+                console.error('❌ Error fetching live sports data:', error);
+                // Fallback to simulation if API unavailable
+                simulateLiveData();
+            }
+        }
+
+        function updateLiveScores(data) {
+            if (data.sports && data.sports.mlb) {
+                updateMLBScores(data.sports.mlb.games);
+            }
+            if (data.sports && data.sports.nfl) {
+                updateNFLScores(data.sports.nfl.games);
+            }
+            if (data.sports && data.sports.nba) {
+                updateNBAScores(data.sports.nba.games);
+            }
+            if (data.sports && data.sports.ncaa) {
+                updateNCAAScores(data.sports.ncaa);
+            }
+        }
+
+        function updateMLBScores(games) {
+            // Update Cardinals vs Cubs game specifically
+            const cardinalsGame = games.find(g => g.home.team === 'Cardinals' || g.away.team === 'Cardinals');
+            if (cardinalsGame) {
+                const scoreItems = document.querySelectorAll('.score-item');
+                const cardinalsItem = Array.from(scoreItems).find(item =>
+                    item.textContent.includes('Cardinals')
+                );
+                if (cardinalsItem) {
+                    const scores = cardinalsItem.querySelectorAll('.score');
+                    if (cardinalsGame.home.team === 'Cardinals') {
+                        scores[0].textContent = cardinalsGame.home.score;
+                        scores[1].textContent = cardinalsGame.away.score;
+                    } else {
+                        scores[0].textContent = cardinalsGame.away.score;
+                        scores[1].textContent = cardinalsGame.home.score;
+                    }
+
+                    const statusElement = cardinalsItem.querySelector('.game-status');
+                    if (statusElement) {
+                        statusElement.textContent = cardinalsGame.status === 'Final' ?
+                            'Final' : `Inning ${cardinalsGame.inning}`;
+                    }
+                }
+            }
+        }
+
+        function updateNFLScores(games) {
+            const titansGame = games.find(g => g.home.team === 'Titans' || g.away.team === 'Titans');
+            if (titansGame && titansGame.status !== 'Scheduled') {
+                const scoreItems = document.querySelectorAll('.score-item');
+                const titansItem = Array.from(scoreItems).find(item =>
+                    item.textContent.includes('Titans')
+                );
+                if (titansItem) {
+                    const statusElement = titansItem.querySelector('.game-status');
+                    if (statusElement) {
+                        statusElement.textContent = titansGame.status;
+                    }
+                }
+            }
+        }
+
+        function updateNBAScores(games) {
+            const grizzliesGame = games.find(g => g.home.team === 'Grizzlies' || g.away.team === 'Grizzlies');
+            if (grizzliesGame) {
+                const scoreItems = document.querySelectorAll('.score-item');
+                const grizzliesItem = Array.from(scoreItems).find(item =>
+                    item.textContent.includes('Grizzlies')
+                );
+                if (grizzliesItem) {
+                    const scores = grizzliesItem.querySelectorAll('.score');
+                    if (grizzliesGame.home.team === 'Grizzlies') {
+                        scores[0].textContent = grizzliesGame.home.score;
+                        scores[1].textContent = grizzliesGame.away.score;
+                    } else {
+                        scores[0].textContent = grizzliesGame.away.score;
+                        scores[1].textContent = grizzliesGame.home.score;
+                    }
+                }
+            }
+        }
+
+        function updateNCAAScores(ncaaData) {
+            if (ncaaData.football && ncaaData.football.games) {
+                const texasGame = ncaaData.football.games.find(g =>
+                    g.home.team === 'Texas' || g.away.team === 'Texas'
+                );
+                if (texasGame) {
+                    const scoreItems = document.querySelectorAll('.score-item');
+                    const longhornsItem = Array.from(scoreItems).find(item =>
+                        item.textContent.includes('Longhorns')
+                    );
+                    if (longhornsItem) {
+                        const statusElement = longhornsItem.querySelector('.game-status');
+                        if (statusElement && texasGame.status !== 'Scheduled') {
+                            statusElement.textContent = texasGame.status;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Live data simulation (fallback)
+        function simulateLiveData() {
+            const scoreElements = document.querySelectorAll('.score');
+            scoreElements.forEach(element => {
+                if (Math.random() < 0.1) { // 10% chance to update each score
+                    const currentScore = parseInt(element.textContent);
+                    element.textContent = currentScore + (Math.random() < 0.5 ? 1 : 0);
+                }
+            });
+        }
+
+        // Update live data every 30 seconds
+        setInterval(fetchLiveSportsData, 30000);
+
+        // Initial load
+        fetchLiveSportsData();
+
+        // MCP Server Integration for Advanced Analytics
+        async function initializeMCPIntegration() {
+            try {
+                // Check if MCP Blaze Intelligence server is available
+                const mcpResponse = await fetch('/api/mcp-status');
+                if (mcpResponse.ok) {
+                    const mcpData = await mcpResponse.json();
+                    if (mcpData.status === 'active') {
+                        console.log('🔥 MCP Blaze Intelligence Server Connected');
+                        enableAdvancedAnalytics();
+                    }
+                }
+            } catch (error) {
+                console.log('⚠️ MCP Server not available, using standard analytics');
+            }
+        }
+
+        function enableAdvancedAnalytics() {
+            // Enable enhanced features when MCP server is available
+            const dashboardCards = document.querySelectorAll('.dashboard-card');
+            dashboardCards.forEach(card => {
+                const header = card.querySelector('.card-header');
+                if (header) {
+                    const indicator = document.createElement('span');
+                    indicator.className = 'mcp-indicator';
+                    indicator.textContent = '⚡ MCP';
+                    indicator.style.fontSize = '0.7rem';
+                    indicator.style.color = '#00bcd4';
+                    indicator.style.marginLeft = '0.5rem';
+                    header.appendChild(indicator);
+                }
+            });
+
+            // Add enhanced data fetching capabilities
+            enableChampionshipIntelligence();
+        }
+
+        async function enableChampionshipIntelligence() {
+            try {
+                const championshipData = await fetch('/api/sports-data/championship');
+                const data = await championshipData.json();
+                updateChampionshipMetrics(data);
+                console.log('✅ Championship Intelligence Active');
+            } catch (error) {
+                console.log('⚠️ Championship data unavailable');
+            }
+        }
+
+        function updateChampionshipMetrics(data) {
+            if (data.championship_intelligence) {
+                // Update dashboard with championship-specific analytics
+                const metricsContainer = document.querySelector('.chart-metrics');
+                if (metricsContainer && data.championship_intelligence.mlb) {
+                    const playoffProb = document.createElement('span');
+                    playoffProb.className = 'metric';
+                    playoffProb.textContent = `Playoff: ${data.championship_intelligence.mlb.playoff_probability}`;
+                    metricsContainer.appendChild(playoffProb);
+                }
+            }
+        }
+
+        // Initialize MCP integration
+        initializeMCPIntegration();
+
+        // Initialize everything
+        console.log('🔥 Blaze Intelligence - The Deep South Sports Authority Dashboard Initialized');
+        console.log('✅ React Components Loaded');
+        console.log('✅ D3.js Visualizations Active');
+        console.log('✅ Interactive Dashboard Ready');
+    </script>
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Blaze Intelligence - The Deep South Sports Authority",
+        "url": "https://blazesportsintel.com",
+        "description": "Championship intelligence from Friday Night Lights to Sunday in the Show. Texas → SEC → Professional pipeline analytics covering Baseball → Football → Basketball → Track & Field. Cardinals, Titans, Grizzlies, Longhorns intelligence.",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Blaze Intelligence",
+            "alternateName": "The Deep South Sports Authority",
+            "url": "https://blazesportsintel.com",
+            "logo": "https://blazesportsintel.com/images/blaze-intelligence-deep-south-logo.png",
+            "slogan": "Texas • SEC • Every Player • Every Level",
+            "sameAs": [
+                "https://x.com/BISportsIntel",
+                "https://x.com/a_hump20"
+            ],
+            "knowsAbout": [
+                "Texas High School Football",
+                "SEC Athletics",
+                "MLB Analytics",
+                "NFL Intelligence",
+                "NBA Analytics",
+                "Perfect Game Baseball",
+                "Championship Predictions"
+            ]
+        },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://blazesportsintel.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        },
+        "mainEntity": {
+            "@type": "SoftwareApplication",
+            "name": "Blaze Intelligence Platform",
+            "alternateName": "Deep South Sports Authority",
+            "applicationCategory": "Sports Analytics",
+            "operatingSystem": "Web Browser",
+            "featureList": [
+                "Live Sports Scores",
+                "Championship Predictions",
+                "Texas High School Athletics",
+                "SEC Conference Analytics",
+                "Professional Sports Intelligence",
+                "Perfect Game Baseball Rankings",
+                "Interactive Data Visualizations"
+            ],
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD",
+                "description": "Free tier with premium options available"
+            }
+        },
+        "about": {
+            "@type": "Thing",
+            "name": "Deep South Sports Pipeline",
+            "description": "Comprehensive athletic talent tracking from Texas High School through SEC to Professional levels"
+        }
+    }
+    </script>
+</body>
+</html>

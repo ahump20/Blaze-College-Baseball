@@ -1,4 +1,4 @@
-DEPLOYMENT MANIFEST - Fri Sep 26 17:55:40 CDT 2025
+DEPLOYMENT MANIFEST - Sun Sep 28 08:11:30 CDT 2025
 ========================================
 Essential Files:
 - index.html
@@ -15,13 +15,23 @@ Essential Files:
 - championship-system-integration.js
 
 CSS Directory (all files):
-
+drwxr-xr-x    4 AustinHumphrey  staff    128 Sep 28 08:03 .
+drwxr-xr-x  132 AustinHumphrey  staff   4224 Sep 28 08:11 ..
+-rw-r--r--    1 AustinHumphrey  staff   8091 Sep 26 19:22 blaze-revolutionary-command-center.css
+-rw-r--r--    1 AustinHumphrey  staff  22926 Sep 28 08:03 blaze-ultimate-aesthetics.css
 
 JS Directory (all files):
-
+drwxr-xr-x    6 AustinHumphrey  staff    192 Sep 28 07:31 .
+drwxr-xr-x  132 AustinHumphrey  staff   4224 Sep 28 08:11 ..
+-rw-r--r--    1 AustinHumphrey  staff  14717 Sep 26 19:22 blaze-revolutionary-command-center.js
+-rw-r--r--    1 AustinHumphrey  staff  16852 Sep 28 07:29 blaze-ultimate-visual-engine.js
+-rw-r--r--    1 AustinHumphrey  staff  17828 Sep 28 07:31 blaze-visual-integration.js
+-rw-r--r--    1 AustinHumphrey  staff  17588 Sep 26 20:22 performance-optimizer.js
 
 Data Directory:
-
+drwxr-xr-x    3 AustinHumphrey  staff    96 Sep 27 22:33 .
+drwxr-xr-x  132 AustinHumphrey  staff  4224 Sep 28 08:11 ..
+-rw-r--r--    1 AustinHumphrey  staff  6773 Sep 27 22:33 deep-south-authority-config.json
 
 Images & Assets:
 

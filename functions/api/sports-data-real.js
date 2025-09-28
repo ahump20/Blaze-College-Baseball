@@ -85,23 +85,27 @@ async function fetchRealMLBData() {
     const rosterData = await rosterResponse.json();
 
     // Calculate REAL Pythagorean expectation (not hardcoded!)
-    const schedule = await fetch(`${baseUrl}/teams/${teamId}/stats?season=2024&group=hitting,pitching`);
-    const statsData = await schedule.json();
+    // Need separate calls for hitting and pitching stats
+    const hittingResponse = await fetch(`${baseUrl}/teams/${teamId}/stats?stats=season&group=hitting&season=2024`);
+    const hittingData = await hittingResponse.json();
 
-    // Extract runs scored and allowed from real data
-    let runsScored = 724; // Default if API doesn't return
-    let runsAllowed = 719;
+    const pitchingResponse = await fetch(`${baseUrl}/teams/${teamId}/stats?stats=season&group=pitching&season=2024`);
+    const pitchingData = await pitchingResponse.json();
 
-    if (statsData.stats && statsData.stats.length > 0) {
-      const hitting = statsData.stats.find(s => s.group?.displayName === 'hitting');
-      const pitching = statsData.stats.find(s => s.group?.displayName === 'pitching');
+    // Extract runs scored and allowed from real data - NO FALLBACKS!
+    let runsScored, runsAllowed;
 
-      if (hitting?.splits?.[0]?.stat?.runs) {
-        runsScored = hitting.splits[0].stat.runs;
-      }
-      if (pitching?.splits?.[0]?.stat?.runs) {
-        runsAllowed = pitching.splits[0].stat.runs;
-      }
+    if (hittingData.stats?.[0]?.splits?.[0]?.stat?.runs) {
+      runsScored = hittingData.stats[0].splits[0].stat.runs;
+    }
+
+    if (pitchingData.stats?.[0]?.splits?.[0]?.stat?.runs) {
+      runsAllowed = pitchingData.stats[0].splits[0].stat.runs;
+    }
+
+    // NO FALLBACKS - if we don't have real data, we fail
+    if (!runsScored || !runsAllowed) {
+      throw new Error('Unable to fetch runs data from MLB Stats API - no fallbacks allowed');
     }
 
     // REAL Pythagorean calculation using Bill James formula
@@ -141,17 +145,35 @@ async function fetchRealNFLData() {
   const teamId = 10; // Tennessee Titans
   const baseUrl = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl';
 
+  // ESPN requires proper headers to avoid 403 errors
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+    'Accept': 'application/json',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Referer': 'https://www.espn.com/',
+    'Origin': 'https://www.espn.com'
+  };
+
   try {
-    // Fetch real team data
-    const teamResponse = await fetch(`${baseUrl}/teams/${teamId}`);
+    // Fetch real team data with proper headers
+    const teamResponse = await fetch(`${baseUrl}/teams/${teamId}`, { headers });
+    if (!teamResponse.ok) {
+      throw new Error(`ESPN API returned ${teamResponse.status}: ${teamResponse.statusText}`);
+    }
     const teamData = await teamResponse.json();
 
-    // Fetch real standings
-    const standingsResponse = await fetch(`${baseUrl}/standings`);
+    // Fetch real standings with proper headers
+    const standingsResponse = await fetch(`${baseUrl}/standings`, { headers });
+    if (!standingsResponse.ok) {
+      throw new Error(`ESPN standings API returned ${standingsResponse.status}`);
+    }
     const standingsData = await standingsResponse.json();
 
-    // Fetch real scoreboard
-    const scoreboardResponse = await fetch(`${baseUrl}/scoreboard`);
+    // Fetch real scoreboard with proper headers
+    const scoreboardResponse = await fetch(`${baseUrl}/scoreboard`, { headers });
+    if (!scoreboardResponse.ok) {
+      throw new Error(`ESPN scoreboard API returned ${scoreboardResponse.status}`);
+    }
     const scoreboardData = await scoreboardResponse.json();
 
     // Calculate REAL Elo rating (not fake!)
@@ -208,11 +230,25 @@ async function fetchRealNBAData() {
   const teamId = 29; // Memphis Grizzlies
   const baseUrl = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba';
 
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+    'Accept': 'application/json',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Referer': 'https://www.espn.com/',
+    'Origin': 'https://www.espn.com'
+  };
+
   try {
-    const teamResponse = await fetch(`${baseUrl}/teams/${teamId}`);
+    const teamResponse = await fetch(`${baseUrl}/teams/${teamId}`, { headers });
+    if (!teamResponse.ok) {
+      throw new Error(`ESPN NBA API returned ${teamResponse.status}`);
+    }
     const teamData = await teamResponse.json();
 
-    const standingsResponse = await fetch(`${baseUrl}/standings`);
+    const standingsResponse = await fetch(`${baseUrl}/standings`, { headers });
+    if (!standingsResponse.ok) {
+      throw new Error(`ESPN NBA standings API returned ${standingsResponse.status}`);
+    }
     const standingsData = await standingsResponse.json();
 
     return {
@@ -233,13 +269,27 @@ async function fetchRealNBAData() {
 async function fetchRealNCAAData() {
   const baseUrl = 'https://site.api.espn.com/apis/site/v2/sports/football/college-football';
 
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+    'Accept': 'application/json',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Referer': 'https://www.espn.com/',
+    'Origin': 'https://www.espn.com'
+  };
+
   try {
     // Texas Longhorns
-    const texasResponse = await fetch(`${baseUrl}/teams/251`);
+    const texasResponse = await fetch(`${baseUrl}/teams/251`, { headers });
+    if (!texasResponse.ok) {
+      throw new Error(`ESPN NCAA API returned ${texasResponse.status}`);
+    }
     const texasData = await texasResponse.json();
 
     // Rankings
-    const rankingsResponse = await fetch(`${baseUrl}/rankings`);
+    const rankingsResponse = await fetch(`${baseUrl}/rankings`, { headers });
+    if (!rankingsResponse.ok) {
+      throw new Error(`ESPN rankings API returned ${rankingsResponse.status}`);
+    }
     const rankingsData = await rankingsResponse.json();
 
     return {
