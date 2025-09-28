@@ -335,10 +335,10 @@ const rateLimiter = async (c, next) => {
   const ip = c.req.header('CF-Connecting-IP') || '0.0.0.0';
   const key = `rate:${ip}`;
   const value = await c.env.CACHE.get(key);
-  const count = value ? Number.parseInt(value, 10) : 0;
+  let count = value ? Number.parseInt(value, 10) : 0;
   if (Number.isNaN(count)) {
-    // If the cached value is not a valid number, treat as rate limit violation
-    return c.json({ error: 'Rate limit exceeded (invalid counter)' }, 429);
+    // If the cached value is not a valid number, reset counter to 0
+    count = 0;
   }
   if (count >= 100) {
     return c.json({ error: 'Rate limit exceeded' }, 429);
