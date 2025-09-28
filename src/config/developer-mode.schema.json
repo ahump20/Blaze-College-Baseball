@@ -1,0 +1,133 @@
+{
+  "profile": "Austin Humphrey • Blaze Sports Intel",
+  "schema_version": "2.2.0",
+  "last_updated": "2025-09-27T14:30:00-05:00",
+  "timezone": "America/Chicago",
+  "absolute_dates_required": true,
+  "canonical_domain": "https://blazesportsintel.com",
+  "sports_order": ["Baseball", "Football", "Basketball", "Track & Field"],
+  "exclude": ["Soccer"],
+  "scope": {
+    "season": "2025-2026",
+    "regions": ["Texas", "Deep South"],
+    "coverage": {
+      "Baseball": ["MLB", "NCAA D1 (P5+G5)", "HS (TX+Deep South)"],
+      "Football": ["NFL", "NCAA D1 (P5+G5)", "HS (TX+Deep South)"],
+      "Basketball": ["NCAA D1 (P5+G5)"],
+      "Track & Field": ["College"]
+    },
+    "must_be_league_complete": true
+  },
+  "data_policy": {
+    "no_mock_no_seed": true,
+    "allow_inferred_estimates": false,
+    "citations_required": true,
+    "min_external_validations": 3,
+    "sla": {
+      "scoreboards": "≤60s",
+      "standings": "≤24h",
+      "injuries_transactions": "≤2h",
+      "recruiting": "≤7d",
+      "historical": "no limit (must show source dates)"
+    },
+    "live_overrides": {
+      "label": "LIVE - PARTIAL DATA",
+      "scoreboard_update_seconds": 15
+    },
+    "fallback": { "on_missing_or_stale": "fail_closed" },
+    "placeholder_blocklist_regex": [
+      "(?i)\\bseed(ed)?\\b",
+      "(?i)\\bmock\\b",
+      "(?i)\\bplaceholder\\b",
+      "(?i)\\bTBD\\b",
+      "(?i)\\bN/?A\\b",
+      "(?i)lorem\\s+ipsum"
+    ]
+  },
+  "evidence": {
+    "classes": [
+      {
+        "name": "official_league",
+        "examples": ["MLB Stats API", "NFL/NGS", "NCAA", "state HS associations"]
+      },
+      {
+        "name": "trusted_aggregator",
+        "examples": ["Sports-Reference", "D1Baseball", "TFRRS", "MaxPreps", "247/On3/Rivals", "ESPN"]
+      },
+      {
+        "name": "peer_reviewed",
+        "fields_required": ["doi_or_pmid", "journal", "pub_date", "authors"]
+      }
+    ],
+    "required_for": [
+      "biomechanics",
+      "medical_info",
+      "training_protocols",
+      "NIL valuation claims"
+    ],
+    "fact_check": {
+      "min_corroborating_sources": 3,
+      "max_source_age_days": {
+        "live_scores": 0,
+        "statistics": 7,
+        "historical": "unlimited_with_date"
+      },
+      "doi_required_when_available": true,
+      "verification_chain": "source → validation → cross_check → approval"
+    }
+  },
+  "validation": {
+    "pipeline": [
+      "scope_check",
+      "source_fetch_parallel (>=2 classes when possible)",
+      "freshness_assertions (per SLA)",
+      "league_completeness_assertions",
+      "consistency_checks (delta thresholds)",
+      "placeholder_scan",
+      "manifest_assembly + evidence_ledger_write"
+    ],
+    "reject_if_any_fail": true,
+    "delta_thresholds": {
+      "standings_win_pct": 0.005,
+      "team_totals_vs_players": 0.02,
+      "box_score_total_vs_scoring": 1
+    }
+  },
+  "output_contract": {
+    "order": ["Baseball", "Football", "Basketball", "Track & Field"],
+    "must_include": [
+      "league-complete tables",
+      "CDT timestamps",
+      "historical context",
+      "power rankings with disclosed weights + window",
+      "citations per block"
+    ],
+    "refusal_template": "Cannot return results: {segment} data unavailable/stale or completeness failed. No placeholders or seeds will be shown. Narrow scope or connect an approved source."
+  },
+  "continuity": {
+    "project_state": {
+      "version": "semver",
+      "timestamp_cdt": "ISO8601",
+      "current_phase": "initial",
+      "completed_features": [],
+      "pending_features": [],
+      "known_issues": [],
+      "next_priority": "",
+      "active_tasks": [],
+      "completed_tasks": [],
+      "pending_validations": [],
+      "blocked_items": [],
+      "test_coverage": 0,
+      "last_successful_build": null,
+      "deployment_status": "not_deployed",
+      "rollback_points": [],
+      "state_snapshots": [],
+      "changelog": []
+    },
+    "checkpoint_marker": "// CHECKPOINT: [timestamp CDT] - [component] - [completion%]",
+    "update_rules": [
+      "update project_state on each deploy + API release",
+      "append-only; never delete historical entries"
+    ]
+  }
+}
