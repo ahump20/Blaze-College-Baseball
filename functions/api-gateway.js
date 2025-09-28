@@ -345,7 +345,7 @@ export default {
         sportsService.getMLBTeamData('STL'),
         sportsService.getNFLTeamData('TEN'),
         sportsService.getNBATeamData('MEM'),
-        sportsService.getNCAA FootballData('TEX')
+        sportsService.getNCAAFootballData('TEX')
       ]);
 
       // Count successful API calls vs errors
