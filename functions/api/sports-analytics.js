@@ -57,10 +57,12 @@ export async function onRequest(context) {
                 coverage: 'Texas • SEC • Every Player • Every Level',
                 sports: sportsData,
                 analytics: {
-                    totalDataPoints: '150M+',
-                    accuracy: '98.7%',
-                    realTimeMetrics: true,
-                    biomechanicsAnalysis: true
+                    totalDataPoints: 'DEMO',
+                    accuracy: 'TBD',
+                    realTimeMetrics: false,
+                    biomechanicsAnalysis: false,
+                    demoMode: true,
+                    warning: '⚠️ DEMO DATA - Analytics Engine Under Development'
                 },
                 timestamp: new Date().toISOString()
             };

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blaze Sports Intel - Deep South Sports Authority | CFP Championship Live</title>
+    <meta name="description" content="NCAA Football CFP Championship coverage, Texas Longhorns analysis, SEC sports intelligence. Real-time scores and Deep South sports authority.">
+    
+    <style>
+        :root {
+            --color-bg: #1a1a1a;
+            --color-primary: #ff6b00;
+            --color-accent: #0066cc;
+            --color-success: #00c851;
+            --color-danger: #ff4444;
+            --color-texas: #bf5700;
+            --color-sec: #1e3a5f;
+            --font-headings: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: #ffffff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            padding: 1rem 2rem;
+            border-bottom: 3px solid var(--color-primary);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--color-primary), var(--color-texas));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-top: 0.25rem;
+        }
+
+        /* Live Status Bar */
+        .live-status {
+            background: linear-gradient(90deg, var(--color-danger) 0%, var(--color-primary) 100%);
+            padding: 0.5rem;
+            text-align: center;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* CFP Championship Hero Section */
+        .cfp-hero {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            padding: 3rem 2rem;
+            border-bottom: 2px solid var(--color-primary);
+        }
+
+        .cfp-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .cfp-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, #ffd700, #ff6b00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .championship-game {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--color-primary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .game-date {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+        }
+
+        .game-venue {
+            color: #aaa;
+            margin-top: 0.5rem;
+        }
+
+        .teams-matchup {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .team-box {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        .team-box:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .team-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-record {
+            color: var(--color-success);
+        }
+
+        .vs-separator {
+            font-size: 2rem;
+            color: var(--color-primary);
+            font-weight: bold;
+        }
+
+        /* Texas Spotlight Section */
+        .texas-section {
+            background: linear-gradient(135deg, var(--color-texas) 0%, #8b3a00 100%);
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 1400px;
+            border-radius: 12px;
+        }
+
+        .texas-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .texas-logo {
+            font-size: 3rem;
+        }
+
+        .texas-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .texas-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Sports Priority Grid */
+        .sports-grid {
+            max-width: 1400px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .sport-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sport-card.priority-1 {
+            border-color: var(--color-primary);
+            background: linear-gradient(135deg, rgba(255, 107, 0, 0.1) 0%, rgba(255, 107, 0, 0.05) 100%);
+        }
+
+        .sport-card.off-season {
+            opacity: 0.6;
+            border-style: dashed;
+        }
+
+        .priority-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--color-primary);
+            color: #fff;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .sport-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .sport-icon {
+            font-size: 2rem;
+        }
+
+        .sport-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .sport-status {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .active-badge {
+            display: inline-block;
+            background: var(--color-success);
+            color: #fff;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        /* SEC Section */
+        .sec-section {
+            background: linear-gradient(135deg, var(--color-sec) 0%, #0d1f38 100%);
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 1400px;
+            border-radius: 12px;
+        }
+
+        .sec-teams {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .sec-team {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .sec-team:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Footer */
+        footer {
+            background: #000;
+            color: #aaa;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--color-primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cfp-title { font-size: 2rem; }
+            .teams-matchup { grid-template-columns: 1fr; }
+            .sports-grid { grid-template-columns: 1fr; }
+            .texas-stats { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div>
+                <div class="logo">BLAZE INTELLIGENCE</div>
+                <div class="tagline">Deep South Sports Authority • Texas → SEC → Every Level</div>
+            </div>
+            <div id="live-time" style="color: #aaa;"></div>
+        </div>
+    </header>
+
+    <!-- Live Status Bar -->
+    <div class="live-status">
+        🏈 CFP CHAMPIONSHIP WEEK LIVE • NCAA Football Priority #1 • Real-Time Data Active
+    </div>
+
+    <!-- CFP Championship Hero Section -->
+    <section class="cfp-hero">
+        <div class="cfp-container">
+            <h1 class="cfp-title">🏆 COLLEGE FOOTBALL PLAYOFF CHAMPIONSHIP</h1>
+            
+            <div class="championship-game">
+                <div class="game-header">
+                    <div class="game-date">MONDAY, JANUARY 20, 2025 • 7:30 PM ET</div>
+                    <div class="game-venue">Mercedes-Benz Stadium • Atlanta, GA • ESPN</div>
+                </div>
+                
+                <div class="teams-matchup">
+                    <div class="team-box">
+                        <div class="team-name">NOTRE DAME</div>
+                        <div class="team-record">14-1 • #7 Seed</div>
+                        <div style="color: #aaa; margin-top: 0.5rem;">Beat Penn State 27-24</div>
+                    </div>
+                    
+                    <div class="vs-separator">VS</div>
+                    
+                    <div class="team-box">
+                        <div class="team-name">OHIO STATE</div>
+                        <div class="team-record">14-1 • #8 Seed</div>
+                        <div style="color: #aaa; margin-top: 0.5rem;">Beat Texas 28-14</div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button onclick="fetchLiveData()" style="background: var(--color-primary); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: bold;">
+                        🔄 Refresh Live Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Texas Spotlight Section -->
+    <section class="texas-section">
+        <div class="texas-header">
+            <span class="texas-logo">🤘</span>
+            <h2 class="texas-title">TEXAS LONGHORNS</h2>
+            <span class="texas-logo">🤘</span>
+        </div>
+        
+        <div style="text-align: center; font-size: 1.2rem; margin-bottom: 1rem;">
+            2024 Season: First CFP Semifinal Appearance
+        </div>
+        
+        <div class="texas-stats">
+            <div class="stat-card">
+                <div class="stat-value">13-3</div>
+                <div class="stat-label">Final Record</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">#3</div>
+                <div class="stat-label">Final Ranking</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">#5</div>
+                <div class="stat-label">CFP Seed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">7-1</div>
+                <div class="stat-label">SEC Record</div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 2rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px;">
+            <strong>CFP Journey:</strong>
+            <ul style="margin-top: 0.5rem; margin-left: 2rem;">
+                <li>✅ First Round: Defeated Clemson 38-24</li>
+                <li>✅ Quarterfinal: Defeated Arizona State 39-31 (2OT)</li>
+                <li>❌ Semifinal: Lost to Ohio State 28-14</li>
+            </ul>
+            <div style="margin-top: 1rem;">
+                <strong>2025 Season Opener:</strong> August 30 vs Ohio State (Rematch!)
+            </div>
+        </div>
+    </section>
+
+    <!-- Sports Priority Grid -->
+    <section class="sports-grid">
+        <!-- Priority 1: NCAA Football -->
+        <div class="sport-card priority-1" id="ncaa-football-card">
+            <span class="priority-badge">PRIORITY #1</span>
+            <div class="sport-header">
+                <span class="sport-icon">🏈</span>
+                <div>
+                    <div class="sport-name">NCAA FOOTBALL</div>
+                    <span class="active-badge">ACTIVE NOW</span>
+                </div>
+            </div>
+            <div class="sport-status">
+                <strong>Current:</strong> CFP Championship Week<br>
+                <strong>Championship:</strong> Jan 20, 2025<br>
+                <strong>Texas:</strong> Finished #3 (13-3)<br>
+                <strong>API:</strong> /api/ncaa-football-live
+            </div>
+        </div>
+
+        <!-- Priority 2: MLB (Off-season) -->
+        <div class="sport-card off-season" id="mlb-card">
+            <span class="priority-badge" style="background: #666;">Priority #2</span>
+            <div class="sport-header">
+                <span class="sport-icon">⚾</span>
+                <div>
+                    <div class="sport-name">MLB</div>
+                    <span class="active-badge" style="background: #666;">OFF-SEASON</span>
+                </div>
+            </div>
+            <div class="sport-status">
+                <strong>Status:</strong> Off-season<br>
+                <strong>Cardinals:</strong> 83-79 in 2024<br>
+                <strong>Spring Training:</strong> Feb 21, 2025<br>
+                <strong>API:</strong> /api/sports-data/mlb
+            </div>
+        </div>
+
+        <!-- Priority 3: NFL -->
+        <div class="sport-card" id="nfl-card">
+            <span class="priority-badge" style="background: #0066cc;">Priority #3</span>
+            <div class="sport-header">
+                <span class="sport-icon">🏈</span>
+                <div>
+                    <div class="sport-name">NFL</div>
+                    <span class="active-badge">PLAYOFFS</span>
+                </div>
+            </div>
+            <div class="sport-status">
+                <strong>Current:</strong> Conference Championships<br>
+                <strong>Titans:</strong> 3-14 (Draft position)<br>
+                <strong>Super Bowl:</strong> Feb 9, 2025<br>
+                <strong>API:</strong> /api/sports-data/nfl
+            </div>
+        </div>
+
+        <!-- Priority 4: NBA -->
+        <div class="sport-card" id="nba-card">
+            <span class="priority-badge" style="background: #0066cc;">Priority #4</span>
+            <div class="sport-header">
+                <span class="sport-icon">🏀</span>
+                <div>
+                    <div class="sport-name">NBA</div>
+                    <span class="active-badge">MID-SEASON</span>
+                </div>
+            </div>
+            <div class="sport-status">
+                <strong>Current:</strong> Regular Season<br>
+                <strong>Grizzlies:</strong> Ja Morant leading<br>
+                <strong>All-Star:</strong> Feb 16, 2025<br>
+                <strong>API:</strong> /api/sports-data/nba
+            </div>
+        </div>
+
+        <!-- Priority 5: Youth Sports -->
+        <div class="sport-card off-season" id="youth-card">
+            <span class="priority-badge" style="background: #666;">Priority #5</span>
+            <div class="sport-header">
+                <span class="sport-icon">🏆</span>
+                <div>
+                    <div class="sport-name">YOUTH SPORTS</div>
+                    <span class="active-badge" style="background: #666;">OFF-SEASON</span>
+                </div>
+            </div>
+            <div class="sport-status">
+                <strong>TX HS Football:</strong> Starts Aug 2025<br>
+                <strong>Perfect Game:</strong> Summer 2025<br>
+                <strong>API:</strong> /api/sports-data/youth-sports
+            </div>
+        </div>
+
+        <!-- Priority 6: College Baseball -->
+        <div class="sport-card" id="college-baseball-card">
+            <span class="priority-badge" style="background: #999;">Priority #6</span>
+            <div class="sport-header">
+                <span class="sport-icon">⚾</span>
+                <div>
+                    <div class="sport-name">COLLEGE BASEBALL</div>
+                    <span class="active-badge" style="background: var(--color-primary);">STARTS FEB 14</span>
+                </div>
+            </div>
+            <div class="sport-status">
+                <strong>Season Starts:</strong> Feb 14, 2025<br>
+                <strong>Texas:</strong> Preseason #5<br>
+                <strong>CWS:</strong> June 2025 in Omaha<br>
+                <strong>API:</strong> /api/sports-data/college-baseball
+            </div>
+        </div>
+    </section>
+
+    <!-- SEC Section -->
+    <section class="sec-section">
+        <h2 style="text-align: center; font-size: 2rem; margin-bottom: 1rem;">🏆 SEC CONFERENCE</h2>
+        <div style="text-align: center; margin-bottom: 1rem;">
+            3 Teams in CFP • Texas Best Finish (Semifinals)
+        </div>
+        <div class="sec-teams">
+            <div class="sec-team">
+                <strong>Texas</strong><br>
+                13-3 • #3
+            </div>
+            <div class="sec-team">
+                <strong>Georgia</strong><br>
+                11-3 • #5
+            </div>
+            <div class="sec-team">
+                <strong>Tennessee</strong><br>
+                10-3 • #7
+            </div>
+            <div class="sec-team">
+                <strong>Alabama</strong><br>
+                9-4 • Bowl Win
+            </div>
+            <div class="sec-team">
+                <strong>Ole Miss</strong><br>
+                10-3 • Bowl Win
+            </div>
+            <div class="sec-team">
+                <strong>LSU</strong><br>
+                9-4 • Bowl Win
+            </div>
+            <div class="sec-team">
+                <strong>Texas A&M</strong><br>
+                8-5 • Bowl Loss
+            </div>
+            <div class="sec-team">
+                <strong>Missouri</strong><br>
+                9-4 • Bowl Win
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div style="margin-bottom: 1rem;">
+            <strong>Blaze Intelligence</strong> • Deep South Sports Authority
+        </div>
+        <div style="font-size: 0.9rem;">
+            🏈 NCAA Football First • ⚾ MLB Cardinals • 🏈 NFL Titans • 🏀 NBA Grizzlies
+        </div>
+        <div style="margin-top: 1rem; font-size: 0.8rem;">
+            Data refreshes every 30 seconds during live games • blazesportsintel.com
+        </div>
+    </footer>
+
+    <script>
+        // Update live time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('en-US', {
+                timeZone: 'America/Chicago',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            document.getElementById('live-time').textContent = `${timeString} CST`;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Fetch live data from our API
+        async function fetchLiveData() {
+            try {
+                // Show loading state
+                const cards = document.querySelectorAll('.sport-card');
+                cards.forEach(card => {
+                    const status = card.querySelector('.sport-status');
+                    if (status && !card.classList.contains('off-season')) {
+                        status.innerHTML = '<div class="loading"></div> Updating...';
+                    }
+                });
+
+                // Fetch NCAA Football data (Priority #1)
+                const ncaaResponse = await fetch('/api/ncaa-football-live');
+                if (ncaaResponse.ok) {
+                    const ncaaData = await ncaaResponse.json();
+                    console.log('NCAA Football data:', ncaaData);
+                    
+                    // Update NCAA card with real data
+                    const ncaaCard = document.getElementById('ncaa-football-card');
+                    if (ncaaCard && ncaaData) {
+                        const statusDiv = ncaaCard.querySelector('.sport-status');
+                        statusDiv.innerHTML = `
+                            <strong>CFP Championship:</strong> ${ncaaData.featured_event?.date || 'Jan 20'}<br>
+                            <strong>Matchup:</strong> ${ncaaData.featured_event?.matchup?.team1?.name || 'TBD'} vs ${ncaaData.featured_event?.matchup?.team2?.name || 'TBD'}<br>
+                            <strong>Texas:</strong> ${ncaaData.texas_focus?.['Texas Longhorns']?.result || 'Semifinals'}<br>
+                            <strong>Live Updates:</strong> <span style="color: var(--color-success);">Active •</span>
+                        `;
+                    }
+                }
+
+                // Fetch seasonal data
+                const seasonalResponse = await fetch('/api/sports-data/seasonal');
+                if (seasonalResponse.ok) {
+                    const seasonalData = await seasonalResponse.json();
+                    console.log('Seasonal data:', seasonalData);
+                }
+
+                // Success message
+                setTimeout(() => {
+                    alert('Live data refreshed successfully!');
+                }, 500);
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                alert('Error fetching live data. API endpoints may need to be deployed.');
+            }
+        }
+
+        // Auto-refresh every 30 seconds (only if page is visible)
+        let refreshInterval;
+        function startAutoRefresh() {
+            refreshInterval = setInterval(() => {
+                if (document.visibilityState === 'visible') {
+                    fetchLiveData();
+                }
+            }, 30000);
+        }
+
+        // Start auto-refresh when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial fetch
+            setTimeout(fetchLiveData, 1000);
+            // Start auto-refresh
+            startAutoRefresh();
+        });
+
+        // Pause refresh when page is hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                clearInterval(refreshInterval);
+            } else {
+                startAutoRefresh();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -46,7 +46,8 @@ async function fetchRealMLB(teamId) {
     const teamData = await teamResponse.json();
 
     // Fetch real standings
-    const standingsResponse = await fetch(`${baseUrl}/standings?leagueId=104&season=2024`);
+    const currentYear = new Date().getFullYear();
+    const standingsResponse = await fetch(`${baseUrl}/standings?leagueId=104&season=${currentYear}`);
     const standingsData = await standingsResponse.json();
 
     // Fetch real roster
@@ -54,10 +55,10 @@ async function fetchRealMLB(teamId) {
     const rosterData = await rosterResponse.json();
 
     // Fetch hitting and pitching stats for Pythagorean calculation
-    const hittingResponse = await fetch(`${baseUrl}/teams/${teamId}/stats?stats=season&group=hitting&season=2024`);
+    const hittingResponse = await fetch(`${baseUrl}/teams/${teamId}/stats?stats=season&group=hitting&season=${currentYear}`);
     const hittingData = await hittingResponse.json();
 
-    const pitchingResponse = await fetch(`${baseUrl}/teams/${teamId}/stats?stats=season&group=pitching&season=2024`);
+    const pitchingResponse = await fetch(`${baseUrl}/teams/${teamId}/stats?stats=season&group=pitching&season=${currentYear}`);
     const pitchingData = await pitchingResponse.json();
 
     // Extract runs scored and allowed from real data - NO FALLBACKS!
@@ -85,6 +86,7 @@ async function fetchRealMLB(teamId) {
 
     return {
       success: true,
+      isLiveData: true,  // This is REAL data from MLB Stats API
       teamId: teamId,
       team: teamData.teams?.[0] || {},
       standings: standingsData.records?.[0]?.teamRecords || [],
@@ -99,9 +101,37 @@ async function fetchRealMLB(teamId) {
         },
         dataSource: 'MLB Stats API (Real-time)',
         lastUpdated: new Date().toISOString()
-      }
+      },
+      season: currentYear
     };
   } catch (error) {
-    throw new Error(`MLB API Error: ${error.message}`);
+    console.error('MLB API Error:', error);
+    // Return demo data with warning
+    return {
+      success: false,
+      isLiveData: false,
+      demo: true,
+      demoWarning: '⚠️ MLB Stats API temporarily unavailable - Demo Mode',
+      teamId: teamId,
+      team: {
+        name: 'St. Louis Cardinals',
+        teamName: 'Cardinals',
+        locationName: 'St. Louis',
+        division: { name: 'NL Central' },
+        venue: { name: 'Busch Stadium' }
+      },
+      analytics: {
+        pythagorean: {
+          expectedWins: 'N/A',
+          winPercentage: 'N/A',
+          runsScored: 'N/A',
+          runsAllowed: 'N/A',
+          formula: 'Bill James Formula (unavailable in demo)'
+        },
+        dataSource: 'Demo Mode - API Connection Failed',
+        lastUpdated: new Date().toISOString()
+      },
+      error: error.message
+    };
   }
 }

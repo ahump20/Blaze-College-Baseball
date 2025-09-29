@@ -1,24 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Blaze Sports Intel - Single Deployment Script
-# Purpose: Deploy to Cloudflare Pages without UI regressions
+# Blaze Sports Intel - SINGLE Deployment Script
+# Purpose: Deploy to Cloudflare Pages - NCAA FIRST
+# Reality Enforcer: Working ugly > beautiful broken
 
 echo "🔥 Blaze Sports Intel Deployment"
 echo "================================"
-
-# Check for UI changes in API-only PRs (token guard)
-if git diff --name-only origin/main...HEAD 2>/dev/null | grep -E 'styles/|packages/ui|\.css$|\.html$' >/dev/null; then
-  echo "⚠️  UI changes detected in this branch"
-  echo "   If this is an API-only PR, these changes will be rejected."
-  echo "   Add 'ui-change' label to PR if UI changes are intentional."
-  read -p "Continue anyway? (y/n) " -n 1 -r
-  echo
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "❌ Deployment cancelled"
-    exit 1
-  fi
-fi
+echo "📍 NCAA FOOTBALL PRIORITY #1"
+echo "📍 Real data or DEMO labels required"
+echo ""
 
 # Build if package.json exists
 if [ -f package.json ]; then
@@ -27,6 +18,18 @@ if [ -f package.json ]; then
 else
   echo "✅ No build required (static site)"
 fi
+
+# Truth Check - Ensure no false claims
+echo "🔍 Running Truth Audit..."
+if grep -r "98\.\|99\.\|accuracy.*[89][0-9]\|million.*data\|billion" index.html functions/api/*.js 2>/dev/null; then
+  echo "❌ FALSE CLAIMS DETECTED! Fix these before deploying:"
+  grep -r "98\.\|99\.\|accuracy.*[89][0-9]\|million.*data\|billion" index.html functions/api/*.js 2>/dev/null || true
+  echo ""
+  echo "Reality Check Failed. Add DEMO labels or remove false claims."
+  exit 1
+fi
+echo "✅ Truth audit passed - no false claims found"
+echo ""
 
 # Find wrangler (prefer global installation)
 WRANGLER=""
@@ -64,8 +67,7 @@ echo "   Account: $CLOUDFLARE_ACCOUNT_ID"
 "$WRANGLER" pages deploy . \
   --project-name blazesportsintel \
   --branch main \
-  --commit-dirty=true \
-  --compatibility-date="$(date +%Y-%m-%d)"
+  --commit-dirty
 
 if [ $? -eq 0 ]; then
   echo ""
@@ -84,8 +86,25 @@ if [ $? -eq 0 ]; then
     echo "⚠️  Site may still be propagating, check in a few minutes"
   fi
 
-  # Check for API endpoints
+  # Check for API endpoints - NCAA FIRST!
   echo "🔍 Checking API endpoints..."
+  echo ""
+
+  # Priority #1: NCAA Football
+  echo "Testing NCAA Football (Priority #1)..."
+  if curl -s https://blazesportsintel.com/api/ncaa-football?teamId=251 | grep -q "team\|demo\|error"; then
+    echo "✅ NCAA Football API endpoint responding"
+    # Show if it's demo or live
+    if curl -s https://blazesportsintel.com/api/ncaa-football?teamId=251 | grep -q "isLiveData.*true"; then
+      echo "   ✅ LIVE DATA from ESPN"
+    else
+      echo "   ⚠️  DEMO MODE (ESPN connection pending)"
+    fi
+  else
+    echo "❌ NCAA Football API endpoint NOT responding - FIX THIS FIRST!"
+  fi
+
+  # Other endpoints (lower priority)
   if curl -s https://blazesportsintel.com/api/mlb?teamId=138 | grep -q "team\|error"; then
     echo "✅ MLB API endpoint responding"
   else

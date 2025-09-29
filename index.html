@@ -191,28 +191,43 @@
         </div>
 
         <div class="grid">
-            <!-- MLB Card -->
-            <div class="card" id="mlb-card">
-                <h2>⚾ MLB - St. Louis Cardinals</h2>
-                <div class="loading">Loading real MLB data...</div>
+            <!-- NCAA FOOTBALL Card - PRIORITY #1 (IN SEASON NOW!) -->
+            <div class="card" id="ncaa-football-card">
+                <h2>🏈 NCAA FOOTBALL - Texas Longhorns</h2>
+                <span class="live-badge">CFP SEASON</span>
+                <div class="loading">Loading NCAA Football data...</div>
             </div>
 
-            <!-- NFL Card -->
+            <!-- MLB Card - PRIORITY #2 -->
+            <div class="card" id="mlb-card">
+                <h2>⚾ BASEBALL (MLB) - St. Louis Cardinals</h2>
+                <div class="loading">Loading MLB data...</div>
+            </div>
+
+            <!-- NFL Card - PRIORITY #3 -->
             <div class="card" id="nfl-card">
                 <h2>🏈 NFL - Tennessee Titans</h2>
-                <div class="loading">Loading real NFL data...</div>
+                <div class="loading">Loading NFL data...</div>
             </div>
 
-            <!-- NBA Card -->
+            <!-- NBA Card - PRIORITY #4 -->
             <div class="card" id="nba-card">
                 <h2>🏀 NBA - Memphis Grizzlies</h2>
-                <div class="loading">Loading real NBA data...</div>
+                <div class="loading">Loading NBA data...</div>
             </div>
 
-            <!-- NCAA Card -->
-            <div class="card" id="ncaa-card">
-                <h2>🎓 NCAA - Texas Longhorns</h2>
-                <div class="loading">Loading real NCAA data...</div>
+            <!-- Youth Sports Card - PRIORITY #5 -->
+            <div class="card" id="youth-sports-card">
+                <h2>🏆 Youth Football/Baseball</h2>
+                <span>Texas HS Football • Perfect Game Baseball</span>
+                <div class="loading">Loading youth sports data...</div>
+            </div>
+
+            <!-- College Baseball Card - PRIORITY #6 -->
+            <div class="card" id="college-baseball-card">
+                <h2>⚾ College Baseball</h2>
+                <span>SEC • Texas Programs</span>
+                <div class="loading">Loading college baseball data...</div>
             </div>
 
             <!-- Analytics Card -->
@@ -268,18 +283,27 @@
 
                 const data = await response.json();
 
+                // Build demo warning if needed
+                const demoWarning = data.demo || data.demoWarning ?
+                    `<div style="background: #ff6b00; color: white; padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px; font-weight: 600;">
+                        ${data.demoWarning || '⚠️ DEMO DATA - Not Live'}
+                    </div>` : '';
+
                 card.innerHTML = `
                     <h2>⚾ MLB - ${data.team?.name || 'St. Louis Cardinals'}</h2>
+                    ${data.isLiveData ? '<span class="live-badge">LIVE DATA</span>' : '<span style="background: orange; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem;">DEMO</span>'}
+                    ${demoWarning}
                     <div class="team-card">
                         <div>
                             <div class="team-name">${data.team?.name || 'Cardinals'}</div>
                             <div class="team-stats">
                                 <span>Division: ${data.team?.division?.name || 'NL Central'}</span>
                                 <span>Venue: ${data.team?.venue?.name || 'Busch Stadium'}</span>
+                                ${data.season ? `<span>Season: ${data.season}</span>` : ''}
                             </div>
                         </div>
                     </div>
-                    ${data.analytics?.pythagorean ? `
+                    ${data.analytics?.pythagorean && data.isLiveData ? `
                         <div class="analytics-value">
                             ${data.analytics.pythagorean.expectedWins} Expected Wins
                         </div>
@@ -294,8 +318,9 @@
             } catch (error) {
                 card.innerHTML = `
                     <h2>⚾ MLB - St. Louis Cardinals</h2>
+                    <span style="background: red; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem;">ERROR</span>
                     <div class="error">Error loading MLB data: ${error.message}</div>
-                    <div class="data-source">Attempting to reconnect...</div>
+                    <div class="data-source">Fallback: Demo Mode</div>
                 `;
                 return false;
             }
@@ -372,33 +397,140 @@
             }
         }
 
-        // Fetch NCAA data
-        async function fetchNCAAData() {
-            const card = document.getElementById('ncaa-card');
+        // Fetch NCAA FOOTBALL data - PRIORITY #1 (IT'S IN SEASON NOW!)
+        async function fetchNCAAFootballData() {
+            const card = document.getElementById('ncaa-football-card');
             try {
-                const response = await fetch(`${API_BASE}/ncaa?teamId=251`);
+                const response = await fetch(`${API_BASE}/ncaa-football?teamId=251`);
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
                 const data = await response.json();
 
+                // Build demo warning if needed
+                const demoWarning = data.demo || data.demoWarning ?
+                    `<div style="background: #ff6b00; color: white; padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px; font-weight: 600;">
+                        ${data.demoWarning || '⚠️ DEMO DATA - Not Live'}
+                    </div>` : '';
+
+                // Build Top 25 section if available
+                const top25Section = data.top25 && data.top25.length > 0 ? `
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <h3 style="color: #ff6b00; margin-bottom: 0.5rem;">Top 10 Rankings</h3>
+                        ${data.top25.slice(0, 5).map(team => `
+                            <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; font-size: 0.9rem;">
+                                <span>#${team.rank} ${team.team}</span>
+                                <span style="color: #aaa;">${team.record}</span>
+                            </div>
+                        `).join('')}
+                    </div>` : '';
+
                 card.innerHTML = `
-                    <h2>🎓 NCAA - ${data.team?.displayName || 'Texas Longhorns'}</h2>
+                    <h2>🏈 NCAA FOOTBALL - ${data.team?.displayName || 'Texas Longhorns'}</h2>
+                    ${data.isLiveData ? '<span class="live-badge">LIVE DATA</span>' : '<span style="background: orange; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem;">DEMO</span>'}
+                    ${demoWarning}
                     <div class="team-card">
                         <div>
-                            <div class="team-name">${data.team?.displayName || 'Longhorns'}</div>
+                            <div class="team-name">${data.team?.displayName || 'Texas Longhorns'}</div>
                             <div class="team-stats">
-                                <span>Mascot: ${data.team?.nickname || 'Longhorns'}</span>
+                                <span>Record: ${data.record || 'N/A'}</span>
+                                <span>Conference: ${data.conference || 'SEC'}</span>
+                                <span>Venue: ${data.venue || 'N/A'}</span>
                             </div>
+                            ${data.coach ? `<div style="margin-top: 0.5rem; color: #aaa; font-size: 0.9rem;">Coach: ${data.coach}</div>` : ''}
                         </div>
                     </div>
-                    <div class="data-source">Source: ${data.dataSource || 'ESPN College Football API'}</div>
+                    ${top25Section}
+                    <div class="data-source">Source: ${data.dataSource || 'ESPN API'}</div>
                 `;
 
                 return true;
             } catch (error) {
                 card.innerHTML = `
-                    <h2>🎓 NCAA - Texas Longhorns</h2>
-                    <div class="error">Error loading NCAA data: ${error.message}</div>
+                    <h2>🏈 NCAA FOOTBALL - Texas Longhorns</h2>
+                    <span style="background: red; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem;">ERROR</span>
+                    <div class="error">Error loading NCAA Football: ${error.message}</div>
+                    <div class="data-source">Fallback: Demo Mode</div>
+                `;
+                return false;
+            }
+        }
+
+        // Fetch Youth Sports data - PRIORITY #5
+        async function fetchYouthSportsData() {
+            const card = document.getElementById('youth-sports-card');
+            try {
+                const response = await fetch(`${API_BASE}/youth-sports`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const data = await response.json();
+
+                card.innerHTML = `
+                    <h2>🏆 Youth Football/Baseball</h2>
+                    <div style="background: orange; color: white; padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px; font-weight: 600;">
+                        ⚠️ DEMO DATA - Youth Sports API Coming Soon
+                    </div>
+                    <div class="team-card">
+                        <div>
+                            <div class="team-name">Texas High School Football</div>
+                            <div class="team-stats">
+                                <span>UIL Championships</span>
+                                <span>6A Division</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-card">
+                        <div>
+                            <div class="team-name">Perfect Game Baseball</div>
+                            <div class="team-stats">
+                                <span>Elite Tournaments</span>
+                                <span>Top Prospects</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="data-source">Source: MaxPreps • Perfect Game</div>
+                `;
+
+                return true;
+            } catch (error) {
+                card.innerHTML = `
+                    <h2>🏆 Youth Football/Baseball</h2>
+                    <div class="error">Youth sports data unavailable</div>
+                `;
+                return false;
+            }
+        }
+
+        // Fetch College Baseball data - PRIORITY #6
+        async function fetchCollegeBaseballData() {
+            const card = document.getElementById('college-baseball-card');
+            try {
+                const response = await fetch(`${API_BASE}/college-baseball`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const data = await response.json();
+
+                card.innerHTML = `
+                    <h2>⚾ College Baseball</h2>
+                    <div style="background: orange; color: white; padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px; font-weight: 600;">
+                        ⚠️ DEMO DATA - College Baseball API Coming Soon
+                    </div>
+                    <div class="team-card">
+                        <div>
+                            <div class="team-name">Texas Longhorns Baseball</div>
+                            <div class="team-stats">
+                                <span>Conference: SEC</span>
+                                <span>Season starts: Feb 14</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="data-source">Source: D1Baseball • NCAA</div>
+                `;
+
+                return true;
+            } catch (error) {
+                card.innerHTML = `
+                    <h2>⚾ College Baseball</h2>
+                    <div class="error">Season starts February 14</div>
                 `;
                 return false;
             }
@@ -503,11 +635,14 @@
         async function loadAllData() {
             updateStatus('connecting', 'Fetching real data...');
 
+            // CORRECT PRIORITY ORDER AS REQUESTED
             const results = await Promise.all([
-                fetchMLBData(),
-                fetchNFLData(),
-                fetchNBAData(),
-                fetchNCAAData(),
+                fetchNCAAFootballData(),    // #1 - IN SEASON NOW!
+                fetchMLBData(),              // #2 - Baseball (MLB)
+                fetchNFLData(),              // #3 - NFL
+                fetchNBAData(),              // #4 - NBA
+                fetchYouthSportsData(),      // #5 - Youth Football/Baseball
+                fetchCollegeBaseballData(),  // #6 - College Baseball
                 fetchAnalytics(),
                 checkLiveGames()
             ]);
