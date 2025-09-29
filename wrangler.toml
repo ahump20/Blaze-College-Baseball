@@ -73,7 +73,7 @@ bucket_name = "blaze-intelligence-data"
 [[d1_databases]]
 binding = "ANALYTICS_DB"
 database_name = "blaze-analytics"
-database_id = "championship-analytics-db"
+database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 
 # Site configuration for Pages
 [site]
