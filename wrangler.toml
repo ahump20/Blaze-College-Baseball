@@ -52,13 +52,13 @@ vars = {
 # KV Namespaces for session/cache data
 [[kv_namespaces]]
 binding = "SPORTS_CACHE"
-id = "sports_data_cache"
-preview_id = "sports_data_cache_preview"
+id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+preview_id = "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
 
 [[kv_namespaces]]
 binding = "SESSION_CACHE"
-id = "session_cache"
-preview_id = "session_cache_preview"
+id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+preview_id = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
 
 # R2 Storage for media assets
 [[r2_buckets]]
