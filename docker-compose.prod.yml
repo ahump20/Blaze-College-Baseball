@@ -55,9 +55,6 @@ services:
       --maxmemory-policy allkeys-lru
       --tcp-keepalive 60
       --timeout 0
-      --save 900 1
-      --save 300 10
-      --save 60 10000
     ports:
       - "6379:6379"
     volumes:
