@@ -1,7 +1,7 @@
 {
   "name": "blaze-sports-intel-bsi",
   "version": "2.1.0",
-  "description": "🔥 Blaze Sports Intel - Biomechanics Vision System & Championship Intelligence Platform",
+  "description": "\ud83d\udd25 Blaze Sports Intel - Biomechanics Vision System & Championship Intelligence Platform",
   "main": "index-enhanced-full.html",
   "type": "module",
   "scripts": {
@@ -36,7 +36,8 @@
     "real:verify": "node test-real-implementation.js",
     "health": "node scripts/health-check.js",
     "migrate": "node scripts/run-migrations.js",
-    "seed": "node scripts/seed-data.js"
+    "seed": "node scripts/seed-data.js",
+    "mcp:sync": "node scripts/apply-mcp-keys.js"
   },
   "keywords": [
     "sports-analytics",
