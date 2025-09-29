@@ -218,9 +218,23 @@ export const DEFAULT_FALLBACKS = {
   NFL: {
     team: {
       name: 'Tennessee Titans',
+      abbreviation: 'TEN',
+      location: 'Nashville',
+      conference: 'AFC',
       division: 'AFC South',
       venue: 'Nissan Stadium',
-      message: 'Live data temporarily unavailable',
+      record: null,
+      dataSource: 'Cache Fallback',
+      lastUpdated: null,
+      truthLabel: 'OFFLINE DATA - SERVICE UNAVAILABLE',
+    },
+    standings: {
+      conference: 'AFC',
+      division: 'AFC South',
+      rows: [],
+      lastUpdated: null,
+      dataSource: 'Cache Fallback',
+      truthLabel: 'OFFLINE DATA - SERVICE UNAVAILABLE',
     },
   },
   NBA: {
