@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blaze Sports Intel - REAL Live Sports Data Platform</title>
+    <title>Blaze Sports Intel - MLB Live Data (Other Leagues in Demo)</title>
     <style>
         :root {
             --color-bg: #1a1a1a;
@@ -41,6 +41,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .status-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.25rem;
         }
 
         .status-indicator {
@@ -152,9 +161,33 @@
             margin-top: 0.5rem;
         }
 
+        .demo-warning {
+            color: #ff6b00;
+            font-weight: 600;
+        }
+
+        .standings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .standings-table th,
+        .standings-table td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.5rem;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .standings-table th {
+            color: #ff6b00;
+            font-weight: 600;
+        }
+
         .no-random {
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid #00ff00;
+            background: rgba(255, 107, 0, 0.08);
+            border: 1px solid rgba(255, 107, 0, 0.6);
             padding: 1rem;
             border-radius: 8px;
             margin: 2rem 0;
@@ -172,65 +205,68 @@
 <body>
     <header>
         <div class="logo">🔥 Blaze Sports Intel</div>
-        <div class="subtitle">REAL Live Sports Data - NO Math.random()</div>
+        <div class="subtitle">MLB live data now shipping • Other leagues in demo mode</div>
     </header>
 
     <div class="status-bar">
         <div>
             <span class="status-indicator status-connecting" id="api-status"></span>
-            <span id="api-status-text">Connecting to real APIs...</span>
+            <span id="api-status-text">Connecting to MLB Stats API...</span>
         </div>
-        <div id="last-update">Last update: Never</div>
+        <div class="status-right">
+            <div id="last-update">Last update: Never</div>
+            <div class="demo-warning" id="demo-warning" style="color:#ff6b00;font-weight:600">⚠️ DEMO — Not all cards use live data yet</div>
+        </div>
     </div>
 
     <div class="container">
         <div class="no-random">
-            <h3>✅ This Page Uses REAL Data</h3>
-            <p>NO Math.random() • NO hardcoded values • NO fake statistics</p>
-            <p>All data fetched from MLB Stats API, ESPN API, and PostgreSQL database</p>
+            <h3>ℹ️ Data status</h3>
+            <p>MLB cards fetch live data directly from the MLB Stats API.</p>
+            <p>NFL, NBA, NCAA, analytics, and live games remain in demo mode until their real adapters are complete.</p>
         </div>
 
         <div class="grid">
             <!-- MLB Card -->
             <div class="card" id="mlb-card">
                 <h2>⚾ MLB - St. Louis Cardinals</h2>
-                <div class="loading">Loading real MLB data...</div>
+                <div class="loading">Loading live MLB data...</div>
             </div>
 
             <!-- NFL Card -->
             <div class="card" id="nfl-card">
-                <h2>🏈 NFL - Tennessee Titans</h2>
-                <div class="loading">Loading real NFL data...</div>
+                <h2>🏈 NFL (DEMO) - Tennessee Titans</h2>
+                <div class="loading">Demo data pending live integration</div>
             </div>
 
             <!-- NBA Card -->
             <div class="card" id="nba-card">
-                <h2>🏀 NBA - Memphis Grizzlies</h2>
-                <div class="loading">Loading real NBA data...</div>
+                <h2>🏀 NBA (DEMO) - Memphis Grizzlies</h2>
+                <div class="loading">Demo data pending live integration</div>
             </div>
 
             <!-- NCAA Card -->
             <div class="card" id="ncaa-card">
-                <h2>🎓 NCAA - Texas Longhorns</h2>
-                <div class="loading">Loading real NCAA data...</div>
+                <h2>🎓 NCAA (DEMO) - Texas Longhorns</h2>
+                <div class="loading">Demo data pending live integration</div>
             </div>
 
             <!-- Analytics Card -->
             <div class="card" id="analytics-card">
-                <h2>📊 Real-time Analytics</h2>
-                <div class="loading">Calculating from real data...</div>
+                <h2>📊 Analytics (DEMO)</h2>
+                <div class="loading">Analytics pending live MLB-only rollout</div>
             </div>
 
             <!-- Live Games Card -->
             <div class="card" id="live-games-card">
-                <h2>🔴 Live Games</h2>
-                <div class="loading">Checking for live games...</div>
+                <h2>🔴 Live Games (DEMO)</h2>
+                <div class="loading">Live scoreboard resumes after MLB v1 verification</div>
             </div>
         </div>
 
         <div class="data-source">
-            Data Sources: MLB Stats API • ESPN API • PostgreSQL Database<br>
-            Updated every 30 seconds for live games, 5 minutes for scores
+            Data source: MLB Stats API (Cardinals + NL Central standings).<br>
+            Other sports remain demo-only until their real endpoints pass validation.
         </div>
     </div>
 
@@ -239,309 +275,227 @@
         <p>Repository: github.com/ahump20/BSI • Commit: 0aba42c+</p>
     </footer>
 
-    <script>
-        // NO Math.random() IN THIS ENTIRE SCRIPT!
+    <script type="module">
+        import { getMlbTeam, getMlbStandings } from './lib/api/mlb.js';
+        import { toTeamCardView, toStandingsView } from './lib/adapters/mlb.js';
 
-        const API_BASE = window.location.hostname === 'localhost'
-            ? 'http://localhost:3000/api'
-            : 'https://blazesportsintel.com/api';
+        const MLB_TEAM_ID = '138';
+        const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+        let refreshHandle = null;
 
-        let websocket = null;
-        let updateInterval = null;
+        function resolveApiBase() {
+            return window.location.hostname === 'localhost'
+                ? 'http://localhost:3000/api'
+                : 'https://blazesportsintel.com/api';
+        }
 
-        // Update status indicator
+        const API_BASE = resolveApiBase();
+
         function updateStatus(status, text) {
             const indicator = document.getElementById('api-status');
             const statusText = document.getElementById('api-status-text');
+            const lastUpdate = document.getElementById('last-update');
 
-            indicator.className = `status-indicator status-${status}`;
-            statusText.textContent = text;
-            document.getElementById('last-update').textContent = `Last update: ${new Date().toLocaleTimeString()}`;
+            if (indicator) {
+                indicator.className = `status-indicator status-${status}`;
+            }
+
+            if (statusText) {
+                statusText.textContent = text;
+            }
+
+            if (lastUpdate) {
+                lastUpdate.textContent = `Last update: ${new Date().toLocaleTimeString()}`;
+            }
         }
 
-        // Fetch MLB data
-        async function fetchMLBData() {
+        function renderMlbError(error) {
             const card = document.getElementById('mlb-card');
-            try {
-                const response = await fetch(`${API_BASE}/mlb?teamId=138`);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            if (!card) {
+                return;
+            }
 
-                const data = await response.json();
+            const message = error instanceof Error ? error.message : 'Unknown error';
 
-                card.innerHTML = `
-                    <h2>⚾ MLB - ${data.team?.name || 'St. Louis Cardinals'}</h2>
-                    <div class="team-card">
-                        <div>
-                            <div class="team-name">${data.team?.name || 'Cardinals'}</div>
-                            <div class="team-stats">
-                                <span>Division: ${data.team?.division?.name || 'NL Central'}</span>
-                                <span>Venue: ${data.team?.venue?.name || 'Busch Stadium'}</span>
-                            </div>
+            card.innerHTML = `
+                <h2>⚾ MLB - St. Louis Cardinals</h2>
+                <div class="error">Error loading MLB data: ${message}</div>
+                <div class="data-source">Retrying when new data is available…</div>
+            `;
+        }
+
+        function renderStandingsTable(standings) {
+            if (!standings || !Array.isArray(standings.rows) || standings.rows.length === 0) {
+                return '<p class="data-source">Standings unavailable right now.</p>';
+            }
+
+            const divisionLabel = standings.divisionName || 'NL Central';
+
+            const rows = standings.rows
+                .map((row) => `
+                    <tr>
+                        <td>${row.rank}</td>
+                        <td>${row.name}</td>
+                        <td>${row.wins}</td>
+                        <td>${row.losses}</td>
+                        <td>${row.pct}</td>
+                    </tr>
+                `)
+                .join('');
+
+            return `
+                <table class="standings-table" aria-label="${divisionLabel} standings">
+                    <thead>
+                        <tr>
+                            <th scope="col">Rank</th>
+                            <th scope="col">Team</th>
+                            <th scope="col">W</th>
+                            <th scope="col">L</th>
+                            <th scope="col">Pct</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            `;
+        }
+
+        function renderAnalyticsBlock(analytics) {
+            if (!analytics) {
+                return '<p class="data-source">Pythagorean expectation is unavailable.</p>';
+            }
+
+            const pieces = [];
+
+            if (typeof analytics.expectedWins === 'number') {
+                pieces.push(`<div class="analytics-value">${analytics.expectedWins} Expected Wins</div>`);
+            }
+
+            if (typeof analytics.winPercentage === 'string') {
+                pieces.push(`<p>Pythagorean Win %: ${analytics.winPercentage}</p>`);
+            }
+
+            if (typeof analytics.runsScored === 'number') {
+                pieces.push(`<p>Runs Scored: ${analytics.runsScored}</p>`);
+            }
+
+            if (typeof analytics.runsAllowed === 'number') {
+                pieces.push(`<p>Runs Allowed: ${analytics.runsAllowed}</p>`);
+            }
+
+            return pieces.join('') || '<p class="data-source">Pythagorean expectation is unavailable.</p>';
+        }
+
+        function renderMlbCard(team, standings) {
+            const card = document.getElementById('mlb-card');
+            if (!card) {
+                return;
+            }
+
+            const analyticsHtml = renderAnalyticsBlock(team.analytics);
+            const standingsHtml = renderStandingsTable(standings);
+            const lastUpdatedDate = team.lastUpdated ? new Date(team.lastUpdated) : null;
+            const updatedLabel = lastUpdatedDate && !Number.isNaN(lastUpdatedDate.getTime())
+                ? `<p class="data-source">Last MLB API update: ${lastUpdatedDate.toLocaleString()}</p>`
+                : '';
+
+            card.innerHTML = `
+                <h2>⚾ MLB - ${team.name}</h2>
+                <div class="team-card">
+                    <div>
+                        <div class="team-name">${team.name}</div>
+                        <div class="team-stats">
+                            <span>Division: ${team.division}</span>
+                            <span>Venue: ${team.venue}</span>
                         </div>
                     </div>
-                    ${data.analytics?.pythagorean ? `
-                        <div class="analytics-value">
-                            ${data.analytics.pythagorean.expectedWins} Expected Wins
-                        </div>
-                        <p>Pythagorean Win % : ${data.analytics.pythagorean.winPercentage}</p>
-                        <p>Runs Scored: ${data.analytics.pythagorean.runsScored} (REAL)</p>
-                        <p>Runs Allowed: ${data.analytics.pythagorean.runsAllowed} (REAL)</p>
-                    ` : ''}
-                    <div class="data-source">Source: ${data.analytics?.dataSource || 'MLB Stats API'}</div>
-                `;
-
-                return true;
-            } catch (error) {
-                card.innerHTML = `
-                    <h2>⚾ MLB - St. Louis Cardinals</h2>
-                    <div class="error">Error loading MLB data: ${error.message}</div>
-                    <div class="data-source">Attempting to reconnect...</div>
-                `;
-                return false;
-            }
+                </div>
+                ${analyticsHtml}
+                <section>
+                    <h3>${standings.divisionName || 'NL Central'} Standings</h3>
+                    ${standingsHtml}
+                </section>
+                <div class="data-source">Source: ${team.dataSource}</div>
+                ${updatedLabel}
+            `;
         }
 
-        // Fetch NFL data
-        async function fetchNFLData() {
-            const card = document.getElementById('nfl-card');
-            try {
-                const response = await fetch(`${API_BASE}/nfl?teamId=10`);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        function initialiseDemoCards() {
+            const demos = [
+                {
+                    id: 'nfl-card',
+                    title: '🏈 NFL (DEMO) - Tennessee Titans',
+                    description: 'Live NFL data will ship after MLB v1 verification.',
+                },
+                {
+                    id: 'nba-card',
+                    title: '🏀 NBA (DEMO) - Memphis Grizzlies',
+                    description: 'NBA integrations resume once MLB is production-stable.',
+                },
+                {
+                    id: 'ncaa-card',
+                    title: '🎓 NCAA (DEMO) - Texas Longhorns',
+                    description: 'College football dashboard is paused during MLB rollout.',
+                },
+                {
+                    id: 'analytics-card',
+                    title: '📊 Analytics (DEMO)',
+                    description: 'Cross-sport analytics are disabled until MLB-only metrics are validated.',
+                },
+                {
+                    id: 'live-games-card',
+                    title: '🔴 Live Games (DEMO)',
+                    description: 'Live score polling resumes once MLB adapters clear validation.',
+                },
+            ];
 
-                const data = await response.json();
-
-                card.innerHTML = `
-                    <h2>🏈 NFL - ${data.team?.displayName || 'Tennessee Titans'}</h2>
-                    <div class="team-card">
-                        <div>
-                            <div class="team-name">${data.team?.displayName || 'Titans'}</div>
-                            <div class="team-stats">
-                                <span>Abbreviation: ${data.team?.abbreviation || 'TEN'}</span>
-                                <span>Color: #${data.team?.color || '4B92DB'}</span>
-                            </div>
-                        </div>
-                    </div>
-                    ${data.analytics?.elo ? `
-                        <div class="analytics-value">
-                            ${data.analytics.elo.currentRating} Elo Rating
-                        </div>
-                        <p>K-Factor: ${data.analytics.elo.kFactor}</p>
-                    ` : ''}
-                    <div class="data-source">Source: ${data.analytics?.dataSource || 'ESPN API'}</div>
-                `;
-
-                return true;
-            } catch (error) {
-                card.innerHTML = `
-                    <h2>🏈 NFL - Tennessee Titans</h2>
-                    <div class="error">Error loading NFL data: ${error.message}</div>
-                `;
-                return false;
-            }
-        }
-
-        // Fetch NBA data
-        async function fetchNBAData() {
-            const card = document.getElementById('nba-card');
-            try {
-                const response = await fetch(`${API_BASE}/nba?teamId=29`);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                const data = await response.json();
-
-                card.innerHTML = `
-                    <h2>🏀 NBA - ${data.team?.displayName || 'Memphis Grizzlies'}</h2>
-                    <div class="team-card">
-                        <div>
-                            <div class="team-name">${data.team?.displayName || 'Grizzlies'}</div>
-                            <div class="team-stats">
-                                <span>Location: ${data.team?.location || 'Memphis'}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="data-source">Source: ${data.dataSource || 'ESPN NBA API'}</div>
-                `;
-
-                return true;
-            } catch (error) {
-                card.innerHTML = `
-                    <h2>🏀 NBA - Memphis Grizzlies</h2>
-                    <div class="error">Error loading NBA data: ${error.message}</div>
-                `;
-                return false;
-            }
-        }
-
-        // Fetch NCAA data
-        async function fetchNCAAData() {
-            const card = document.getElementById('ncaa-card');
-            try {
-                const response = await fetch(`${API_BASE}/ncaa?teamId=251`);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                const data = await response.json();
-
-                card.innerHTML = `
-                    <h2>🎓 NCAA - ${data.team?.displayName || 'Texas Longhorns'}</h2>
-                    <div class="team-card">
-                        <div>
-                            <div class="team-name">${data.team?.displayName || 'Longhorns'}</div>
-                            <div class="team-stats">
-                                <span>Mascot: ${data.team?.nickname || 'Longhorns'}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="data-source">Source: ${data.dataSource || 'ESPN College Football API'}</div>
-                `;
-
-                return true;
-            } catch (error) {
-                card.innerHTML = `
-                    <h2>🎓 NCAA - Texas Longhorns</h2>
-                    <div class="error">Error loading NCAA data: ${error.message}</div>
-                `;
-                return false;
-            }
-        }
-
-        // Fetch analytics
-        async function fetchAnalytics() {
-            const card = document.getElementById('analytics-card');
-            try {
-                const response = await fetch(`${API_BASE}/analytics`);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                const data = await response.json();
-
-                card.innerHTML = `
-                    <h2>📊 Real-time Analytics</h2>
-                    <p>Cardinals Pythagorean Wins: ${data.cardinals?.pythagorean || 'Calculating...'}</p>
-                    <p>Titans Elo Rating: ${data.titans?.elo || 'Calculating...'}</p>
-                    <p>Predictions Accuracy: ${data.accuracy || 'N/A'}%</p>
-                    <div class="data-source">Calculated from real game data</div>
-                `;
-            } catch (error) {
-                card.innerHTML = `
-                    <h2>📊 Real-time Analytics</h2>
-                    <div class="error">Analytics temporarily unavailable</div>
-                `;
-            }
-        }
-
-        // Check for live games
-        async function checkLiveGames() {
-            const card = document.getElementById('live-games-card');
-            try {
-                const response = await fetch(`${API_BASE}/live-scores`);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                const data = await response.json();
-
-                if (data.games && data.games.length > 0) {
-                    const gamesHtml = data.games.slice(0, 3).map(game => `
-                        <div class="team-card">
-                            <span class="live-badge">LIVE</span>
-                            <span>${game.home_team} ${game.home_score} - ${game.away_score} ${game.away_team}</span>
-                        </div>
-                    `).join('');
-
-                    card.innerHTML = `
-                        <h2>🔴 Live Games</h2>
-                        ${gamesHtml}
-                        <div class="data-source">Updated every 30 seconds</div>
-                    `;
-                } else {
-                    card.innerHTML = `
-                        <h2>🔴 Live Games</h2>
-                        <p>No live games at the moment</p>
-                        <div class="data-source">Checking every 30 seconds</div>
-                    `;
+            demos.forEach(({ id, title, description }) => {
+                const card = document.getElementById(id);
+                if (!card) {
+                    return;
                 }
-            } catch (error) {
+
                 card.innerHTML = `
-                    <h2>🔴 Live Games</h2>
-                    <p>Live scores temporarily unavailable</p>
+                    <h2>${title}</h2>
+                    <p>${description}</p>
+                    <div class="data-source demo-warning">⚠️ Demo placeholder — awaiting live data.</div>
                 `;
-            }
+            });
         }
 
-        // Initialize WebSocket for real-time updates
-        function initWebSocket() {
-            const wsUrl = window.location.hostname === 'localhost'
-                ? 'ws://localhost:3001'
-                : 'wss://blazesportsintel.com/ws';
+        async function loadMlbData() {
+            updateStatus('connecting', 'Fetching MLB data…');
 
             try {
-                websocket = new WebSocket(wsUrl);
+                const [teamRaw, standingsRaw] = await Promise.all([
+                    getMlbTeam(MLB_TEAM_ID, API_BASE),
+                    getMlbStandings(API_BASE),
+                ]);
 
-                websocket.onopen = () => {
-                    console.log('WebSocket connected for real-time updates');
-                    websocket.send(JSON.stringify({ type: 'subscribe', sport: 'all' }));
-                };
+                const teamView = toTeamCardView(teamRaw);
+                const standingsView = toStandingsView(standingsRaw);
 
-                websocket.onmessage = (event) => {
-                    const data = JSON.parse(event.data);
-                    if (data.type === 'liveScore' || data.type === 'scoreUpdate') {
-                        checkLiveGames(); // Refresh live games on score update
-                    }
-                };
-
-                websocket.onerror = (error) => {
-                    console.error('WebSocket error:', error);
-                };
-
-                websocket.onclose = () => {
-                    console.log('WebSocket disconnected, reconnecting in 5s...');
-                    setTimeout(initWebSocket, 5000);
-                };
+                renderMlbCard(teamView, standingsView);
+                updateStatus('live', 'MLB data live');
             } catch (error) {
-                console.error('WebSocket initialization failed:', error);
+                console.error('Failed to load MLB data', error);
+                renderMlbError(error);
+                updateStatus('error', 'MLB data unavailable — retrying…');
             }
         }
 
-        // Load all data
-        async function loadAllData() {
-            updateStatus('connecting', 'Fetching real data...');
-
-            const results = await Promise.all([
-                fetchMLBData(),
-                fetchNFLData(),
-                fetchNBAData(),
-                fetchNCAAData(),
-                fetchAnalytics(),
-                checkLiveGames()
-            ]);
-
-            const allSuccessful = results.every(r => r !== false);
-
-            if (allSuccessful) {
-                updateStatus('live', 'Connected to real APIs');
-            } else {
-                updateStatus('error', 'Some APIs unavailable - retrying...');
-            }
-        }
-
-        // Initialize on page load
         window.addEventListener('DOMContentLoaded', () => {
-            loadAllData();
+            console.log('⚠️ Demo mode – parts of this page use non-live data');
+            initialiseDemoCards();
+            loadMlbData();
 
-            // Refresh every 30 seconds for live games, 5 minutes for other data
-            updateInterval = setInterval(loadAllData, 30000);
-
-            // Initialize WebSocket for real-time updates
-            initWebSocket();
+            refreshHandle = setInterval(loadMlbData, REFRESH_INTERVAL_MS);
         });
 
-        // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
-            if (websocket) websocket.close();
-            if (updateInterval) clearInterval(updateInterval);
+            if (refreshHandle) {
+                clearInterval(refreshHandle);
+            }
         });
-
-        // Verify no Math.random() is used
-        console.log('✅ This page contains ZERO Math.random() calls');
-        console.log('✅ All data is fetched from real APIs');
-        console.log('✅ No hardcoded values or fake statistics');
     </script>
 </body>
 </html>
