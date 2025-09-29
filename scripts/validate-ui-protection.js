@@ -97,7 +97,8 @@ class UIProtectionValidator {
     }
 
     // Check for proper Zod usage
-    if (!content.includes('import') || !content.includes('zod')) {
+    const zodImportRegex = /import\s+.*\s+from\s+['"]zod['"]/;
+    if (!zodImportRegex.test(content)) {
       this.errors.push(`${fileName}: Missing Zod imports`);
     }
 
