@@ -39,7 +39,7 @@ jobs:
         fetch-depth: 0  # Full history for baseline comparisons
 
     - name: 🐍 Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
         cache: 'pip'
@@ -58,7 +58,7 @@ jobs:
       run: npm install -g wrangler
 
     - name: 💾 Restore Baseline Cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: observability/drift/baselines
         key: drift-baselines-${{ runner.os }}-${{ hashFiles('observability/drift/config/drift-config.yaml') }}
@@ -159,20 +159,21 @@ jobs:
 
     - name: 💾 Save Baseline Cache
       if: success() && github.event_name == 'schedule'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: observability/drift/baselines
         key: drift-baselines-${{ runner.os }}-${{ hashFiles('observability/drift/config/drift-config.yaml') }}-${{ github.sha }}
 
     - name: 📦 Upload Artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: drift-reports-${{ github.run_number }}
         path: |
           observability/drift/reports/
           observability/drift/ci/
           observability/drift/logs/
+        if-no-files-found: ignore
 
     - name: 🏁 CI Gate Decision
       if: github.event_name == 'pull_request'
