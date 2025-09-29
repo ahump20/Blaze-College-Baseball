@@ -13,3 +13,5 @@ coverage/
 .idea/
 __pycache__/
 *.pyc
+config/*.env
+wrangler-*.local.toml
