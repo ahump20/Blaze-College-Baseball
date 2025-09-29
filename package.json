@@ -9,7 +9,7 @@
     "dev": "python3 -m http.server 8000",
     "serve": "python3 -m http.server 8000",
     "build": "echo 'Build complete - BSI platform ready'",
-    "deploy": "./deploy-blazesportsintel.sh",
+    "deploy": "./deploy.sh",
     "deploy:staging": "wrangler pages deploy --env staging",
     "deploy:production": "wrangler pages deploy --env production",
     "test": "python3 -m pytest test_biomech.py -v",
