@@ -145,8 +145,9 @@ class UIProtectionValidator {
         this.errors.push(`${fileName}: Missing DOCTYPE declaration`);
       }
       
-      if (!content.includes('<html lang="en">')) {
-        this.errors.push(`${fileName}: Missing lang attribute`);
+      const htmlLangRegex = /<html[^>]*\blang\s*=\s*["'][^"']+["']/i;
+      if (!htmlLangRegex.test(content)) {
+        this.errors.push(`${fileName}: Missing lang attribute in <html> tag`);
       }
     }
 
