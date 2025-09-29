@@ -41,7 +41,7 @@ jobs:
           changed_files=$(git diff --name-only origin/main...HEAD)
           
           # Check for UI-related changes
-          ui_files=$(echo "$changed_files" | grep -E '\.(html|css|js|tsx|ts)$' | grep -v 'context7-enhanced/src/tools/' | grep -v 'context7-enhanced/__tests__/' || true)
+          ui_files=$(echo "$changed_files" | grep -E '\.(html|css|js|tsx|ts)$' | grep -vE '^context7-enhanced/(src/tools|__tests__)/' || true)
           
           if [ -n "$ui_files" ]; then
             echo "❌ UI changes detected in API-only PR:"
