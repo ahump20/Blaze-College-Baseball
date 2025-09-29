@@ -86,7 +86,9 @@ class UIProtectionValidator {
       /classList\./,
       /setAttribute/,
       /addEventListener/,
-      /document\.|window\.|DOM/
+      /\bdocument\./,
+      /\bwindow\./,
+      /\bDOM\b/
     ];
 
     for (const pattern of uiPatterns) {
