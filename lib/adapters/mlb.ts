@@ -33,7 +33,7 @@ function toPythagoreanViewModel(data: unknown): PythagoreanViewModel | null {
     return null;
   }
 
-  const record = data as { expectedWins?: unknown; winPercentage?: unknown; runsScored?: unknown; runsAllowed?: unknown };
+  const record = data as Partial<PythagoreanViewModel>;
 
   const expectedWins = typeof record.expectedWins === 'number' ? record.expectedWins : null;
   const winPercentage = typeof record.winPercentage === 'string' ? record.winPercentage : null;
