@@ -391,32 +391,37 @@ class DeepSouthSportsAnalytics:
 
         d["is_running_event"] = d["event"].isin(running_events)
 
-        # Calculate rolling progression rate (last 5 competitions)
+        # Calculate rolling progression rate (last 5 competitions) - OPTIMIZED
         def calculate_progression(group):
             if len(group) < 2:
                 return pd.Series(np.nan, index=group.index)
 
-            # Linear regression slope over last 5 competitions
-            progression_rates = []
-            for i in range(len(group)):
+            # Vectorized approach for better performance
+            group_len = len(group)
+            progression_rates = np.zeros(group_len)
+            
+            # Pre-calculate running event flag
+            is_running = group["is_running_event"].iloc[0]
+            
+            # Use rolling window approach for better performance
+            for i in range(group_len):
                 start_idx = max(0, i - 4)  # Last 5 competitions
-                subset = group.iloc[start_idx:i+1]
-
-                if len(subset) >= 2:
-                    x = np.arange(len(subset))
-                    y = subset["performance_seconds"].values
-
-                    # Handle running vs field events
-                    if subset["is_running_event"].iloc[0]:
-                        # For running, negative slope is improvement
-                        slope = -np.polyfit(x, y, 1)[0] if not np.any(np.isnan(y)) else 0
+                subset_len = i + 1 - start_idx
+                
+                if subset_len >= 2:
+                    # Use vectorized operations
+                    x = np.arange(subset_len)
+                    y = group["performance_seconds"].iloc[start_idx:i+1].values
+                    
+                    # Skip if all NaN values
+                    if not np.all(np.isnan(y)):
+                        slope = np.polyfit(x, y, 1)[0]
+                        # Apply direction based on event type
+                        progression_rates[i] = -slope if is_running else slope
                     else:
-                        # For field events, positive slope is improvement
-                        slope = np.polyfit(x, y, 1)[0] if not np.any(np.isnan(y)) else 0
-
-                    progression_rates.append(slope)
+                        progression_rates[i] = 0
                 else:
-                    progression_rates.append(0)
+                    progression_rates[i] = 0
 
             return pd.Series(progression_rates, index=group.index)
 
