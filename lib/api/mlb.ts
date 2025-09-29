@@ -43,11 +43,28 @@ export async function getMlbTeam(
   return handleResponse(response);
 }
 
+// Define the expected structure of the MLB standings API response
+export interface MlbStandingsResponse {
+  season: number;
+  lastUpdated: string;
+  standings: Array<{
+    division: string;
+    teams: Array<{
+      teamId: string;
+      name: string;
+      wins: number;
+      losses: number;
+      pct: string;
+      gb: string;
+    }>;
+  }>;
+}
+
 export async function getMlbStandings(
   apiBase: string = resolveDefaultApiBase(),
   fetcher: Fetcher = fetch,
-): Promise<unknown> {
+): Promise<MlbStandingsResponse> {
   const url = buildUrl(apiBase, 'mlb-standings');
   const response = await fetcher(url, { method: 'GET' });
-  return handleResponse(response);
+  return handleResponse<MlbStandingsResponse>(response);
 }
