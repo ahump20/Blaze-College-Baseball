@@ -37,7 +37,6 @@
     "health": "node scripts/health-check.js",
     "migrate": "node scripts/run-migrations.js",
     "seed": "node scripts/seed-data.js",
-    "mcp:sync": "node scripts/apply-mcp-keys.js"
   },
   "keywords": [
     "sports-analytics",
