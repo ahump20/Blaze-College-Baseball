@@ -1,0 +1,125 @@
+# 🔥 BLAZE SPORTS INTEL - CLOUDFLARE PAGES CONFIGURATION
+# Deep South Sports Authority Platform - blazesportsintel.com
+# Exclusive Cloudflare Pages deployment configuration
+# Repository: BSI (ahump20/BSI)
+
+name = "blazesportsintel"
+compatibility_date = "2025-01-26"
+compatibility_flags = ["nodejs_compat"]
+
+# Pages Build Configuration
+[build]
+command = ""
+cwd = "."
+watch_dir = "."
+
+# Production Environment
+[env.production]
+vars = {
+  ENVIRONMENT = "production",
+  API_VERSION = "v1",
+  SPORTS_DATA_REFRESH_INTERVAL = "300",
+  CACHE_TTL = "3600",
+  PLATFORM = "cloudflare-pages",
+  BRAND = "Blaze Intelligence",
+  DOMAIN = "blazesportsintel.com"
+}
+
+# Preview Environment  
+[env.preview]
+vars = {
+  ENVIRONMENT = "preview",
+  API_VERSION = "v1-preview", 
+  SPORTS_DATA_REFRESH_INTERVAL = "60",
+  CACHE_TTL = "300",
+  PLATFORM = "cloudflare-pages",
+  BRAND = "Blaze Intelligence",
+  DOMAIN = "preview.blazesportsintel.com"
+}
+
+# Development Environment
+[env.development]
+vars = {
+  ENVIRONMENT = "development",
+  API_VERSION = "v1-dev",
+  SPORTS_DATA_REFRESH_INTERVAL = "30",
+  CACHE_TTL = "60",
+  PLATFORM = "cloudflare-pages",
+  BRAND = "Blaze Intelligence",
+  DOMAIN = "localhost:8080"
+}
+
+# KV Namespaces for session/cache data
+[[kv_namespaces]]
+binding = "SPORTS_CACHE"
+id = "sports_data_cache"
+preview_id = "sports_data_cache_preview"
+
+[[kv_namespaces]]
+binding = "SESSION_CACHE"
+id = "session_cache"
+preview_id = "session_cache_preview"
+
+# R2 Storage for media assets
+[[r2_buckets]]
+binding = "MEDIA_STORAGE"
+bucket_name = "blaze-intelligence-media"
+
+[[r2_buckets]]
+binding = "DATA_STORAGE"
+bucket_name = "blaze-intelligence-data"
+
+# D1 Database for structured data
+[[d1_databases]]
+binding = "ANALYTICS_DB"
+database_name = "blaze-analytics"
+database_id = "championship-analytics-db"
+
+# Site configuration for Pages
+[site]
+bucket = "."
+include = ["*.html", "*.js", "*.css", "*.json", "*.png", "*.jpg", "*.svg", "_headers", "_redirects", "functions/**/*"]
+exclude = ["node_modules", "*.md", "*.log", ".*", "*.py", "*.toml", "tests/**/*", "docs/**/*"]
+
+# Custom routing rules
+[[rules]]
+path = "*.js"
+headers = { 
+  "Content-Type" = "application/javascript; charset=utf-8", 
+  "Cache-Control" = "public, max-age=3600"
+}
+
+[[rules]]
+path = "*.css"
+headers = { 
+  "Content-Type" = "text/css; charset=utf-8", 
+  "Cache-Control" = "public, max-age=3600"
+}
+
+[[rules]]
+path = "*.html"
+headers = { 
+  "Content-Type" = "text/html; charset=utf-8", 
+  "Cache-Control" = "public, max-age=300",
+  "X-Frame-Options" = "DENY",
+  "X-Content-Type-Options" = "nosniff",
+  "X-XSS-Protection" = "1; mode=block",
+  "Referrer-Policy" = "strict-origin-when-cross-origin"
+}
+
+[[rules]]
+path = "/api/*"
+headers = { 
+  "Content-Type" = "application/json; charset=utf-8",
+  "Access-Control-Allow-Origin" = "*",
+  "Access-Control-Allow-Methods" = "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers" = "Content-Type, Authorization"
+}
+
+# Analytics and monitoring
+[observability]
+enabled = true
+
+# Security and performance limits
+[limits]
+cpu_ms = 50000
