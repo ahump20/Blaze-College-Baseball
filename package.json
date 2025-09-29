@@ -36,7 +36,12 @@
     "real:verify": "node test-real-implementation.js",
     "health": "node scripts/health-check.js",
     "migrate": "node scripts/run-migrations.js",
-    "seed": "node scripts/seed-data.js"
+    "seed": "node scripts/seed-data.js",
+    "ui:protect": "jest context7-enhanced/__tests__/ui-protection.spec.ts",
+    "ui:validate": "node scripts/validate-ui-protection.js",
+    "context7:test": "jest context7-enhanced/__tests__/contracts/context7.docs.spec.ts",
+    "context7:validate": "npm run ui:protect && npm run context7:test",
+    "pre-commit": "npm run context7:validate && npm run ui:validate"
   },
   "keywords": [
     "sports-analytics",
