@@ -36,7 +36,7 @@ CACHE_TTL = 300  # 5 minutes
 def get_cache_key(data: Dict, sport: str) -> str:
     """Generate cache key for data"""
     data_str = str(sorted(data.items()))
-    return hashlib.md5(f"{sport}_{data_str}".encode()).hexdigest()
+    return hashlib.sha256(f"{sport}_{data_str}".encode()).hexdigest()
 
 def is_cache_valid(timestamp: datetime) -> bool:
     """Check if cache entry is still valid"""
