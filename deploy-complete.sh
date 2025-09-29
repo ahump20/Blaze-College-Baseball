@@ -34,9 +34,13 @@ echo -e "${BLUE}📋 Step 1: Setting up environment...${NC}"
 python3 --version
 check_status "Python version check"
 
-# Install required packages
-echo "Installing Python dependencies..."
-pip3 install --break-system-packages fastapi uvicorn pandas numpy httpx
+# Install required packages in a virtual environment
+echo "Creating Python virtual environment..."
+python3 -m venv venv
+check_status "Virtual environment creation"
+echo "Activating virtual environment and installing dependencies..."
+source venv/bin/activate
+pip install fastapi uvicorn pandas numpy httpx
 check_status "Python dependencies installation"
 
 # Step 2: Code Quality Checks
