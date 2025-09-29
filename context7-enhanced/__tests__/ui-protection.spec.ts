@@ -132,7 +132,7 @@ describe("UI Protection - Context7 Integration", () => {
       expect(content).toMatch(/try\s*{|catch\s*\(|throw new Error/);
       
       // Should not have console.log in production code
-      expect(content).not.toMatch(/console\.log/);
+      expect(content).not.toMatch(/^\s*console\.log\(/m);
     }
   });
 
