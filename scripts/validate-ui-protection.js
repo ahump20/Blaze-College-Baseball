@@ -202,7 +202,11 @@ class UIProtectionValidator {
           const content = fs.readFileSync(file, 'utf8');
           
           for (const color of PROTECTED_COLORS) {
-            const matches = (content.match(new RegExp(color.replace('#', '\\#'), 'g')) || []).length;
+            // Escape the color code for regex
+            const escapedColor = color.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            // Match color codes only in CSS/HTML value contexts (e.g., after :, =, or whitespace, and before ;, ", ', or word boundary)
+            const regex = new RegExp(`([:\\s=])${escapedColor}(?=[;"'\\s])`, 'gi');
+            const matches = (content.match(regex) || []).length;
             brandColorCounts[color] += matches;
           }
         } catch (error) {
