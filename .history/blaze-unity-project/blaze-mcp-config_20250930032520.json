@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "unity-blaze-mcp": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "/workspace/unity-mcp-integration/UnityMcpBridge/UnityMcpServer~/src",
+        "server.py"
+      ],
+      "env": {
+        "BLAZE_PROJECT_PATH": "/workspace/blaze-unity-project",
+        "BLAZE_ANALYTICS_ENABLED": "true",
+        "BLAZE_SPORTS_MODE": "true",
+        "MCP_WEBSOCKET_PORT": "5010",
+        "BLAZE_UNITY_INTEGRATION": "true"
+      }
+    }
+  }
+}
