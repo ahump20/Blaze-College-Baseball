@@ -47,8 +47,8 @@ async function fetchTeamData(teamId, season) {
   const signal = createTimeoutSignal(FETCH_TIMEOUT_MS);
 
   const [team, roster, schedule] = await Promise.all([
-    fetchJson(`${BASE_URL}/teams/${teamId}?season=${season}`, signal, 'team'),
-    fetchJson(`${BASE_URL}/teams/${teamId}/roster?season=${season}`, signal, 'roster'),
+    fetchJson(`${BASE_URL}/teams/${teamId}`, signal, 'team'),
+    fetchJson(`${BASE_URL}/teams/${teamId}/roster`, signal, 'roster'),
     fetchJson(`${BASE_URL}/teams/${teamId}/schedule?season=${season}`, signal, 'schedule'),
   ]);
 
@@ -92,7 +92,7 @@ async function fetchTeamData(teamId, season) {
     meta: {
       dataSource: 'ESPN College Football API',
       lastUpdated: new Date().toISOString(),
-      season,
+      season: schedule?.season?.year?.toString() || season,
     },
   };
 }
