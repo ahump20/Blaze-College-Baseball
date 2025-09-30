@@ -344,17 +344,35 @@
         }
 
         .team-logo {
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--gradient-primary);
-            border-radius: var(--radius-md);
-            font-size: 1.75rem;
+            background: linear-gradient(135deg, rgba(191, 87, 0, 0.2), rgba(204, 102, 0, 0.15));
+            border: 2px solid var(--blaze-copper);
+            border-radius: 50%;
+            font-size: 1.5rem;
             font-weight: 800;
-            color: white;
+            color: var(--blaze-copper);
             flex-shrink: 0;
+            box-shadow: 0 4px 20px rgba(217, 123, 56, 0.3), inset 0 0 20px rgba(191, 87, 0, 0.1);
+            position: relative;
+        }
+
+        .team-logo::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity var(--transition-base);
+            z-index: -1;
+        }
+
+        .team-card:hover .team-logo::before {
+            opacity: 0.2;
         }
 
         .team-info h3 {
@@ -532,10 +550,10 @@
     <main class="main-content">
         <!-- Hero Section -->
         <section class="hero-section" data-aos="fade-up">
-            <div class="section-badge">The Founder's Story</div>
-            <h1 class="hero-title">Where Southern Roots Meet Championship Vision</h1>
+            <div class="section-badge">Who We Are</div>
+            <h1 class="hero-title">Built by Someone Who Gets It</h1>
             <p class="hero-subtitle">
-                Building the sports intelligence platform that coaches, athletes, and front offices deserve—no shortcuts, no compromises.
+                From Memphis to Texas, building sports intelligence tools for teams that demand better.
             </p>
         </section>
 
@@ -544,26 +562,18 @@
             <div class="story-grid">
                 <!-- Left Column - Story -->
                 <div class="story-content" data-aos="fade-right">
-                    <h2 class="story-title">From Memphis to Texas: A Journey in Sports Intelligence</h2>
+                    <h2 class="story-title">About the Founder</h2>
 
                     <p class="story-paragraph">
-                        <strong class="story-highlight">Austin Humphrey</strong> grew up in Memphis, Tennessee, where sports weren't just games—they were a way of life. From Beale Street blues to the roar of FedExForum, he learned early that championship culture runs deeper than wins and losses. It's about preparation, discipline, and never accepting "good enough."
+                        <strong class="story-highlight">Austin Humphrey</strong> grew up in Memphis, moved to Texas, and spent years watching coaches struggle with outdated tools and scattered data. As a University of Texas graduate who loves the Cardinals, Titans, Longhorns, and Grizzlies, he knew there had to be a better way.
                     </p>
 
                     <p class="story-paragraph">
-                        After moving to Texas and graduating from <strong class="story-highlight">The University of Texas at Austin</strong>, Austin spent years in the trenches—watching coaches struggle with outdated tools, athletes navigate recruiting without real data, and front offices make million-dollar decisions based on gut feelings rather than intelligence.
+                        So he built Blaze Sports Intel—the platform he always wished existed. No BS. No fluff. Just the intelligence you need to prepare your team, evaluate talent, and make the right call when it matters most.
                     </p>
 
                     <p class="story-paragraph">
-                        The breaking point came during a high school playoff game. A coach was flipping through printed scouting reports, trying to adjust strategy mid-game while his opponent had real-time analytics. That's when the mission became clear: <strong class="story-highlight">build the platform that should have existed all along.</strong>
-                    </p>
-
-                    <p class="story-paragraph">
-                        Blaze Sports Intel was born from frustration, forged in competition, and refined through countless conversations with coaches, scouts, and athletes who deserved better. From Boerne, Texas to programs across the Deep South, the platform is helping teams make smarter decisions, faster.
-                    </p>
-
-                    <p class="story-paragraph">
-                        No venture capital pressures. No compromises on data integrity. No inflated promises. Just a championship-caliber platform built by someone who understands what's at stake—because he's lived it.
+                        From Boerne, Texas to programs across the Deep South, Blaze Sports Intel provides sports data and analytics tools.
                     </p>
                 </div>
 
@@ -623,7 +633,7 @@
                                         <div class="team-league">MLB Baseball</div>
                                     </div>
                                 </div>
-                                <p class="team-description">11× World Series Champions • National League Central • Cardinal Nation</p>
+                                <p class="team-description">MLB • 11x World Series Champions</p>
                             </div>
                         </div>
 
@@ -636,7 +646,7 @@
                                         <div class="team-league">NCAA Multi-Sport</div>
                                     </div>
                                 </div>
-                                <p class="team-description">SEC Conference • Football, Baseball, Basketball • Hook 'em Horns</p>
+                                <p class="team-description">NCAA • All Sports Coverage</p>
                             </div>
                         </div>
 
@@ -649,7 +659,7 @@
                                         <div class="team-league">NBA Basketball</div>
                                     </div>
                                 </div>
-                                <p class="team-description">Western Conference • Grit & Grind Culture • Memphis Legacy</p>
+                                <p class="team-description">NBA • Grit & Grind</p>
                             </div>
                         </div>
 
@@ -662,7 +672,7 @@
                                         <div class="team-league">NFL Football</div>
                                     </div>
                                 </div>
-                                <p class="team-description">AFC South • Two-Tone Blue • Titan Up Nation</p>
+                                <p class="team-description">NFL • Titan Up</p>
                             </div>
                         </div>
                     </div>
@@ -677,7 +687,7 @@
                     "Where Southern Grit Meets Silicon Valley Analytics"
                 </p>
                 <p class="philosophy-text">
-                    From Memphis roots to Texas soil, Blaze Sports Intel honors Deep South sports tradition with championship-caliber technology. Born on the same day as Davy Crockett, built for coaches, athletes, and front offices who refuse to settle for second place. No BS. No fluff. Just the intelligence you need when championships are on the line.
+                    From Memphis roots to Texas soil, Blaze Sports Intel honors Deep South sports tradition with championship-caliber technology. Born on the same day as Davy Crockett, built for teams who refuse to settle for second place.
                 </p>
             </div>
         </section>
