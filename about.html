@@ -261,15 +261,10 @@
         }
 
         .credential-icon {
-            width: 48px;
+            width: 4px;
             height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--gradient-primary);
-            border-radius: var(--radius-md);
-            font-size: 1.25rem;
-            color: white;
+            background: var(--blaze-copper);
+            border-radius: 2px;
             flex-shrink: 0;
         }
 
@@ -344,35 +339,24 @@
         }
 
         .team-logo {
-            width: 70px;
-            height: 70px;
+            width: 56px;
+            height: 56px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, rgba(191, 87, 0, 0.2), rgba(204, 102, 0, 0.15));
-            border: 2px solid var(--blaze-copper);
-            border-radius: 50%;
-            font-size: 1.5rem;
-            font-weight: 800;
+            background: rgba(191, 87, 0, 0.1);
+            border: 1px solid rgba(217, 123, 56, 0.3);
+            border-radius: 8px;
+            font-size: 1.25rem;
+            font-weight: 700;
             color: var(--blaze-copper);
             flex-shrink: 0;
-            box-shadow: 0 4px 20px rgba(217, 123, 56, 0.3), inset 0 0 20px rgba(191, 87, 0, 0.1);
-            position: relative;
+            transition: all var(--transition-base);
         }
 
-        .team-logo::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            opacity: 0;
-            transition: opacity var(--transition-base);
-            z-index: -1;
-        }
-
-        .team-card:hover .team-logo::before {
-            opacity: 0.2;
+        .team-card:hover .team-logo {
+            background: rgba(191, 87, 0, 0.15);
+            border-color: var(--blaze-copper);
         }
 
         .team-info h3 {
@@ -583,38 +567,30 @@
                     <div class="credentials-card">
                         <h3 class="credentials-title">Background & Credentials</h3>
                         <div class="credential-item">
-                            <div class="credential-icon">
-                                <i class="fas fa-graduation-cap"></i>
-                            </div>
+                            <div class="credential-icon"></div>
                             <div class="credential-text">
-                                <div class="credential-label">Education</div>
+                                <div class="credential-label">EDUCATION</div>
                                 <div class="credential-value">University of Texas at Austin</div>
                             </div>
                         </div>
                         <div class="credential-item">
-                            <div class="credential-icon">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </div>
+                            <div class="credential-icon"></div>
                             <div class="credential-text">
-                                <div class="credential-label">Location</div>
+                                <div class="credential-label">LOCATION</div>
                                 <div class="credential-value">Boerne, Texas</div>
                             </div>
                         </div>
                         <div class="credential-item">
-                            <div class="credential-icon">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
+                            <div class="credential-icon"></div>
                             <div class="credential-text">
-                                <div class="credential-label">Founded</div>
+                                <div class="credential-label">FOUNDED</div>
                                 <div class="credential-value">Born August 17, 1995</div>
                             </div>
                         </div>
                         <div class="credential-item">
-                            <div class="credential-icon">
-                                <i class="fas fa-trophy"></i>
-                            </div>
+                            <div class="credential-icon"></div>
                             <div class="credential-text">
-                                <div class="credential-label">Heritage</div>
+                                <div class="credential-label">HERITAGE</div>
                                 <div class="credential-value">Memphis → Texas</div>
                             </div>
                         </div>
