@@ -1,0 +1,29 @@
+name = "blazesportsintel"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "."
+
+[env.production]
+name = "blazesportsintel-production"
+
+# Environment variables (secrets - set via wrangler secret put)
+[env.production.vars]
+SPORTSDATAIO_API_KEY = "6ca2adb39404482da5406f0a6cd7aa37"
+CFBDATA_API_KEY = "hm0Hj86TobTT+xJb4mSCIhuWd0+FuRH/+S/J8Ck04/MmocJxm/zqGXjOL4eutKk8"
+THEODDS_API_KEY = "930b17cbb3925fd07d3e2f752ff0f9f6"
+
+# KV Namespaces for caching
+[[env.production.kv_namespaces]]
+binding = "SPORTS_CACHE"
+id = "your-kv-namespace-id"
+
+# R2 Buckets for asset storage
+[[env.production.r2_buckets]]
+binding = "SPORTS_ASSETS"
+bucket_name = "blaze-sports-assets"
+
+[build]
+command = "echo 'No build step required'"
+
+[observability]
+enabled = true
+head_sampling_rate = 0.01
