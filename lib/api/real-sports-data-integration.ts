@@ -412,8 +412,16 @@ export class RealSportsDataClient {
 }
 
 // Export singleton with environment variables
+// SECURITY: All API keys MUST be set via environment variables
+// No fallback keys allowed in production code
 export const realSportsDataClient = new RealSportsDataClient({
-  sportsDataIOKey: process.env.SPORTSDATAIO_API_KEY || '6ca2adb39404482da5406f0a6cd7aa37',
-  collegeFBDataKey: process.env.CFBDATA_API_KEY || 'hm0Hj86TobTT+xJb4mSCIhuWd0+FuRH/+S/J8Ck04/MmocJxm/zqGXjOL4eutKk8',
-  theOddsAPIKey: process.env.THEODDS_API_KEY || '930b17cbb3925fd07d3e2f752ff0f9f6',
+  sportsDataIOKey: process.env.SPORTSDATAIO_API_KEY || (() => {
+    throw new Error('SPORTSDATAIO_API_KEY environment variable is required');
+  })(),
+  collegeFBDataKey: process.env.CFBDATA_API_KEY || (() => {
+    throw new Error('CFBDATA_API_KEY environment variable is required');
+  })(),
+  theOddsAPIKey: process.env.THEODDS_API_KEY || (() => {
+    throw new Error('THEODDS_API_KEY environment variable is required');
+  })(),
 });
