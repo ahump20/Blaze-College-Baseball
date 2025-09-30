@@ -89,4 +89,3 @@ namespace BlazeSports.Intelligence
         }
     }
 }
-
