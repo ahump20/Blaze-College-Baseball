@@ -1,28 +1,37 @@
-# Blaze Biomechanics Vision System
+# 🔥 Blaze Sports Intel - Championship Intelligence Platform
 
-**Real-time 3D pose tracking + biomechanical analysis for elite athletic performance prediction**
+**Repository:** BSI (ahump20/BSI)  
+**Domain:** [blazesportsintel.com](https://blazesportsintel.com)  
+**Platform:** Cloudflare Pages Exclusive  
+**Brand:** Blaze Intelligence - Deep South Sports Authority  
+
+> 📖 **Complete platform documentation:** [@blaze_sports_platform.md](./@blaze_sports_platform.md)
 
 ## Mission
-Bridge computer vision and biomechanics to quantify the "unseen" micro-moves that predict elite upside. Integrates seamlessly with the Champion Enigma Engine to deliver actionable insights from multi-camera 3D pose data.
+Transform sports data into championship intelligence through advanced biomechanical analysis, real-time 3D pose tracking, and AI-powered performance prediction. Exclusively focused on Baseball, Football, Basketball, and Track & Field in the Southeastern United States.
 
 ## Quick Start
 
 ```bash
 # Clone and setup
-git clone https://github.com/blazesportsintel/biomech-vision.git
-cd blaze-biomech-vision
+git clone https://github.com/ahump20/BSI.git
+cd BSI
 
-# One-command launch
-make up
+# Install dependencies
+npm install
+pip install -r requirements.txt
 
-# Or using docker-compose directly
-docker-compose up -d
+# Start development server
+npm run dev
 
-# Access the system
-# Dashboard: http://localhost:3000
-# API: http://localhost:8000
-# API Docs: http://localhost:8000/docs
+# Deploy to Cloudflare Pages
+wrangler pages deploy . --project-name=blazesportsintel
 ```
+
+## Platform URLs
+- **Production:** https://blazesportsintel.com
+- **Preview:** https://blazesportsintel.pages.dev
+- **Documentation:** [@blaze_sports_platform.md](./@blaze_sports_platform.md)
 
 ## Architecture
 

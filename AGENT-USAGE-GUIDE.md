@@ -5,9 +5,11 @@
 **Platform:** Cloudflare Pages Exclusive
 **Last Updated:** January 26, 2025
 
+> 📖 **See [@blaze_sports_platform.md](./@blaze_sports_platform.md) for complete platform configuration and standards.**
+
 ## Quick Start
 
-All agents in this guide are optimized for the BSI repository and blazesportsintel.com deployment via Cloudflare Pages. No other deployment platforms should be used.
+All agents in this guide are optimized for the BSI repository and blazesportsintel.com deployment via Cloudflare Pages. No other deployment platforms should be used. This guide references the comprehensive platform standards defined in @blaze_sports_platform.md.
 
 ### Essential Agent Workflow
 
