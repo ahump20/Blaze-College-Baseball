@@ -15,3 +15,5 @@ __pycache__/
 *.pyc
 config/*.env
 wrangler-*.local.toml
+.env.local
+.env
