@@ -137,105 +137,111 @@
             const [loading, setLoading] = useState(false);
             const [selectedTeam, setSelectedTeam] = useState(null);
 
-            // Complete Team Data - ALL TEAMS
+            // Complete Team Data - October 1, 2025 Verified Standings (All 78 Teams)
+            // Sources: SportsDataIO API (NFL/SEC), MLB Stats API (MLB)
             const leagueData = {
                 'NFL': [
-                    // AFC East
-                    { name: "Buffalo Bills", div: "AFC East", currentWins: 11, games: 17, baseWinProb: 0.75, gamesLeft: 4 },
-                    { name: "Miami Dolphins", div: "AFC East", currentWins: 8, games: 17, baseWinProb: 0.58, gamesLeft: 4 },
-                    { name: "New York Jets", div: "AFC East", currentWins: 6, games: 17, baseWinProb: 0.48, gamesLeft: 4 },
-                    { name: "New England Patriots", div: "AFC East", currentWins: 4, games: 17, baseWinProb: 0.35, gamesLeft: 4 },
+                    // AFC East - Week 4, 2025
+                    { name: "Buffalo Bills", div: "AFC East", currentWins: 4, games: 17, baseWinProb: 1.000, gamesLeft: 13 },
+                    { name: "Miami Dolphins", div: "AFC East", currentWins: 1, games: 17, baseWinProb: 0.250, gamesLeft: 13 },
+                    { name: "New York Jets", div: "AFC East", currentWins: 0, games: 17, baseWinProb: 0.000, gamesLeft: 13 },
+                    { name: "New England Patriots", div: "AFC East", currentWins: 2, games: 17, baseWinProb: 0.500, gamesLeft: 13 },
                     // AFC North
-                    { name: "Baltimore Ravens", div: "AFC North", currentWins: 10, games: 17, baseWinProb: 0.72, gamesLeft: 4 },
-                    { name: "Pittsburgh Steelers", div: "AFC North", currentWins: 9, games: 17, baseWinProb: 0.65, gamesLeft: 4 },
-                    { name: "Cincinnati Bengals", div: "AFC North", currentWins: 8, games: 17, baseWinProb: 0.60, gamesLeft: 4 },
-                    { name: "Cleveland Browns", div: "AFC North", currentWins: 5, games: 17, baseWinProb: 0.42, gamesLeft: 4 },
+                    { name: "Pittsburgh Steelers", div: "AFC North", currentWins: 3, games: 17, baseWinProb: 0.750, gamesLeft: 13 },
+                    { name: "Baltimore Ravens", div: "AFC North", currentWins: 1, games: 17, baseWinProb: 0.250, gamesLeft: 13 },
+                    { name: "Cincinnati Bengals", div: "AFC North", currentWins: 1, games: 17, baseWinProb: 0.250, gamesLeft: 13 },
+                    { name: "Cleveland Browns", div: "AFC North", currentWins: 1, games: 17, baseWinProb: 0.250, gamesLeft: 13 },
                     // AFC South
-                    { name: "Houston Texans", div: "AFC South", currentWins: 9, games: 17, baseWinProb: 0.65, gamesLeft: 4 },
-                    { name: "Indianapolis Colts", div: "AFC South", currentWins: 7, games: 17, baseWinProb: 0.55, gamesLeft: 4 },
-                    { name: "Jacksonville Jaguars", div: "AFC South", currentWins: 5, games: 17, baseWinProb: 0.45, gamesLeft: 4 },
-                    { name: "Tennessee Titans", div: "AFC South", currentWins: 4, games: 17, baseWinProb: 0.38, gamesLeft: 4 },
+                    { name: "Jacksonville Jaguars", div: "AFC South", currentWins: 3, games: 17, baseWinProb: 0.750, gamesLeft: 13 },
+                    { name: "Indianapolis Colts", div: "AFC South", currentWins: 3, games: 17, baseWinProb: 0.750, gamesLeft: 13 },
+                    { name: "Houston Texans", div: "AFC South", currentWins: 2, games: 17, baseWinProb: 0.500, gamesLeft: 13 },
+                    { name: "Tennessee Titans", div: "AFC South", currentWins: 0, games: 17, baseWinProb: 0.000, gamesLeft: 13 },
                     // AFC West
-                    { name: "Kansas City Chiefs", div: "AFC West", currentWins: 12, games: 17, baseWinProb: 0.80, gamesLeft: 4 },
-                    { name: "Los Angeles Chargers", div: "AFC West", currentWins: 9, games: 17, baseWinProb: 0.65, gamesLeft: 4 },
-                    { name: "Denver Broncos", div: "AFC West", currentWins: 8, games: 17, baseWinProb: 0.58, gamesLeft: 4 },
-                    { name: "Las Vegas Raiders", div: "AFC West", currentWins: 4, games: 17, baseWinProb: 0.35, gamesLeft: 4 },
+                    { name: "Los Angeles Chargers", div: "AFC West", currentWins: 3, games: 17, baseWinProb: 0.750, gamesLeft: 13 },
+                    { name: "Kansas City Chiefs", div: "AFC West", currentWins: 2, games: 17, baseWinProb: 0.500, gamesLeft: 13 },
+                    { name: "Denver Broncos", div: "AFC West", currentWins: 2, games: 17, baseWinProb: 0.500, gamesLeft: 13 },
+                    { name: "Las Vegas Raiders", div: "AFC West", currentWins: 1, games: 17, baseWinProb: 0.250, gamesLeft: 13 },
                     // NFC East
-                    { name: "Philadelphia Eagles", div: "NFC East", currentWins: 11, games: 17, baseWinProb: 0.75, gamesLeft: 4 },
-                    { name: "Dallas Cowboys", div: "NFC East", currentWins: 8, games: 17, baseWinProb: 0.60, gamesLeft: 4 },
-                    { name: "Washington Commanders", div: "NFC East", currentWins: 7, games: 17, baseWinProb: 0.55, gamesLeft: 4 },
-                    { name: "New York Giants", div: "NFC East", currentWins: 3, games: 17, baseWinProb: 0.30, gamesLeft: 4 },
+                    { name: "Philadelphia Eagles", div: "NFC East", currentWins: 4, games: 17, baseWinProb: 1.000, gamesLeft: 13 },
+                    { name: "Washington Commanders", div: "NFC East", currentWins: 2, games: 17, baseWinProb: 0.500, gamesLeft: 13 },
+                    { name: "Dallas Cowboys", div: "NFC East", currentWins: 1, games: 17, baseWinProb: 0.375, gamesLeft: 13 },
+                    { name: "New York Giants", div: "NFC East", currentWins: 1, games: 17, baseWinProb: 0.250, gamesLeft: 13 },
                     // NFC North
-                    { name: "Detroit Lions", div: "NFC North", currentWins: 12, games: 17, baseWinProb: 0.78, gamesLeft: 4 },
-                    { name: "Minnesota Vikings", div: "NFC North", currentWins: 10, games: 17, baseWinProb: 0.70, gamesLeft: 4 },
-                    { name: "Green Bay Packers", div: "NFC North", currentWins: 9, games: 17, baseWinProb: 0.65, gamesLeft: 4 },
-                    { name: "Chicago Bears", div: "NFC North", currentWins: 6, games: 17, baseWinProb: 0.48, gamesLeft: 4 },
+                    { name: "Detroit Lions", div: "NFC North", currentWins: 4, games: 17, baseWinProb: 1.000, gamesLeft: 13 },
+                    { name: "Minnesota Vikings", div: "NFC North", currentWins: 3, games: 17, baseWinProb: 0.750, gamesLeft: 13 },
+                    { name: "Green Bay Packers", div: "NFC North", currentWins: 2, games: 17, baseWinProb: 0.625, gamesLeft: 13 },
+                    { name: "Chicago Bears", div: "NFC North", currentWins: 2, games: 17, baseWinProb: 0.500, gamesLeft: 13 },
                     // NFC South
-                    { name: "Tampa Bay Buccaneers", div: "NFC South", currentWins: 8, games: 17, baseWinProb: 0.60, gamesLeft: 4 },
-                    { name: "Atlanta Falcons", div: "NFC South", currentWins: 7, games: 17, baseWinProb: 0.55, gamesLeft: 4 },
-                    { name: "New Orleans Saints", div: "NFC South", currentWins: 6, games: 17, baseWinProb: 0.50, gamesLeft: 4 },
-                    { name: "Carolina Panthers", div: "NFC South", currentWins: 5, games: 17, baseWinProb: 0.42, gamesLeft: 4 },
+                    { name: "Tampa Bay Buccaneers", div: "NFC South", currentWins: 3, games: 17, baseWinProb: 0.750, gamesLeft: 13 },
+                    { name: "Atlanta Falcons", div: "NFC South", currentWins: 2, games: 17, baseWinProb: 0.500, gamesLeft: 13 },
+                    { name: "Carolina Panthers", div: "NFC South", currentWins: 1, games: 17, baseWinProb: 0.250, gamesLeft: 13 },
+                    { name: "New Orleans Saints", div: "NFC South", currentWins: 0, games: 17, baseWinProb: 0.000, gamesLeft: 13 },
                     // NFC West
-                    { name: "San Francisco 49ers", div: "NFC West", currentWins: 10, games: 17, baseWinProb: 0.72, gamesLeft: 4 },
-                    { name: "Los Angeles Rams", div: "NFC West", currentWins: 8, games: 17, baseWinProb: 0.60, gamesLeft: 4 },
-                    { name: "Seattle Seahawks", div: "NFC West", currentWins: 8, games: 17, baseWinProb: 0.58, gamesLeft: 4 },
-                    { name: "Arizona Cardinals", div: "NFC West", currentWins: 5, games: 17, baseWinProb: 0.42, gamesLeft: 4 }
+                    { name: "Seattle Seahawks", div: "NFC West", currentWins: 3, games: 17, baseWinProb: 0.750, gamesLeft: 13 },
+                    { name: "San Francisco 49ers", div: "NFC West", currentWins: 3, games: 17, baseWinProb: 0.750, gamesLeft: 13 },
+                    { name: "Los Angeles Rams", div: "NFC West", currentWins: 3, games: 17, baseWinProb: 0.750, gamesLeft: 13 },
+                    { name: "Arizona Cardinals", div: "NFC West", currentWins: 1, games: 17, baseWinProb: 0.250, gamesLeft: 13 }
                 ],
                 'SEC': [
-                    { name: "Georgia", div: "SEC East", currentWins: 9, games: 13, baseWinProb: 0.82, gamesLeft: 4 },
-                    { name: "Alabama", div: "SEC West", currentWins: 8, games: 13, baseWinProb: 0.78, gamesLeft: 5 },
-                    { name: "Texas", div: "SEC West", currentWins: 9, games: 13, baseWinProb: 0.80, gamesLeft: 4 },
-                    { name: "LSU", div: "SEC West", currentWins: 7, games: 13, baseWinProb: 0.68, gamesLeft: 6 },
-                    { name: "Ole Miss", div: "SEC West", currentWins: 8, games: 13, baseWinProb: 0.72, gamesLeft: 5 },
-                    { name: "Tennessee", div: "SEC East", currentWins: 7, games: 13, baseWinProb: 0.70, gamesLeft: 6 },
-                    { name: "Missouri", div: "SEC East", currentWins: 7, games: 13, baseWinProb: 0.65, gamesLeft: 6 },
-                    { name: "Oklahoma", div: "SEC West", currentWins: 6, games: 13, baseWinProb: 0.58, gamesLeft: 7 },
-                    { name: "Texas A&M", div: "SEC West", currentWins: 7, games: 13, baseWinProb: 0.66, gamesLeft: 6 },
-                    { name: "Florida", div: "SEC East", currentWins: 5, games: 13, baseWinProb: 0.52, gamesLeft: 8 },
-                    { name: "South Carolina", div: "SEC East", currentWins: 6, games: 13, baseWinProb: 0.55, gamesLeft: 7 },
-                    { name: "Kentucky", div: "SEC East", currentWins: 4, games: 13, baseWinProb: 0.45, gamesLeft: 9 },
-                    { name: "Auburn", div: "SEC West", currentWins: 4, games: 13, baseWinProb: 0.42, gamesLeft: 9 },
-                    { name: "Arkansas", div: "SEC West", currentWins: 5, games: 13, baseWinProb: 0.48, gamesLeft: 8 },
-                    { name: "Mississippi State", div: "SEC West", currentWins: 3, games: 13, baseWinProb: 0.35, gamesLeft: 10 },
-                    { name: "Vanderbilt", div: "SEC East", currentWins: 3, games: 13, baseWinProb: 0.32, gamesLeft: 10 }
+                    // Undefeated (5-0)
+                    { name: "Ole Miss", div: "SEC West", currentWins: 5, games: 12, baseWinProb: 1.000, gamesLeft: 7 },
+                    { name: "Missouri", div: "SEC East", currentWins: 5, games: 12, baseWinProb: 1.000, gamesLeft: 7 },
+                    { name: "Vanderbilt", div: "SEC East", currentWins: 5, games: 12, baseWinProb: 1.000, gamesLeft: 7 },
+                    // One Loss (4-0, 4-1)
+                    { name: "Texas A&M", div: "SEC West", currentWins: 4, games: 12, baseWinProb: 1.000, gamesLeft: 8 },
+                    { name: "Oklahoma", div: "SEC West", currentWins: 4, games: 12, baseWinProb: 1.000, gamesLeft: 8 },
+                    { name: "LSU", div: "SEC West", currentWins: 4, games: 12, baseWinProb: 0.800, gamesLeft: 7 },
+                    { name: "Tennessee", div: "SEC East", currentWins: 4, games: 12, baseWinProb: 0.800, gamesLeft: 7 },
+                    { name: "Mississippi State", div: "SEC West", currentWins: 4, games: 12, baseWinProb: 0.800, gamesLeft: 7 },
+                    // Two Losses (3-1, 3-2)
+                    { name: "Alabama", div: "SEC West", currentWins: 3, games: 12, baseWinProb: 0.750, gamesLeft: 8 },
+                    { name: "Georgia", div: "SEC East", currentWins: 3, games: 12, baseWinProb: 0.750, gamesLeft: 8 },
+                    { name: "Texas", div: "SEC West", currentWins: 3, games: 12, baseWinProb: 0.750, gamesLeft: 8 },
+                    { name: "Auburn", div: "SEC West", currentWins: 3, games: 12, baseWinProb: 0.600, gamesLeft: 7 },
+                    { name: "South Carolina", div: "SEC East", currentWins: 3, games: 12, baseWinProb: 0.600, gamesLeft: 7 },
+                    // Below .500
+                    { name: "Arkansas", div: "SEC West", currentWins: 2, games: 12, baseWinProb: 0.400, gamesLeft: 7 },
+                    { name: "Kentucky", div: "SEC East", currentWins: 2, games: 12, baseWinProb: 0.500, gamesLeft: 8 },
+                    { name: "Florida", div: "SEC East", currentWins: 1, games: 12, baseWinProb: 0.250, gamesLeft: 8 }
                 ],
                 'MLB': [
+                    // ⚾ MLB 2025 FINAL STANDINGS (Regular Season Complete - In Playoffs)
                     // AL East
-                    { name: "New York Yankees", div: "AL East", currentWins: 92, games: 162, baseWinProb: 0.58, gamesLeft: 12 },
-                    { name: "Baltimore Orioles", div: "AL East", currentWins: 89, games: 162, baseWinProb: 0.56, gamesLeft: 12 },
-                    { name: "Tampa Bay Rays", div: "AL East", currentWins: 78, games: 162, baseWinProb: 0.50, gamesLeft: 12 },
-                    { name: "Toronto Blue Jays", div: "AL East", currentWins: 74, games: 162, baseWinProb: 0.48, gamesLeft: 12 },
-                    { name: "Boston Red Sox", div: "AL East", currentWins: 71, games: 162, baseWinProb: 0.46, gamesLeft: 12 },
+                    { name: "Toronto Blue Jays", div: "AL East", currentWins: 94, games: 162, baseWinProb: 0.580, gamesLeft: 0, playoff: "Division Champion" },
+                    { name: "New York Yankees", div: "AL East", currentWins: 94, games: 162, baseWinProb: 0.580, gamesLeft: 0, playoff: "Wild Card" },
+                    { name: "Boston Red Sox", div: "AL East", currentWins: 89, games: 162, baseWinProb: 0.549, gamesLeft: 0, playoff: "Wild Card" },
+                    { name: "Tampa Bay Rays", div: "AL East", currentWins: 77, games: 162, baseWinProb: 0.475, gamesLeft: 0 },
+                    { name: "Baltimore Orioles", div: "AL East", currentWins: 75, games: 162, baseWinProb: 0.463, gamesLeft: 0 },
                     // AL Central
-                    { name: "Cleveland Guardians", div: "AL Central", currentWins: 84, games: 162, baseWinProb: 0.54, gamesLeft: 12 },
-                    { name: "Minnesota Twins", div: "AL Central", currentWins: 80, games: 162, baseWinProb: 0.52, gamesLeft: 12 },
-                    { name: "Kansas City Royals", div: "AL Central", currentWins: 78, games: 162, baseWinProb: 0.50, gamesLeft: 12 },
-                    { name: "Detroit Tigers", div: "AL Central", currentWins: 73, games: 162, baseWinProb: 0.47, gamesLeft: 12 },
-                    { name: "Chicago White Sox", div: "AL Central", currentWins: 58, games: 162, baseWinProb: 0.38, gamesLeft: 12 },
+                    { name: "Cleveland Guardians", div: "AL Central", currentWins: 88, games: 162, baseWinProb: 0.543, gamesLeft: 0, playoff: "Division Champion" },
+                    { name: "Detroit Tigers", div: "AL Central", currentWins: 87, games: 162, baseWinProb: 0.537, gamesLeft: 0, playoff: "Wild Card" },
+                    { name: "Kansas City Royals", div: "AL Central", currentWins: 82, games: 162, baseWinProb: 0.506, gamesLeft: 0 },
+                    { name: "Minnesota Twins", div: "AL Central", currentWins: 70, games: 162, baseWinProb: 0.432, gamesLeft: 0 },
+                    { name: "Chicago White Sox", div: "AL Central", currentWins: 60, games: 162, baseWinProb: 0.370, gamesLeft: 0 },
                     // AL West
-                    { name: "Houston Astros", div: "AL West", currentWins: 88, games: 162, baseWinProb: 0.56, gamesLeft: 12 },
-                    { name: "Seattle Mariners", div: "AL West", currentWins: 82, games: 162, baseWinProb: 0.53, gamesLeft: 12 },
-                    { name: "Texas Rangers", div: "AL West", currentWins: 79, games: 162, baseWinProb: 0.51, gamesLeft: 12 },
-                    { name: "Los Angeles Angels", div: "AL West", currentWins: 68, games: 162, baseWinProb: 0.44, gamesLeft: 12 },
-                    { name: "Oakland Athletics", div: "AL West", currentWins: 65, games: 162, baseWinProb: 0.42, gamesLeft: 12 },
+                    { name: "Seattle Mariners", div: "AL West", currentWins: 90, games: 162, baseWinProb: 0.556, gamesLeft: 0, playoff: "Division Champion" },
+                    { name: "Houston Astros", div: "AL West", currentWins: 87, games: 162, baseWinProb: 0.537, gamesLeft: 0, playoff: "Wild Card" },
+                    { name: "Texas Rangers", div: "AL West", currentWins: 81, games: 162, baseWinProb: 0.500, gamesLeft: 0 },
+                    { name: "Oakland Athletics", div: "AL West", currentWins: 76, games: 162, baseWinProb: 0.469, gamesLeft: 0 },
+                    { name: "Los Angeles Angels", div: "AL West", currentWins: 72, games: 162, baseWinProb: 0.444, gamesLeft: 0 },
                     // NL East
-                    { name: "Philadelphia Phillies", div: "NL East", currentWins: 94, games: 162, baseWinProb: 0.59, gamesLeft: 12 },
-                    { name: "Atlanta Braves", div: "NL East", currentWins: 91, games: 162, baseWinProb: 0.57, gamesLeft: 12 },
-                    { name: "New York Mets", div: "NL East", currentWins: 86, games: 162, baseWinProb: 0.55, gamesLeft: 12 },
-                    { name: "Miami Marlins", div: "NL East", currentWins: 67, games: 162, baseWinProb: 0.43, gamesLeft: 12 },
-                    { name: "Washington Nationals", div: "NL East", currentWins: 64, games: 162, baseWinProb: 0.41, gamesLeft: 12 },
+                    { name: "Philadelphia Phillies", div: "NL East", currentWins: 96, games: 162, baseWinProb: 0.593, gamesLeft: 0, playoff: "Division Champion" },
+                    { name: "New York Mets", div: "NL East", currentWins: 83, games: 162, baseWinProb: 0.512, gamesLeft: 0, playoff: "Wild Card" },
+                    { name: "Miami Marlins", div: "NL East", currentWins: 79, games: 162, baseWinProb: 0.488, gamesLeft: 0 },
+                    { name: "Atlanta Braves", div: "NL East", currentWins: 76, games: 162, baseWinProb: 0.469, gamesLeft: 0 },
+                    { name: "Washington Nationals", div: "NL East", currentWins: 66, games: 162, baseWinProb: 0.407, gamesLeft: 0 },
                     // NL Central
-                    { name: "Milwaukee Brewers", div: "NL Central", currentWins: 87, games: 162, baseWinProb: 0.55, gamesLeft: 12 },
-                    { name: "Chicago Cubs", div: "NL Central", currentWins: 81, games: 162, baseWinProb: 0.52, gamesLeft: 12 },
-                    { name: "Cincinnati Reds", div: "NL Central", currentWins: 76, games: 162, baseWinProb: 0.49, gamesLeft: 12 },
-                    { name: "St. Louis Cardinals", div: "NL Central", currentWins: 74, games: 162, baseWinProb: 0.48, gamesLeft: 12 },
-                    { name: "Pittsburgh Pirates", div: "NL Central", currentWins: 71, games: 162, baseWinProb: 0.46, gamesLeft: 12 },
+                    { name: "Milwaukee Brewers", div: "NL Central", currentWins: 97, games: 162, baseWinProb: 0.599, gamesLeft: 0, playoff: "Division Champion (#1 Seed)" },
+                    { name: "Chicago Cubs", div: "NL Central", currentWins: 92, games: 162, baseWinProb: 0.568, gamesLeft: 0, playoff: "Wild Card" },
+                    { name: "Cincinnati Reds", div: "NL Central", currentWins: 83, games: 162, baseWinProb: 0.512, gamesLeft: 0, playoff: "Wild Card" },
+                    { name: "St. Louis Cardinals", div: "NL Central", currentWins: 78, games: 162, baseWinProb: 0.481, gamesLeft: 0 },
+                    { name: "Pittsburgh Pirates", div: "NL Central", currentWins: 71, games: 162, baseWinProb: 0.438, gamesLeft: 0 },
                     // NL West
-                    { name: "Los Angeles Dodgers", div: "NL West", currentWins: 96, games: 162, baseWinProb: 0.60, gamesLeft: 12 },
-                    { name: "San Diego Padres", div: "NL West", currentWins: 89, games: 162, baseWinProb: 0.56, gamesLeft: 12 },
-                    { name: "Arizona Diamondbacks", div: "NL West", currentWins: 85, games: 162, baseWinProb: 0.54, gamesLeft: 12 },
-                    { name: "San Francisco Giants", div: "NL West", currentWins: 77, games: 162, baseWinProb: 0.50, gamesLeft: 12 },
-                    { name: "Colorado Rockies", div: "NL West", currentWins: 63, games: 162, baseWinProb: 0.41, gamesLeft: 12 }
+                    { name: "Los Angeles Dodgers", div: "NL West", currentWins: 93, games: 162, baseWinProb: 0.574, gamesLeft: 0, playoff: "Division Champion" },
+                    { name: "San Diego Padres", div: "NL West", currentWins: 90, games: 162, baseWinProb: 0.556, gamesLeft: 0, playoff: "Wild Card" },
+                    { name: "San Francisco Giants", div: "NL West", currentWins: 81, games: 162, baseWinProb: 0.500, gamesLeft: 0 },
+                    { name: "Arizona Diamondbacks", div: "NL West", currentWins: 80, games: 162, baseWinProb: 0.494, gamesLeft: 0 },
+                    { name: "Colorado Rockies", div: "NL West", currentWins: 43, games: 162, baseWinProb: 0.265, gamesLeft: 0 }
                 ]
             };
 
@@ -318,11 +324,24 @@
                         <div className="header-content">
                             <h1>🔥 BlazeS Sports Analytics</h1>
                             <p className="subtitle">Monte Carlo Simulations • 10,000 Iterations Per Team • All {leagueStats[activeLeague].teams} {activeLeague} Teams</p>
+                            <div className="data-timestamp" style={{
+                                textAlign: 'center',
+                                marginTop: '8px',
+                                padding: '8px 16px',
+                                background: 'linear-gradient(135deg, rgba(204, 85, 0, 0.2), rgba(139, 0, 0, 0.15))',
+                                border: '1px solid var(--color-burnt-orange)',
+                                borderRadius: '6px',
+                                color: 'var(--color-bright-orange)',
+                                fontWeight: '600',
+                                fontSize: '14px'
+                            }}>
+                                📅 Data Current as of: October 1, 2025 (America/Chicago)
+                            </div>
                             <div className="tech-badges">
-                                <span className="badge">📊 D1 Database</span>
+                                <span className="badge">📊 SportsDataIO API</span>
                                 <span className="badge">⚡ Workers KV</span>
                                 <span className="badge">🧮 Monte Carlo Engine</span>
-                                <span className="badge">📡 ESPN API</span>
+                                <span className="badge">📡 MLB Stats API</span>
                             </div>
                         </div>
                     </div>
