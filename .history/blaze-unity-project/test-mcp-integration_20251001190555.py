@@ -115,5 +115,9 @@ def main():
         return False
 
 if __name__ == "__main__":
+<<<<<<< Current (Your changes)
+    asyncio.run(main())
+=======
     success = main()
     sys.exit(0 if success else 1)
+>>>>>>> Incoming (Background Agent changes)

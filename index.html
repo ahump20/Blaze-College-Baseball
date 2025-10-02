@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blaze Sports Intel - REAL Live Sports Data Platform</title>
+
+    <!-- Cookie Consent Library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@v3.0.1/dist/cookieconsent.css">
+    <script defer src="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@v3.0.1/dist/cookieconsent.umd.js"></script>
+
     <style>
         :root {
             --color-bg: #1a1a1a;
@@ -162,10 +167,92 @@
         }
 
         footer {
-            text-align: center;
-            padding: 2rem;
-            color: #666;
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 3px solid #ff6b00;
+            padding: 3rem 2rem 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: #ff6b00;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-section h4 {
+            color: #ff6b00;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .footer-section p {
+            color: #999;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .footer-location {
+            margin-top: 0.5rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #ff6b00;
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 2rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .footer-bottom p {
+            margin: 0.5rem 0;
+        }
+
+        .footer-disclaimer {
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        .footer-disclaimer a {
+            color: #ff6b00;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -235,8 +322,52 @@
     </div>
 
     <footer>
-        <p>© 2025 Blaze Sports Intel - Genuine Implementation</p>
-        <p>Repository: github.com/ahump20/BSI • Commit: 0aba42c+</p>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Blaze Sports Intel</h3>
+                <p>Professional sports intelligence and analytics platform</p>
+                <p class="footer-location">Built with 🔥 in Boerne, Texas</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul class="footer-links">
+                    <li><a href="/legal/terms-of-service">Terms of Service</a></li>
+                    <li><a href="/legal/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/legal/disclaimer">Disclaimer</a></li>
+                    <li><a href="/legal/acceptable-use-policy">Acceptable Use</a></li>
+                    <li><a href="/legal/cookie-policy">Cookie Policy</a></li>
+                    <li><a href="/legal/copyright-dmca">Copyright & DMCA</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <ul class="footer-links">
+                    <li><a href="mailto:support@blazesportsintel.com">Support</a></li>
+                    <li><a href="mailto:privacy@blazesportsintel.com">Privacy Requests</a></li>
+                    <li><a href="mailto:legal@blazesportsintel.com">Legal Inquiries</a></li>
+                    <li><a href="mailto:security@blazesportsintel.com">Security Issues</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul class="footer-links">
+                    <li><a href="/legal/">Legal Hub</a></li>
+                    <li><a href="https://github.com/ahump20/BSI" target="_blank" rel="noopener">GitHub Repository</a></li>
+                    <li><a href="/api/docs">API Documentation</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Blaze Sports Intelligence. All rights reserved.</p>
+            <p class="footer-disclaimer">
+                <strong>Not Betting Advice:</strong> All analytics and predictions are for informational and entertainment purposes only.
+                See our <a href="/legal/disclaimer">Disclaimer</a> for details.
+            </p>
+        </div>
     </footer>
 
     <script>
@@ -543,5 +674,151 @@
         console.log('✅ All data is fetched from real APIs');
         console.log('✅ No hardcoded values or fake statistics');
     </script>
+
+    <!-- Cookie Consent Configuration -->
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            // Initialize CookieConsent
+            const cc = window.initCookieConsent();
+
+            cc.run({
+                current_lang: 'en',
+                autoclear_cookies: true,
+                page_scripts: true,
+
+                gui_options: {
+                    consent_modal: {
+                        layout: 'box',
+                        position: 'bottom right',
+                        transition: 'slide'
+                    },
+                    settings_modal: {
+                        layout: 'box',
+                        transition: 'slide'
+                    }
+                },
+
+                languages: {
+                    'en': {
+                        consent_modal: {
+                            title: '🍪 We use cookies',
+                            description: 'Blaze Sports Intelligence uses essential cookies for site functionality and analytics cookies to improve your experience. We do NOT use advertising cookies or sell your data. <button type="button" data-cc="c-settings" class="cc-link">Let me choose</button>',
+                            primary_btn: {
+                                text: 'Accept all',
+                                role: 'accept_all'
+                            },
+                            secondary_btn: {
+                                text: 'Reject analytics',
+                                role: 'accept_necessary'
+                            }
+                        },
+                        settings_modal: {
+                            title: 'Cookie Settings',
+                            save_settings_btn: 'Save settings',
+                            accept_all_btn: 'Accept all',
+                            reject_all_btn: 'Reject all',
+                            close_btn_label: 'Close',
+                            cookie_table_headers: [
+                                {col1: 'Name'},
+                                {col2: 'Domain'},
+                                {col3: 'Expiration'},
+                                {col4: 'Description'}
+                            ],
+                            blocks: [
+                                {
+                                    title: 'Cookie usage 📢',
+                                    description: 'We use cookies to ensure the basic functionalities of the website and to enhance your online experience. You can choose for each category to opt-in/out whenever you want. For more details about cookies and other sensitive data, please read the full <a href="/legal/privacy-policy" class="cc-link">privacy policy</a> and <a href="/legal/cookie-policy" class="cc-link">cookie policy</a>.'
+                                }, {
+                                    title: 'Strictly necessary cookies',
+                                    description: 'These cookies are essential for the proper functioning of the website. Without these cookies, the website would not work properly.',
+                                    toggle: {
+                                        value: 'necessary',
+                                        enabled: true,
+                                        readonly: true
+                                    },
+                                    cookie_table: [
+                                        {
+                                            col1: 'cc_cookie',
+                                            col2: 'blazesportsintel.com',
+                                            col3: '6 months',
+                                            col4: 'Stores your cookie consent preferences'
+                                        },
+                                        {
+                                            col1: 'session_id',
+                                            col2: 'blazesportsintel.com',
+                                            col3: 'Session',
+                                            col4: 'Maintains your session state (login, preferences)'
+                                        }
+                                    ]
+                                }, {
+                                    title: 'Analytics cookies',
+                                    description: 'These cookies collect information about how you use the website, which pages you visited, and which links you clicked. All data is anonymized and used only to improve site performance.',
+                                    toggle: {
+                                        value: 'analytics',
+                                        enabled: false,
+                                        readonly: false
+                                    },
+                                    cookie_table: [
+                                        {
+                                            col1: '__cf_bm',
+                                            col2: '.blazesportsintel.com',
+                                            col3: '30 minutes',
+                                            col4: 'Cloudflare Analytics - tracks page views and site performance (privacy-friendly, no personal data)'
+                                        },
+                                        {
+                                            col1: '_ga',
+                                            col2: '.blazesportsintel.com',
+                                            col3: '2 years',
+                                            col4: 'Cloudflare Web Analytics - aggregated usage statistics (GDPR compliant)'
+                                        }
+                                    ]
+                                }, {
+                                    title: 'More information',
+                                    description: 'For any queries in relation to our policy on cookies and your choices, please <a class="cc-link" href="mailto:privacy@blazesportsintel.com">contact us</a>. Read our full <a class="cc-link" href="/legal/privacy-policy">Privacy Policy</a> and <a class="cc-link" href="/legal/cookie-policy">Cookie Policy</a>.'
+                                }
+                            ]
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+    <!-- Custom Cookie Consent Styling -->
+    <style>
+        /* Override cookie consent colors to match Blaze brand */
+        :root {
+            --cc-bg: #1a1a1a;
+            --cc-text: #ffffff;
+            --cc-btn-primary-bg: #ff6b00;
+            --cc-btn-primary-text: #ffffff;
+            --cc-btn-primary-hover-bg: #e55f00;
+            --cc-btn-secondary-bg: rgba(255, 255, 255, 0.1);
+            --cc-btn-secondary-text: #ffffff;
+            --cc-btn-secondary-hover-bg: rgba(255, 255, 255, 0.2);
+            --cc-cookie-category-block-bg: rgba(255, 255, 255, 0.05);
+            --cc-overlay-bg: rgba(0, 0, 0, 0.85);
+            --cc-toggle-on-bg: #ff6b00;
+        }
+
+        #cc-main .cm {
+            background: var(--cc-bg) !important;
+            border: 2px solid #ff6b00 !important;
+            box-shadow: 0 8px 32px rgba(255, 107, 0, 0.3) !important;
+        }
+
+        #cc-main button.cm__btn {
+            border-radius: 6px !important;
+            font-weight: 600 !important;
+        }
+
+        #cc-main .cc-link {
+            color: #ff6b00 !important;
+        }
+
+        #cc-main .cc-link:hover {
+            text-decoration: underline !important;
+        }
+    </style>
 </body>
 </html>
