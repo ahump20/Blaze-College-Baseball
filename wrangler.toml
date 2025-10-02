@@ -2,6 +2,81 @@ name = "blazesportsintel"
 compatibility_date = "2025-01-01"
 pages_build_output_dir = "."
 
-# Note: All API keys must be set as secrets via:
-# wrangler pages secret put <KEY_NAME> --project-name blazesportsintel
-# Never commit API keys to version control
+# ============================================================================
+# D1 DATABASE CONFIGURATION
+# ============================================================================
+# Created: 2025-10-01
+# Database ID: cbafed34-782f-4bf1-a14b-4ea49661e52b
+# Run migrations: wrangler d1 execute blazesports-db --file=schema/001_initial_schema.sql
+[[d1_databases]]
+binding = "DB"
+database_name = "blazesports-db"
+database_id = "cbafed34-782f-4bf1-a14b-4ea49661e52b"
+
+# ============================================================================
+# KV NAMESPACES (API Caching)
+# ============================================================================
+# Using existing CACHE namespace
+# ID: a53c3726fc3044be82e79d2d1e371d26
+[[kv_namespaces]]
+binding = "CACHE"
+id = "a53c3726fc3044be82e79d2d1e371d26"
+
+# ============================================================================
+# ENVIRONMENT VARIABLES (Secrets)
+# ============================================================================
+# Set these as secrets (DO NOT commit actual values to git):
+# wrangler pages secret put SPORTSDATA_API_KEY --project-name blazesportsintel
+# wrangler pages secret put ANTHROPIC_API_KEY --project-name blazesportsintel
+
+# ============================================================================
+# CRON TRIGGERS (Scheduled Data Updates)
+# ============================================================================
+# Note: Cloudflare Pages doesn't support cron triggers in wrangler.toml
+# Cron jobs will be configured via Cloudflare Dashboard after deployment
+# Or convert to separate Workers with cron triggers
+#
+# Recommended schedule:
+# - NFL: Every 5 minutes (Sep-Feb) - */5 * * 9-12,1-2 *
+# - MLB: Every 10 minutes (Mar-Oct) - */10 * * 3-10 *
+# - CFB: Every 15 minutes (Aug-Jan) - */15 * * 8-12,1 *
+# - CBB: Every 20 minutes (Nov-Mar) - */20 * * 11-12,1-3 *
+
+# ============================================================================
+# ROUTES & FUNCTIONS
+# ============================================================================
+# All routes in /functions are automatically deployed as Workers Functions
+# API endpoints: /api/{sport}/[[route]]
+# Scheduled jobs: /scheduled/update-{sport}
+
+# ============================================================================
+# SECURITY NOTES
+# ============================================================================
+# 1. All API keys must be set as secrets via wrangler CLI
+# 2. Never commit secrets to version control
+# 3. Use environment-specific bindings for staging/production
+# 4. Set secrets with: wrangler pages secret put <KEY> --project-name blazesportsintel
+#
+# Required secrets:
+#   - SPORTSDATA_API_KEY (SportsDataIO API key)
+#   - ANTHROPIC_API_KEY (Claude chat assistant)
+
+# ============================================================================
+# DEPLOYMENT COMMANDS
+# ============================================================================
+# Create D1 database:
+#   wrangler d1 create blazesports-db
+#
+# Run database migration:
+#   wrangler d1 execute blazesports-db --file=schema/001_initial_schema.sql
+#
+# Create KV namespace:
+#   wrangler kv:namespace create CACHE
+#   wrangler kv:namespace create CACHE --preview
+#
+# Set secrets:
+#   wrangler pages secret put SPORTSDATA_API_KEY --project-name blazesportsintel
+#   wrangler pages secret put ANTHROPIC_API_KEY --project-name blazesportsintel
+#
+# Deploy to production:
+#   wrangler pages deploy . --project-name blazesportsintel --branch main
