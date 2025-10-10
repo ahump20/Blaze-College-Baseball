@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🔥 Blaze Sports Intel | Championship Analytics Platform</title>
-    <meta name="description" content="Elite championship analytics platform delivering real-time data-driven intelligence for Baseball, Football, Basketball, and Track & Field. Professional scouting, performance metrics, and strategic insights from the Deep South Sports Authority.">
-    <meta name="keywords" content="sports analytics, championship intelligence, Deep South sports, Texas athletics, baseball analytics, football analytics, basketball analytics, track and field, MLB scouting, NFL strategy, NBA metrics, NCAA recruiting, Austin Humphrey, Blaze Sports Intel, Monte Carlo simulation, AI sports analysis">
+    <meta name="description" content="Practice to Play. Blaze Data Wins the Day. Elite championship analytics platform delivering real-time data-driven intelligence for Baseball, Football, and Basketball. Professional scouting, performance metrics, and strategic insights from the Deep South Sports Authority powered by SportsDataIO.">
+    <meta name="keywords" content="sports analytics, championship intelligence, Deep South sports, Texas athletics, baseball analytics, football analytics, basketball analytics, MLB scouting, NFL strategy, NBA metrics, NCAA recruiting, Austin Humphrey, Blaze Sports Intel, Monte Carlo simulation, AI sports analysis, SportsDataIO">
 
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://blazesportsintel.com/">
     <meta property="og:title" content="🔥 Blaze Sports Intel | Deep South Sports Authority">
-    <meta property="og:description" content="Championship intelligence platform delivering elite analytics for professional and collegiate sports organizations.">
+    <meta property="og:description" content="Practice to Play. Blaze Data Wins the Day. Championship intelligence platform delivering elite analytics for professional and collegiate sports organizations.">
     <meta property="og:site_name" content="Blaze Sports Intel">
 
     <!-- Twitter Card -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://blazesportsintel.com/">
     <meta property="twitter:title" content="🔥 Blaze Sports Intel | Championship Intelligence">
-    <meta property="twitter:description" content="Where Southern grit meets Silicon Valley analytics. Elite sports intelligence platform.">
+    <meta property="twitter:description" content="Practice to Play. Blaze Data Wins the Day. Elite sports intelligence platform delivering championship-caliber analytics.">
     <meta property="twitter:creator" content="@BISportsIntel">
 
     <!-- Theme -->
@@ -41,6 +41,16 @@
     <!-- Three.js for particle background -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
+    <!-- Postprocessing Library (pmndrs/postprocessing) -->
+    <script src="https://cdn.jsdelivr.net/npm/postprocessing@6.35.3/build/postprocessing.umd.min.js"></script>
+
+    <!-- Blaze Graphics Modules -->
+    <script src="/lib/graphics/blaze-particle-engine.js"></script>
+    <script src="/lib/graphics/blaze-postprocessing.js"></script>
+
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- AOS Animations -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -49,14 +59,14 @@
         /* ==================== CSS VARIABLES ==================== */
         :root {
             /* Sophisticated Burnt Orange Palette - Psychology Optimized */
-            --blaze-burnt-orange: #BF5700;           /* Deep burnt orange - primary brand */
-            --blaze-ember: #CC6600;                  /* Rich ember glow - warmth & energy */
-            --blaze-copper: #D97B38;                 /* Copper accent - sophistication */
-            --blaze-sunset: #E69551;                 /* Sunset warmth - approachability */
-            --blaze-bronze: #A0522D;                 /* Bronze depth - stability */
-            --blaze-amber: #FFBF00;                  /* Amber highlight - excellence */
-            --blaze-rust: #8B4513;                   /* Rust undertone - heritage */
-            --blaze-terracotta: #E2725B;             /* Terracotta accent - earth connection */
+            --blaze-burnt-orange: #BF5700;
+            --blaze-ember: #CC6600;
+            --blaze-copper: #D97B38;
+            --blaze-sunset: #E69551;
+            --blaze-bronze: #A0522D;
+            --blaze-amber: #FFBF00;
+            --blaze-rust: #8B4513;
+            --blaze-terracotta: #E2725B;
 
             /* Gradient Definitions */
             --gradient-primary: linear-gradient(135deg, #BF5700 0%, #CC6600 50%, #D97B38 100%);
@@ -65,11 +75,12 @@
             --gradient-glow: radial-gradient(circle at center, rgba(191, 87, 0, 0.3) 0%, transparent 70%);
 
             /* Dark Theme - Enhanced Contrast */
-            --dark-charcoal: #0D0D12;                /* Deep charcoal base */
-            --dark-slate: #161620;                   /* Slate secondary */
-            --dark-graphite: #1F1F2E;                /* Graphite tertiary */
-            --dark-midnight: #0A0A0F;                /* Midnight depth */
-            --dark-border: rgba(191, 87, 0, 0.15);   /* Burnt orange tinted borders */
+            --dark-charcoal: #0D0D12;
+            --dark-slate: #161620;
+            --dark-graphite: #1F1F2E;
+            --dark-midnight: #0A0A0F;
+            --dark-border: rgba(191, 87, 0, 0.15);
+            --dark-secondary: rgba(22, 22, 32, 0.7);
 
             /* Glass Morphism - Burnt Orange Tinted */
             --glass-light: rgba(191, 87, 0, 0.08);
@@ -81,11 +92,10 @@
             /* Text - Warm Tinted */
             --text-primary: #FFFFFF;
             --text-secondary: rgba(255, 255, 255, 0.92);
-            --text-tertiary: rgba(255, 235, 215, 0.75);   /* Warm white */
-            --text-quaternary: rgba(255, 235, 215, 0.55); /* Warm muted */
-            --text-burnt-orange: #FFE4C4;                 /* Bisque tint for emphasis */
+            --text-tertiary: rgba(255, 235, 215, 0.75);
+            --text-quaternary: rgba(255, 235, 215, 0.55);
 
-            /* Semantic - Burnt Orange Harmony */
+            /* Semantic */
             --success: #2ECC71;
             --warning: #FFBF00;
             --danger: #E74C3C;
@@ -94,13 +104,11 @@
             /* Typography */
             --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             --font-display: 'Bebas Neue', 'Impact', sans-serif;
-            --font-mono: 'JetBrains Mono', 'Courier New', monospace;
 
-            /* Effects - Enhanced Psychological Impact */
+            /* Effects */
             --transition-fast: 200ms cubic-bezier(0.4, 0, 0.2, 1);
             --transition-base: 350ms cubic-bezier(0.4, 0, 0.2, 1);
             --transition-slow: 600ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-bounce: 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
             /* Glow Effects */
             --glow-soft: 0 0 30px rgba(191, 87, 0, 0.4);
@@ -108,10 +116,6 @@
             --glow-intense: 0 0 60px rgba(204, 102, 0, 0.6), 0 0 100px rgba(191, 87, 0, 0.4), 0 0 140px rgba(217, 123, 56, 0.2);
 
             /* Shadow Depths */
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
             --shadow-burnt: 0 8px 32px rgba(191, 87, 0, 0.3);
 
             /* Spacing */
@@ -192,8 +196,10 @@
             left: 0;
             right: 0;
             z-index: 1000;
-            background: linear-gradient(180deg, var(--dark-secondary) 0%, transparent 100%);
-            backdrop-filter: blur(20px);
+            background: linear-gradient(180deg, rgba(22, 22, 32, 0.9) 0%, transparent 100%);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            box-shadow: 0 8px 32px 0 rgba(191, 87, 0, 0.1);
             border-bottom: 1px solid var(--dark-border);
             transition: all var(--transition-base);
         }
@@ -217,7 +223,7 @@
             font-family: var(--font-display);
             font-size: 2rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--blaze-primary) 0%, var(--blaze-accent) 100%);
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -225,6 +231,13 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 20px rgba(191, 87, 0, 0.6));
         }
 
         .nav-menu {
@@ -277,24 +290,6 @@
             overflow: hidden;
         }
 
-        .nav-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width var(--transition-slow), height var(--transition-slow);
-        }
-
-        .nav-btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
         .nav-btn-primary {
             background: var(--gradient-primary);
             color: var(--text-primary);
@@ -305,19 +300,6 @@
         .nav-btn-primary:hover {
             transform: translateY(-3px) scale(1.02);
             box-shadow: var(--glow-medium);
-        }
-
-        .nav-btn-secondary {
-            background: var(--glass-medium);
-            color: var(--text-primary);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(10px);
-        }
-
-        .nav-btn-secondary:hover {
-            background: var(--glass-heavy);
-            border-color: var(--blaze-ember);
-            box-shadow: var(--glow-soft);
         }
 
         /* Mobile Menu Toggle */
@@ -372,26 +354,6 @@
             overflow: hidden;
         }
 
-        .hero-badge::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                transparent 30%,
-                rgba(204, 102, 0, 0.1) 50%,
-                transparent 70%
-            );
-            animation: shimmer 3s infinite;
-        }
-
-        .hero-badge i {
-            filter: drop-shadow(0 0 8px rgba(255, 191, 0, 0.6));
-        }
-
         @keyframes float {
             0%, 100% {
                 transform: translateY(0) scale(1);
@@ -401,11 +363,6 @@
                 transform: translateY(-12px) scale(1.02);
                 box-shadow: var(--glow-medium);
             }
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
         .hero-title {
@@ -467,25 +424,6 @@
             z-index: 1;
         }
 
-        .cta-btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s ease, height 0.6s ease;
-            z-index: -1;
-        }
-
-        .cta-btn:hover::after {
-            width: 400px;
-            height: 400px;
-        }
-
         .cta-btn-primary {
             background: var(--gradient-primary);
             color: var(--text-primary);
@@ -496,10 +434,6 @@
         .cta-btn-primary:hover {
             transform: translateY(-5px) scale(1.03);
             box-shadow: var(--glow-intense);
-        }
-
-        .cta-btn-primary i {
-            filter: drop-shadow(0 0 8px rgba(255, 191, 0, 0.8));
         }
 
         .cta-btn-secondary {
@@ -516,16 +450,16 @@
             box-shadow: var(--glow-soft);
         }
 
-        /* ==================== FEATURES GRID ==================== */
-        .features-section {
+        /* ==================== PLATFORM ACCESS HUB ==================== */
+        .platform-access {
             position: relative;
             z-index: 10;
-            padding: 6rem 2rem;
-            background: linear-gradient(180deg, transparent 0%, var(--dark-secondary) 100%);
+            padding: 5rem 2rem;
+            background: linear-gradient(180deg, transparent 0%, rgba(13, 13, 18, 0.5) 100%);
         }
 
         .section-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -546,26 +480,8 @@
             margin-bottom: 1rem;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(16px);
             box-shadow: var(--glow-soft);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .section-badge::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                transparent 30%,
-                rgba(255, 191, 0, 0.1) 50%,
-                transparent 70%
-            );
-            animation: shimmer 3s infinite linear;
         }
 
         .section-title {
@@ -575,7 +491,6 @@
             color: var(--text-primary);
             margin-bottom: 1rem;
             letter-spacing: 1.5px;
-            position: relative;
         }
 
         .section-title::after {
@@ -597,14 +512,14 @@
             line-height: 1.7;
         }
 
-        .features-grid {
+        .access-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
             margin-top: 3rem;
         }
 
-        .feature-card {
+        .access-card {
             background: var(--glass-medium);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-xl);
@@ -613,10 +528,12 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(16px);
+            text-decoration: none;
+            display: block;
         }
 
-        .feature-card::before {
+        .access-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -629,39 +546,18 @@
             transition: transform var(--transition-base);
         }
 
-        .feature-card::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: var(--gradient-glow);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.8s ease, height 0.8s ease;
-            opacity: 0;
-            z-index: -1;
-        }
-
-        .feature-card:hover {
+        .access-card:hover {
             background: var(--glass-heavy);
             transform: translateY(-10px) scale(1.02);
-            box-shadow: var(--shadow-burnt);
+            box-shadow: var(--glow-medium);
             border-color: var(--blaze-ember);
         }
 
-        .feature-card:hover::before {
+        .access-card:hover::before {
             transform: scaleX(1);
         }
 
-        .feature-card:hover::after {
-            width: 400px;
-            height: 400px;
-            opacity: 1;
-        }
-
-        .feature-icon {
+        .access-icon {
             width: 70px;
             height: 70px;
             background: var(--gradient-primary);
@@ -673,45 +569,28 @@
             margin-bottom: 1.5rem;
             box-shadow: var(--shadow-burnt);
             transition: all var(--transition-base);
-            position: relative;
         }
 
-        .feature-icon::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            background: var(--gradient-ember);
-            border-radius: var(--radius-xl);
-            z-index: -1;
-            opacity: 0;
-            transition: opacity var(--transition-base);
-        }
-
-        .feature-card:hover .feature-icon {
+        .access-card:hover .access-icon {
             transform: scale(1.1) rotate(5deg);
             box-shadow: var(--glow-medium);
         }
 
-        .feature-card:hover .feature-icon::before {
-            opacity: 1;
-        }
-
-        .feature-title {
+        .access-title {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 1rem;
         }
 
-        .feature-description {
+        .access-description {
             color: var(--text-tertiary);
             line-height: 1.7;
             margin-bottom: 1.5rem;
         }
 
-        .feature-link {
-            color: var(--blaze-accent);
-            text-decoration: none;
+        .access-link {
+            color: var(--blaze-copper);
             font-weight: 600;
             display: inline-flex;
             align-items: center;
@@ -719,78 +598,8 @@
             transition: gap var(--transition-fast);
         }
 
-        .feature-link:hover {
+        .access-card:hover .access-link {
             gap: 1rem;
-        }
-
-        /* ==================== SPORTS HUBS ==================== */
-        .sports-section {
-            position: relative;
-            z-index: 10;
-            padding: 6rem 2rem;
-            background: var(--dark-secondary);
-        }
-
-        .sports-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .sport-card {
-            background: var(--glass-medium);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            padding: 2rem;
-            text-align: center;
-            transition: all var(--transition-base);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sport-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, var(--blaze-primary) 0%, var(--blaze-accent) 100%);
-            opacity: 0;
-            transition: opacity var(--transition-base);
-            z-index: -1;
-        }
-
-        .sport-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(191, 87, 0, 0.4);
-            border-color: transparent;
-        }
-
-        .sport-card:hover::after {
-            opacity: 0.1;
-        }
-
-        .sport-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        .sport-name {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-            letter-spacing: 1px;
-        }
-
-        .sport-status {
-            color: var(--text-tertiary);
-            font-size: 0.9rem;
-        }
-
-        .sport-status.live {
-            color: var(--success);
-            font-weight: 600;
         }
 
         /* ==================== STATS TICKER ==================== */
@@ -798,7 +607,7 @@
             position: relative;
             z-index: 10;
             padding: 2rem 0;
-            background: var(--dark-tertiary);
+            background: var(--dark-graphite);
             border-top: 1px solid var(--dark-border);
             border-bottom: 1px solid var(--dark-border);
             overflow: hidden;
@@ -824,8 +633,155 @@
             font-weight: 500;
         }
 
-        .ticker-item strong {
-            color: var(--blaze-accent);
+        .ticker-item i {
+            color: var(--blaze-copper);
+        }
+
+        /* ==================== FEATURES GRID ==================== */
+        .features-section {
+            position: relative;
+            z-index: 10;
+            padding: 6rem 2rem;
+            background: var(--dark-slate);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: var(--glass-medium);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            transition: all var(--transition-base);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(16px);
+        }
+
+        .feature-card:hover {
+            background: var(--glass-heavy);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-burnt);
+            border-color: var(--blaze-ember);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-burnt);
+            transition: all var(--transition-base);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: var(--glow-medium);
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: var(--text-tertiary);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-link {
+            color: var(--blaze-copper);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: gap var(--transition-fast);
+        }
+
+        .feature-link:hover {
+            gap: 1rem;
+        }
+
+        /* ==================== SPORTS HUBS ==================== */
+        .sports-section {
+            position: relative;
+            z-index: 10;
+            padding: 6rem 2rem;
+            background: var(--dark-charcoal);
+        }
+
+        .sports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .sport-card {
+            background: var(--glass-medium);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            text-align: center;
+            transition: all var(--transition-base);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: block;
+        }
+
+        .sport-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(191, 87, 0, 0.4);
+            border-color: var(--blaze-ember);
+        }
+
+        .sport-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .sport-name {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .sport-status {
+            color: var(--text-tertiary);
+            font-size: 0.9rem;
+        }
+
+        .sport-status.live {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
 
         /* ==================== ABOUT SECTION ==================== */
@@ -833,7 +789,7 @@
             position: relative;
             z-index: 10;
             padding: 6rem 2rem;
-            background: linear-gradient(180deg, var(--dark-primary) 0%, var(--dark-secondary) 100%);
+            background: linear-gradient(180deg, var(--dark-slate) 0%, var(--dark-graphite) 100%);
         }
 
         .about-grid {
@@ -851,7 +807,7 @@
         }
 
         .about-text strong {
-            color: var(--blaze-primary-light);
+            color: var(--blaze-copper);
             font-weight: 600;
         }
 
@@ -862,8 +818,8 @@
             margin-top: 2rem;
             padding: 1.5rem;
             background: var(--glass-light);
-            border-radius: 12px;
-            border: 1px solid var(--glass-medium);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
         }
 
         .credential-item {
@@ -875,7 +831,7 @@
         }
 
         .credential-item i {
-            color: var(--blaze-accent);
+            color: var(--blaze-copper);
             font-size: 1.1rem;
             width: 24px;
             text-align: center;
@@ -893,15 +849,15 @@
             gap: 1.5rem;
             padding: 1.25rem;
             background: var(--glass-light);
-            border-radius: 12px;
-            border: 1px solid var(--glass-medium);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
             transition: all var(--transition-base);
             cursor: pointer;
         }
 
         .team-card:hover {
             background: var(--glass-medium);
-            border-color: var(--blaze-primary);
+            border-color: var(--blaze-copper);
             transform: translateX(8px);
         }
 
@@ -923,22 +879,11 @@
             margin: 0;
         }
 
-        @media (max-width: 968px) {
-            .about-grid {
-                grid-template-columns: 1fr;
-                gap: 3rem;
-            }
-
-            .team-card:hover {
-                transform: translateX(4px);
-            }
-        }
-
         /* ==================== FOOTER ==================== */
         .footer {
             position: relative;
             z-index: 10;
-            background: var(--dark-secondary);
+            background: var(--dark-graphite);
             border-top: 1px solid var(--dark-border);
             padding: 4rem 2rem 2rem;
         }
@@ -958,7 +903,7 @@
         .footer-section h3 {
             font-family: var(--font-display);
             font-size: 1.5rem;
-            color: var(--blaze-accent);
+            color: var(--blaze-copper);
             margin-bottom: 1rem;
             letter-spacing: 1px;
         }
@@ -977,7 +922,7 @@
         }
 
         .footer-link:hover {
-            color: var(--blaze-primary-light);
+            color: var(--blaze-copper);
         }
 
         .footer-bottom {
@@ -1009,10 +954,17 @@
         }
 
         .social-link:hover {
-            background: var(--blaze-primary);
-            border-color: var(--blaze-primary);
+            background: var(--blaze-burnt-orange);
+            border-color: var(--blaze-ember);
             color: var(--text-primary);
             transform: translateY(-4px);
+        }
+
+        .text-gradient {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         /* ==================== RESPONSIVE ==================== */
@@ -1038,18 +990,6 @@
                 display: flex;
             }
 
-            .mobile-toggle.active span:nth-child(1) {
-                transform: rotate(45deg) translate(5px, 5px);
-            }
-
-            .mobile-toggle.active span:nth-child(2) {
-                opacity: 0;
-            }
-
-            .mobile-toggle.active span:nth-child(3) {
-                transform: rotate(-45deg) translate(7px, -6px);
-            }
-
             .hero {
                 padding: 5rem 1rem 3rem;
             }
@@ -1059,60 +999,16 @@
                 align-items: stretch;
             }
 
-            .cta-btn {
-                justify-content: center;
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
             }
 
+            .access-grid,
             .features-grid,
             .sports-grid {
                 grid-template-columns: 1fr;
             }
-
-            .ticker-item {
-                padding: 0 1.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .logo {
-                font-size: 1.5rem;
-            }
-
-            .hero-title {
-                font-size: 2.5rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .feature-card,
-            .sport-card {
-                padding: 1.5rem;
-            }
-        }
-
-        /* ==================== UTILITY CLASSES ==================== */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .text-gradient {
-            background: linear-gradient(135deg, var(--blaze-primary) 0%, var(--blaze-accent) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
         }
     </style>
 </head>
@@ -1123,16 +1019,18 @@
     <!-- Navigation -->
     <nav class="nav" id="nav">
         <div class="nav-container">
-            <div class="logo">
+            <a href="/" class="logo" style="text-decoration: none;">
                 🔥 BLAZE SPORTS INTEL
-            </div>
+            </a>
             <ul class="nav-menu" id="navMenu">
+                <li><a href="#access" class="nav-link">Platform</a></li>
                 <li><a href="#features" class="nav-link">Features</a></li>
                 <li><a href="#sports" class="nav-link">Sports</a></li>
-                <li><a href="/analytics.html" class="nav-link">Analytics</a></li>
+                <li><a href="/copilot" class="nav-link">
+                    <i class="fas fa-robot" style="margin-right: 0.35rem;"></i>AI Copilot
+                </a></li>
                 <li><a href="/about" class="nav-link">About</a></li>
-                <li><a href="/contact" class="nav-link">Contact</a></li>
-                <li><a href="/analytics.html" class="nav-btn nav-btn-primary">Launch Analytics</a></li>
+                <li><a href="/analytics" class="nav-btn nav-btn-primary">Launch Analytics</a></li>
             </ul>
             <div class="mobile-toggle" id="mobileToggle">
                 <span></span>
@@ -1146,22 +1044,154 @@
     <section class="hero">
         <div class="hero-content" data-aos="fade-up">
             <div class="hero-badge">
-                Built from years of observation
+                Built from Deep South observation
             </div>
             <h1 class="hero-title">
-                After watching the Cardinals,<br>Titans, Longhorns, and Grizzlies<br>one pattern became clear
+                Practice to Play.<br>Blaze Data Wins the Day.
             </h1>
             <p class="hero-subtitle">
-                Analytics platforms measure what's easy to quantify—exit velocity, launch angle, yards per play. They miss what actually determines outcomes: reading situations, understanding momentum shifts, recognizing when the numbers don't tell the story. This exists because someone needed to build tools that focus on what wins, not what's convenient to measure.
+                Most tools count what's convenient. Blaze captures what swings outcomes—situation, momentum, and adjustments under pressure—so coaches decide faster.
             </p>
             <div class="hero-cta">
-                <a href="/analytics.html" class="cta-btn cta-btn-primary">
+                <a href="/analytics" class="cta-btn cta-btn-primary">
                     <i class="fas fa-chart-line"></i>
                     View Analytics
                 </a>
                 <a href="/about" class="cta-btn cta-btn-secondary">
                     <i class="fas fa-info-circle"></i>
                     Why This Exists
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Access Hub -->
+    <section class="platform-access" id="access">
+        <div class="section-container">
+            <div class="section-header" data-aos="fade-up">
+                <div class="section-badge">Quick Access</div>
+                <h2 class="section-title">Platform Navigation</h2>
+                <p class="section-subtitle">
+                    Access all platform features and sports-specific analytics
+                </p>
+            </div>
+
+            <div class="access-grid">
+                <a href="/copilot" class="access-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="access-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="access-title">AI Copilot</h3>
+                    <p class="access-description">
+                        Natural language sports intelligence. Ask questions, get data-driven insights with semantic search and RAG technology.
+                    </p>
+                    <span class="access-link">
+                        Launch Copilot <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+
+                <a href="/analytics" class="access-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="access-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3 class="access-title">Analytics Dashboard</h3>
+                    <p class="access-description">
+                        Real-time standings, Monte Carlo simulations, 3D visualizations, and championship probability tracking.
+                    </p>
+                    <span class="access-link">
+                        View Analytics <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+
+                <a href="/mlb" class="access-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="access-icon">
+                        ⚾
+                    </div>
+                    <h3 class="access-title">MLB Baseball</h3>
+                    <p class="access-description">
+                        Complete Major League Baseball coverage with live scores, team stats, player analytics, and Perfect Game data.
+                    </p>
+                    <span class="access-link">
+                        View MLB Hub <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+
+                <a href="/nfl" class="access-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="access-icon">
+                        🏈
+                    </div>
+                    <h3 class="access-title">NFL Football</h3>
+                    <p class="access-description">
+                        Professional football analytics with real-time game data, team performance metrics, and playoff projections.
+                    </p>
+                    <span class="access-link">
+                        View NFL Hub <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+
+                <a href="/cfb" class="access-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="access-icon">
+                        🏈
+                    </div>
+                    <h3 class="access-title">College Football</h3>
+                    <p class="access-description">
+                        NCAA Football including Texas HS, conference standings, recruiting data, and championship scenarios.
+                    </p>
+                    <span class="access-link">
+                        View CFB Hub <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+
+                <a href="/cbb" class="access-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="access-icon">
+                        🏀
+                    </div>
+                    <h3 class="access-title">College Basketball</h3>
+                    <p class="access-description">
+                        NCAA Men's Basketball analytics, tournament projections, conference tracking, and player statistics.
+                    </p>
+                    <span class="access-link">
+                        View CBB Hub <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+
+                <a href="/contact" class="access-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="access-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3 class="access-title">Contact Us</h3>
+                    <p class="access-description">
+                        Get in touch for partnerships, enterprise solutions, or platform support. We're here to help.
+                    </p>
+                    <span class="access-link">
+                        Contact Form <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+
+                <a href="/about" class="access-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="access-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 class="access-title">About the Founder</h3>
+                    <p class="access-description">
+                        Learn about Austin Humphrey and the mission behind Blaze Sports Intel—from Memphis to Texas.
+                    </p>
+                    <span class="access-link">
+                        Read Story <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+
+                <a href="/legal/privacy" class="access-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="access-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="access-title">Legal & Privacy</h3>
+                    <p class="access-description">
+                        Our commitment to data privacy, security, and transparency. View our privacy policy and terms.
+                    </p>
+                    <span class="access-link">
+                        Legal Info <i class="fas fa-arrow-right"></i>
+                    </span>
                 </a>
             </div>
         </div>
@@ -1190,6 +1220,10 @@
                 <i class="fas fa-filter"></i>
                 <span>Multi-filter search</span>
             </div>
+            <div class="ticker-item">
+                <i class="fas fa-robot"></i>
+                <span>AI-powered insights</span>
+            </div>
             <!-- Duplicate for seamless loop -->
             <div class="ticker-item">
                 <i class="fas fa-chart-line"></i>
@@ -1211,6 +1245,10 @@
                 <i class="fas fa-filter"></i>
                 <span>Multi-filter search</span>
             </div>
+            <div class="ticker-item">
+                <i class="fas fa-robot"></i>
+                <span>AI-powered insights</span>
+            </div>
         </div>
     </div>
 
@@ -1221,7 +1259,7 @@
                 <div class="section-badge">Platform</div>
                 <h2 class="section-title">What exists</h2>
                 <p class="section-subtitle">
-                    Multi-sport data aggregation and analytics. MLB, NFL, NCAA Baseball, Track & Field.
+                    Multi-sport data aggregation and analytics powered by SportsDataIO. MLB, NFL, NBA, NCAA Football, and NCAA Basketball.
                 </p>
             </div>
 
@@ -1235,7 +1273,7 @@
                         Playoff probability calculations based on current standings, remaining schedule strength, and historical performance patterns. Not predictions—just math on what the numbers say.
                         <br><small style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">Sources: MLB Stats API, ESPN API · Method: 10,000 simulations per team</small>
                     </p>
-                    <a href="/analytics.html" class="feature-link">
+                    <a href="/analytics" class="feature-link">
                         View Projections <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -1249,7 +1287,7 @@
                         Real-time game feeds from ESPN API, MLB Stats API, SportsDataIO. Scores update during games. Injury reports when they're filed. No manual refresh required.
                         <br><small style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">Update frequency: 30-60 seconds during live games</small>
                     </p>
-                    <a href="/analytics.html" class="feature-link">
+                    <a href="/analytics" class="feature-link">
                         See Live Data <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -1262,7 +1300,7 @@
                     <p class="feature-description">
                         Standings, schedules, box scores across MLB, NFL, NBA, NCAA in one interface. Same data structure whether you're looking at the Cardinals or the Longhorns.
                     </p>
-                    <a href="/analytics.html" class="feature-link">
+                    <a href="/analytics" class="feature-link">
                         Browse Leagues <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -1275,7 +1313,7 @@
                     <p class="feature-description">
                         Team performance over time, player stat trends, season-over-season changes. Pulled from official league databases. Useful for spotting patterns before they become obvious.
                     </p>
-                    <a href="/analytics.html" class="feature-link">
+                    <a href="/analytics" class="feature-link">
                         View Archives <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -1288,7 +1326,7 @@
                     <p class="feature-description">
                         Query by team, player, position, date range, stat threshold. Find specific matchups or performance scenarios without clicking through fifty pages.
                     </p>
-                    <a href="/analytics.html#teams" class="feature-link">
+                    <a href="/analytics#teams" class="feature-link">
                         Browse Opponents <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -1302,7 +1340,7 @@
                         Perfect Game tournament results, high school rosters, NCAA player stats. Aggregated from public sources. No proprietary recruiting rankings—just the official data points that exist.
                         <br><small style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">Sources: Perfect Game, MaxPreps, NCAA.org · Texas & Deep South focus</small>
                     </p>
-                    <a href="/analytics.html" class="feature-link">
+                    <a href="/analytics" class="feature-link">
                         Browse Youth Data <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -1315,145 +1353,32 @@
         <div class="section-container">
             <div class="section-header" data-aos="fade-up">
                 <div class="section-badge">Coverage</div>
-                <h2 class="section-title">Four sports</h2>
+                <h2 class="section-title">Three sports</h2>
                 <p class="section-subtitle">
-                    Baseball → Football → Basketball → Track & Field. Youth through professional levels.
+                    Baseball → Football → Basketball. Youth through professional levels.
                 </p>
             </div>
 
             <div class="sports-grid">
-                <div class="sport-card" data-aos="zoom-in" data-aos-delay="100">
+                <a href="/mlb" class="sport-card" data-aos="zoom-in" data-aos-delay="100">
                     <div class="sport-icon">⚾</div>
                     <h3 class="sport-name">BASEBALL</h3>
                     <p class="sport-status">MLB • NCAA D1 • Perfect Game</p>
-                </div>
+                </a>
 
-                <div class="sport-card" data-aos="zoom-in" data-aos-delay="200">
+                <a href="/nfl" class="sport-card" data-aos="zoom-in" data-aos-delay="200">
                     <div class="sport-icon">🏈</div>
                     <h3 class="sport-name">FOOTBALL</h3>
                     <p class="sport-status live pulse">
                         <i class="fas fa-circle"></i> NFL • NCAA • Texas HS
                     </p>
-                </div>
+                </a>
 
-                <div class="sport-card" data-aos="zoom-in" data-aos-delay="300">
+                <a href="/cbb" class="sport-card" data-aos="zoom-in" data-aos-delay="300">
                     <div class="sport-icon">🏀</div>
                     <h3 class="sport-name">BASKETBALL</h3>
                     <p class="sport-status">NBA • NCAA D1</p>
-                </div>
-
-                <div class="sport-card" data-aos="zoom-in" data-aos-delay="400">
-                    <div class="sport-icon">🏃</div>
-                    <h3 class="sport-name">TRACK & FIELD</h3>
-                    <p class="sport-status">NCAA • Elite Programs</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Use Cases Section -->
-    <section style="position: relative; z-index: 10; padding: 5rem 2rem; background: var(--dark-charcoal); border-top: 1px solid var(--dark-border); border-bottom: 1px solid var(--dark-border);">
-        <div class="section-container">
-            <div class="section-header" data-aos="fade-up">
-                <div class="section-badge">Who This Is For</div>
-                <h2 class="section-title">Built for Programs That Need an Edge</h2>
-                <p class="section-subtitle">
-                    Real use cases from coaches, coordinators, and athletic staff
-                </p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 4rem;">
-                <div style="padding: 2rem; background: var(--glass-medium); border: 1px solid var(--glass-border); border-radius: var(--radius-xl); backdrop-filter: blur(10px);" data-aos="fade-up" data-aos-delay="100">
-                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                        <div style="width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">⚾</div>
-                        <div>
-                            <h4 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.25rem;">High School Coaches</h4>
-                            <p style="color: var(--text-tertiary); font-size: 0.9rem;">Game Preparation</p>
-                        </div>
-                    </div>
-                    <p style="color: var(--text-secondary); line-height: 1.7;">
-                        Pull opponent stats and tendencies in minutes instead of hours. See pitch patterns, hitting zones, and defensive alignments all in one place before Friday night.
-                    </p>
-                </div>
-
-                <div style="padding: 2rem; background: var(--glass-medium); border: 1px solid var(--glass-border); border-radius: var(--radius-xl); backdrop-filter: blur(10px);" data-aos="fade-up" data-aos-delay="200">
-                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                        <div style="width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🏈</div>
-                        <div>
-                            <h4 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.25rem;">Recruiting Coordinators</h4>
-                            <p style="color: var(--text-tertiary); font-size: 0.9rem;">Talent Evaluation</p>
-                        </div>
-                    </div>
-                    <p style="color: var(--text-secondary); line-height: 1.7;">
-                        Track prospects across Texas and the Deep South with NIL market estimates and performance comparisons. Make informed offers backed by data, not just highlight reels.
-                    </p>
-                </div>
-
-                <div style="padding: 2rem; background: var(--glass-medium); border: 1px solid var(--glass-border); border-radius: var(--radius-xl); backdrop-filter: blur(10px);" data-aos="fade-up" data-aos-delay="300">
-                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                        <div style="width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">📊</div>
-                        <div>
-                            <h4 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.25rem;">Athletic Directors</h4>
-                            <p style="color: var(--text-tertiary); font-size: 0.9rem;">Program Management</p>
-                        </div>
-                    </div>
-                    <p style="color: var(--text-secondary); line-height: 1.7;">
-                        Monitor all your teams from one dashboard. Check live scores during away games, track season performance trends, and give coaches the tools they need without breaking the budget.
-                    </p>
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: rgba(191, 87, 0, 0.05); border-radius: var(--radius-xl); border: 1px solid rgba(191, 87, 0, 0.15);" data-aos="fade-up">
-                <p style="color: var(--text-tertiary); font-size: 1rem; line-height: 1.8; max-width: 700px; margin: 0 auto;">
-                    <strong style="color: var(--blaze-copper);">Full transparency:</strong> We're a small team constantly improving this platform. Some features are still in beta, and we're honest about what works and what doesn't. But if you need reliable sports intelligence without the enterprise price tag, we'd love to earn your trust.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Value Proposition Section -->
-    <section class="value-section" style="position: relative; z-index: 10; padding: 6rem 2rem; background: linear-gradient(180deg, var(--dark-slate) 0%, var(--dark-graphite) 100%);">
-        <div class="section-container">
-            <div class="section-header" data-aos="fade-up">
-                <div class="section-badge">Why Choose Blaze</div>
-                <h2 class="section-title">Stop Guessing. Start Winning.</h2>
-                <p class="section-subtitle">
-                    Real benefits for coaches who don't have time to waste
-                </p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; margin-top: 4rem;">
-                <div style="text-align: center; padding: 2rem;" data-aos="fade-up" data-aos-delay="100">
-                    <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; box-shadow: var(--glow-soft);">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <h3 style="font-size: 1.5rem; color: var(--text-primary); margin-bottom: 0.75rem; font-weight: 700;">Get Your Time Back</h3>
-                    <p style="color: var(--text-tertiary); line-height: 1.7;">Coaches tell us they save 10+ hours per week. No more jumping between five different websites or building spreadsheets from scratch.</p>
-                </div>
-
-                <div style="text-align: center; padding: 2rem;" data-aos="fade-up" data-aos-delay="200">
-                    <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; box-shadow: var(--glow-soft);">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <h3 style="font-size: 1.5rem; color: var(--text-primary); margin-bottom: 0.75rem; font-weight: 700;">Spot Problems Early</h3>
-                    <p style="color: var(--text-tertiary); line-height: 1.7;">See player performance trends before they become issues. Data helps you make the right call when your gut says something's off.</p>
-                </div>
-
-                <div style="text-align: center; padding: 2rem;" data-aos="fade-up" data-aos-delay="300">
-                    <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; box-shadow: var(--glow-soft);">
-                        <i class="fas fa-lock"></i>
-                    </div>
-                    <h3 style="font-size: 1.5rem; color: var(--text-primary); margin-bottom: 0.75rem; font-weight: 700;">Your Data Stays Yours</h3>
-                    <p style="color: var(--text-tertiary); line-height: 1.7;">Your scouting reports, strategies, and game plans are private. We'll never sell your data or share it with other programs.</p>
-                </div>
-            </div>
-
-            <div style="margin-top: 4rem; text-align: center;" data-aos="fade-up">
-                <a href="/analytics.html" style="display: inline-flex; align-items: center; gap: 0.75rem; padding: 1.5rem 3rem; background: var(--gradient-primary); color: var(--text-primary); border-radius: var(--radius-xl); font-weight: 700; font-size: 1.2rem; text-decoration: none; box-shadow: var(--shadow-burnt); transition: all var(--transition-base);">
-                    <i class="fas fa-chart-bar"></i>
-                    Launch Analytics Dashboard
                 </a>
-                <p style="margin-top: 1rem; color: var(--text-tertiary); font-size: 0.95rem;">Full access to multi-sport analytics • Live data • Championship predictions</p>
             </div>
         </div>
     </section>
@@ -1527,9 +1452,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="about-contact" style="margin-top: 2rem; padding: 1.5rem; background: var(--glass-light); border-radius: 12px; border: 1px solid var(--glass-medium);">
+                    <div class="about-contact" style="margin-top: 2rem; padding: 1.5rem; background: var(--glass-light); border-radius: var(--radius-lg); border: 1px solid var(--glass-border);">
                         <p style="color: var(--text-secondary); margin-bottom: 0.75rem; font-size: 0.95rem;">
-                            <i class="fas fa-envelope"></i> <a href="mailto:ahump20@outlook.com" style="color: var(--blaze-copper); text-decoration: none; transition: all 0.3s;">ahump20@outlook.com</a>
+                            <i class="fas fa-envelope"></i> <a href="mailto:austin@blazesportsintel.com" style="color: var(--blaze-copper); text-decoration: none;">austin@blazesportsintel.com</a>
                         </p>
                         <p style="color: var(--text-secondary); font-size: 0.95rem;">
                             <i class="fas fa-phone"></i> (210) 273-5538
@@ -1538,7 +1463,7 @@
                 </div>
             </div>
 
-            <div class="heritage-banner" data-aos="fade-up" style="margin-top: 4rem; padding: 2.5rem; background: linear-gradient(135deg, rgba(191, 87, 0, 0.12), rgba(204, 102, 0, 0.08), rgba(217, 123, 56, 0.06)); border-radius: 20px; border: 2px solid rgba(217, 123, 56, 0.3); text-align: center; box-shadow: var(--glow-soft);">
+            <div class="heritage-banner" data-aos="fade-up" style="margin-top: 4rem; padding: 2.5rem; background: linear-gradient(135deg, rgba(191, 87, 0, 0.12), rgba(204, 102, 0, 0.08), rgba(217, 123, 56, 0.06)); border-radius: var(--radius-xl); border: 2px solid rgba(217, 123, 56, 0.3); text-align: center; box-shadow: var(--glow-soft);">
                 <p style="font-size: 1.15rem; color: var(--text-primary); line-height: 1.8; max-width: 900px; margin: 0 auto;">
                     <strong style="color: var(--blaze-copper); text-shadow: 0 0 20px rgba(217, 123, 56, 0.5);">Where Southern Grit Meets Silicon Valley Analytics.</strong><br>
                     From Memphis roots to Texas soil, Blaze Sports Intel honors Deep South sports tradition
@@ -1575,11 +1500,14 @@
                 <div class="footer-section">
                     <h3>Platform</h3>
                     <ul class="footer-links">
-                        <li><a href="/analytics.html" class="footer-link">Analytics Dashboard</a></li>
-                        <li><a href="/analytics.html#nfl" class="footer-link">NFL Analytics</a></li>
-                        <li><a href="/analytics.html#mlb" class="footer-link">MLB Analytics</a></li>
-                        <li><a href="/analytics.html#nba" class="footer-link">NBA Analytics</a></li>
-                        <li><a href="/analytics.html#ncaa" class="footer-link">NCAA Analytics</a></li>
+                        <li><a href="/copilot" class="footer-link">
+                            <i class="fas fa-robot" style="margin-right: 0.5rem;"></i>AI Copilot
+                        </a></li>
+                        <li><a href="/analytics" class="footer-link">Analytics Dashboard</a></li>
+                        <li><a href="/mlb" class="footer-link">MLB Hub</a></li>
+                        <li><a href="/nfl" class="footer-link">NFL Hub</a></li>
+                        <li><a href="/cfb" class="footer-link">College Football Hub</a></li>
+                        <li><a href="/cbb" class="footer-link">College Basketball Hub</a></li>
                     </ul>
                 </div>
 
@@ -1590,18 +1518,8 @@
                         <li><a href="#sports" class="footer-link">Sports Coverage</a></li>
                         <li><a href="/about" class="footer-link">About the Founder</a></li>
                         <li><a href="/contact" class="footer-link">Contact</a></li>
-                        <li><a href="/privacy" class="footer-link">Privacy Policy</a></li>
-                        <li><a href="/terms" class="footer-link">Terms of Service</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-section">
-                    <h3>Focus Teams</h3>
-                    <ul class="footer-links">
-                        <li><a href="/analytics.html?team=cardinals" class="footer-link">St. Louis Cardinals</a></li>
-                        <li><a href="/analytics.html?team=titans" class="footer-link">Tennessee Titans</a></li>
-                        <li><a href="/analytics.html?team=longhorns" class="footer-link">Texas Longhorns</a></li>
-                        <li><a href="/analytics.html?team=grizzlies" class="footer-link">Memphis Grizzlies</a></li>
+                        <li><a href="/legal/privacy" class="footer-link">Privacy Policy</a></li>
+                        <li><a href="/legal/terms" class="footer-link">Terms of Service</a></li>
                     </ul>
                 </div>
             </div>
@@ -1674,8 +1592,12 @@
             });
         });
 
-        // ==================== THREE.JS PARTICLE SYSTEM ====================
-        function initParticleSystem() {
+        // ==================== BLAZE ADVANCED GRAPHICS SYSTEM ====================
+        // Global references for graphics engines
+        let blazeParticles = null;
+        let blazePostprocessing = null;
+
+        async function initAdvancedGraphics() {
             const canvas = document.getElementById('particle-field');
             if (!canvas || typeof THREE === 'undefined') {
                 console.warn('Three.js or canvas not available');
@@ -1683,136 +1605,194 @@
             }
 
             try {
-                // Scene setup
-                const scene = new THREE.Scene();
-                const camera = new THREE.PerspectiveCamera(
-                    75,
-                    window.innerWidth / window.innerHeight,
-                    0.1,
-                    1000
-                );
-                const renderer = new THREE.WebGLRenderer({
-                    canvas,
-                    alpha: true,
-                    antialias: true
+                console.log('🔥 Initializing Blaze Advanced Graphics System...');
+
+                // Initialize WebGPU/WebGL2 Particle Engine with 500K particles
+                blazeParticles = new BlazeParticleEngine('particle-field', {
+                    maxParticles: 500000,
+                    particleSize: 3,
+                    particleOpacity: 0.8,
+                    enableMorphing: true,
+                    enablePhysics: true,
+                    enableMouseInteraction: true,
+                    morphShapes: ['logo', 'baseball', 'football', 'basketball'],
+                    morphInterval: 8000, // Change shape every 8 seconds
                 });
 
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                renderer.setClearColor(0x000000, 0);
-                camera.position.z = 500;
+                await blazeParticles.init();
+                console.log(`✅ Particle Engine initialized with ${blazeParticles.useWebGPU ? 'WebGPU' : 'WebGL2'}`);
 
-                // Particle system
-                const particleCount = 1500;
-                const particles = new THREE.BufferGeometry();
-                const positions = new Float32Array(particleCount * 3);
-                const colors = new Float32Array(particleCount * 3);
-                const velocities = new Float32Array(particleCount * 3);
+                // Initialize Postprocessing Effects
+                // Check if postprocessing library is available
+                if (typeof blazeParticles.renderer !== 'undefined') {
+                    try {
+                        blazePostprocessing = new BlazePostprocessing(
+                            blazeParticles.scene,
+                            blazeParticles.camera,
+                            blazeParticles.renderer
+                        );
 
-                // Blaze color palette
-                const blazeColors = [
-                    new THREE.Color(0xBF5700), // Deep burnt orange
-                    new THREE.Color(0xCC6600), // Rich ember
-                    new THREE.Color(0xD97B38), // Copper accent
-                    new THREE.Color(0xE69551), // Sunset warmth
-                    new THREE.Color(0xA0522D), // Bronze depth
-                    new THREE.Color(0xFFBF00), // Amber highlight
-                ];
+                        const postprocessingInitialized = await blazePostprocessing.init();
+                        if (postprocessingInitialized) {
+                            console.log('✅ Postprocessing pipeline initialized (bloom, DOF, chromatic aberration, grain, vignette, color grading)');
 
-                for (let i = 0; i < particleCount; i++) {
-                    const i3 = i * 3;
+                            // Replace render method to use postprocessing
+                            const originalRender = blazeParticles.render.bind(blazeParticles);
+                            blazeParticles.render = function(deltaTime) {
+                                // Update particles
+                                this.update(deltaTime);
 
-                    // Position
-                    positions[i3] = (Math.random() - 0.5) * 2000;
-                    positions[i3 + 1] = (Math.random() - 0.5) * 2000;
-                    positions[i3 + 2] = (Math.random() - 0.5) * 1000;
-
-                    // Velocity
-                    velocities[i3] = (Math.random() - 0.5) * 0.2;
-                    velocities[i3 + 1] = (Math.random() - 0.5) * 0.2;
-                    velocities[i3 + 2] = (Math.random() - 0.5) * 0.2;
-
-                    // Color - pick from Blaze palette
-                    const color = blazeColors[Math.floor(Math.random() * blazeColors.length)];
-                    colors[i3] = color.r;
-                    colors[i3 + 1] = color.g;
-                    colors[i3 + 2] = color.b;
-                }
-
-                particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-                const particleMaterial = new THREE.PointsMaterial({
-                    size: 3,
-                    vertexColors: true,
-                    transparent: true,
-                    opacity: 0.8,
-                    sizeAttenuation: true,
-                    blending: THREE.AdditiveBlending
-                });
-
-                const particleSystem = new THREE.Points(particles, particleMaterial);
-                scene.add(particleSystem);
-
-                // Animation loop
-                function animate() {
-                    requestAnimationFrame(animate);
-
-                    // Update particle positions
-                    const positions = particles.attributes.position.array;
-                    for (let i = 0; i < particleCount; i++) {
-                        const i3 = i * 3;
-
-                        positions[i3] += velocities[i3];
-                        positions[i3 + 1] += velocities[i3 + 1];
-                        positions[i3 + 2] += velocities[i3 + 2];
-
-                        // Boundary check and wrap
-                        if (Math.abs(positions[i3]) > 1000) velocities[i3] *= -1;
-                        if (Math.abs(positions[i3 + 1]) > 1000) velocities[i3 + 1] *= -1;
-                        if (Math.abs(positions[i3 + 2]) > 500) velocities[i3 + 2] *= -1;
+                                // Render with postprocessing
+                                if (blazePostprocessing && blazePostprocessing.initialized) {
+                                    blazePostprocessing.render(deltaTime);
+                                } else {
+                                    originalRender(deltaTime);
+                                }
+                            };
+                        } else {
+                            console.log('⚠️ Postprocessing library not available, using basic renderer');
+                        }
+                    } catch (postError) {
+                        console.warn('Postprocessing initialization failed, using basic renderer:', postError);
                     }
-                    particles.attributes.position.needsUpdate = true;
-
-                    // Rotate entire system slowly
-                    particleSystem.rotation.y += 0.0005;
-                    particleSystem.rotation.x += 0.0002;
-
-                    renderer.render(scene, camera);
                 }
 
-                animate();
+                // Setup scroll-driven effects
+                let lastScrollProgress = 0;
+                window.addEventListener('scroll', () => {
+                    if (blazePostprocessing && blazePostprocessing.initialized) {
+                        const scrollProgress = Math.min(
+                            window.scrollY / (document.documentElement.scrollHeight - window.innerHeight),
+                            1
+                        );
 
-                // Handle resize
-                window.addEventListener('resize', () => {
-                    camera.aspect = window.innerWidth / window.innerHeight;
-                    camera.updateProjectionMatrix();
-                    renderer.setSize(window.innerWidth, window.innerHeight);
+                        // Only update if scroll changed significantly (performance optimization)
+                        if (Math.abs(scrollProgress - lastScrollProgress) > 0.01) {
+                            blazePostprocessing.updateOnScroll(scrollProgress);
+                            lastScrollProgress = scrollProgress;
+                        }
+                    }
                 });
+
+                // Setup hover effects for cards
+                document.querySelectorAll('.access-card, .feature-card, .sport-card').forEach(card => {
+                    card.addEventListener('mouseenter', () => {
+                        if (blazePostprocessing && blazePostprocessing.initialized) {
+                            blazePostprocessing.onCardHover(true);
+                        }
+                    });
+
+                    card.addEventListener('mouseleave', () => {
+                        if (blazePostprocessing && blazePostprocessing.initialized) {
+                            blazePostprocessing.onCardHover(false);
+                        }
+                    });
+                });
+
+                // Start morphing animation cycle
+                if (blazeParticles.config.enableMorphing) {
+                    setInterval(() => {
+                        const shapes = blazeParticles.config.morphShapes;
+                        blazeParticles.currentShapeIndex = (blazeParticles.currentShapeIndex + 1) % shapes.length;
+                        const nextShape = shapes[blazeParticles.currentShapeIndex];
+                        blazeParticles.morphToShape(nextShape);
+                    }, blazeParticles.config.morphInterval);
+                }
+
+                console.log('🎉 Blaze Advanced Graphics System ready!');
+                console.log(`   • Particles: ${blazeParticles.currentParticleCount.toLocaleString()}`);
+                console.log(`   • Renderer: ${blazeParticles.useWebGPU ? 'WebGPU Compute Shaders' : 'WebGL2'}`);
+                console.log(`   • Postprocessing: ${blazePostprocessing && blazePostprocessing.initialized ? 'Enabled' : 'Disabled'}`);
+                console.log(`   • Morphing: ${blazeParticles.config.enableMorphing ? 'Active' : 'Disabled'}`);
 
             } catch (error) {
-                console.error('Error initializing particle system:', error);
+                console.error('❌ Error initializing advanced graphics:', error);
+                // Fallback to basic Three.js if advanced features fail
+                console.log('⚠️ Falling back to basic particle system...');
+                initBasicParticleSystem();
             }
         }
 
+        // Fallback basic particle system (for compatibility)
+        function initBasicParticleSystem() {
+            const canvas = document.getElementById('particle-field');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            camera.position.z = 500;
+
+            const particleCount = 50000;
+            const particles = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+
+            const blazeColors = [
+                new THREE.Color(0xBF5700),
+                new THREE.Color(0xCC6600),
+                new THREE.Color(0xD97B38),
+            ];
+
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                positions[i3] = (Math.random() - 0.5) * 2000;
+                positions[i3 + 1] = (Math.random() - 0.5) * 2000;
+                positions[i3 + 2] = (Math.random() - 0.5) * 1000;
+
+                const color = blazeColors[Math.floor(Math.random() * blazeColors.length)];
+                colors[i3] = color.r;
+                colors[i3 + 1] = color.g;
+                colors[i3 + 2] = color.b;
+            }
+
+            particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const particleMaterial = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.7,
+                blending: THREE.AdditiveBlending
+            });
+
+            const particleSystem = new THREE.Points(particles, particleMaterial);
+            scene.add(particleSystem);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                particleSystem.rotation.y += 0.0005;
+                particleSystem.rotation.x += 0.0002;
+                renderer.render(scene, camera);
+            }
+
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            console.log('✅ Basic particle system initialized (fallback mode)');
+        }
+
         // Initialize on load
-        window.addEventListener('load', initParticleSystem);
-
-        // ==================== FEATURE CARD INTERACTIONS ====================
-        document.querySelectorAll('.feature-card, .sport-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-8px) scale(1.02)';
-            });
-
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
+        window.addEventListener('load', initAdvancedGraphics);
 
         // ==================== CONSOLE BRANDING ====================
         console.log(`
 %c🔥 BLAZE SPORTS INTEL %c
 %cChampionship Analytics Platform
-%cBuilt with Three.js, React, and Cloudflare Workers
+%cBuilt with WebGPU, Three.js, Babylon.js, React, and Cloudflare Workers
+%cAdvanced Graphics System:
+%c• 500,000 particle WebGPU compute shader system
+%c• Particle morphing (logo → baseball → football → basketball)
+%c• Postprocessing: Bloom, DOF, Chromatic Aberration, Film Grain, Vignette
+%c• Real-time physics simulation with curl noise
+%c• Adaptive performance monitoring and auto-scaling
 %c
 Deep South Sports Authority • Est. 2025
         `,
@@ -1820,6 +1800,12 @@ Deep South Sports Authority • Est. 2025
         '',
         'font-size: 14px; color: #FFB81C;',
         'font-size: 12px; color: #999;',
+        'font-size: 11px; color: #E69551; font-weight: bold;',
+        'font-size: 10px; color: #D97B38;',
+        'font-size: 10px; color: #D97B38;',
+        'font-size: 10px; color: #D97B38;',
+        'font-size: 10px; color: #D97B38;',
+        'font-size: 10px; color: #D97B38;',
         'font-size: 11px; color: #666; font-style: italic;'
         );
     </script>

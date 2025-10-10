@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 Scouting Intel Copilot | Blaze Sports Intel</title>
+    <meta name="description" content="Multi-Provider AI-Powered Search: Gemini 2.5, GPT-5, Claude 4.5 • Real Data from 212 Games">
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-orange: #ff6b35;
+            --secondary-orange: #f7931e;
+            --dark-bg: #1a1a1a;
+            --darker-bg: #0f0f0f;
+            --card-bg: rgba(42, 42, 42, 0.6);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--darker-bg);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Three.js Canvas */
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Vignette */
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(15, 15, 15, 0.6) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Content Layer */
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+        }
+
+        .logo-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-orange);
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+        .logo-tagline {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-orange);
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, var(--primary-orange), var(--secondary-orange));
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 107, 53, 0.15);
+            border: 1px solid rgba(255, 107, 53, 0.4);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--primary-orange);
+            margin-bottom: 24px;
+            animation: badgePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 107, 53, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(255, 107, 53, 0.6); }
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.3));
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 12px;
+            max-width: 700px;
+            line-height: 1.6;
+        }
+
+        .ai-providers {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .provider-badge {
+            background: rgba(42, 42, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 0.5px;
+        }
+
+        /* Glass Search Box */
+        .search-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .glass-search {
+            background: rgba(42, 42, 42, 0.7);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-search:hover {
+            background: rgba(42, 42, 42, 0.8);
+            border-color: rgba(255, 107, 53, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .search-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            font-size: 16px;
+            padding: 16px;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, var(--primary-orange), var(--secondary-orange));
+            border: none;
+            border-radius: 10px;
+            padding: 14px 32px;
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.5);
+        }
+
+        .search-btn:active {
+            transform: scale(0.98);
+        }
+
+        .search-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Filter Pills */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .filter-pill {
+            background: rgba(42, 42, 42, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-pill:hover {
+            background: rgba(255, 107, 53, 0.2);
+            border-color: rgba(255, 107, 53, 0.5);
+            color: white;
+        }
+
+        .filter-pill.active {
+            background: var(--primary-orange);
+            border-color: var(--primary-orange);
+            color: white;
+        }
+
+        /* Status Message */
+        .status-message {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(42, 42, 42, 0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 24px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-message.visible {
+            display: flex;
+        }
+
+        .status-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--primary-orange);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Results Section */
+        .results-section {
+            padding: 80px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .results-section.visible {
+            display: block;
+        }
+
+        .results-header {
+            margin-bottom: 40px;
+        }
+
+        .results-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .results-count {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 16px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        /* Insights Card */
+        .insights-card {
+            background: rgba(255, 107, 53, 0.1);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 32px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .insights-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .insights-icon {
+            font-size: 24px;
+        }
+
+        .insights-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-orange);
+        }
+
+        .provider-tag {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: auto;
+        }
+
+        .insights-content {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.8;
+            font-size: 15px;
+            margin-bottom: 16px;
+        }
+
+        .insights-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .confidence-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .confidence-high {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+        }
+
+        .confidence-medium {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.4);
+        }
+
+        .confidence-low {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.4);
+        }
+
+        .insights-sources {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: rgba(42, 42, 42, 0.7);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .glass-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .glass-card:hover {
+            background: rgba(42, 42, 42, 0.85);
+            border-color: rgba(255, 107, 53, 0.5);
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .card-badge {
+            background: rgba(255, 107, 53, 0.15);
+            border: 1px solid rgba(255, 107, 53, 0.4);
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary-orange);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-score {
+            font-size: 13px;
+            color: #28a745;
+            font-weight: 700;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .card-snippet {
+            font-size: 14px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 16px;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            flex-wrap: wrap;
+        }
+
+        /* Stats Panel */
+        .stats-panel {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: rgba(42, 42, 42, 0.7);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            width: 280px;
+            z-index: 100;
+        }
+
+        .stats-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            margin-bottom: 16px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        /* Loading */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            z-index: 10000;
+            transition: opacity 0.5s;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary-orange);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loading-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .stats-panel {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                padding: 16px 20px;
+            }
+
+            .logo-text h1 {
+                font-size: 16px;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .nav-link:not(.nav-btn) {
+                display: none;
+            }
+
+            .results-section {
+                padding: 40px 20px;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-wrapper {
+                flex-direction: column;
+            }
+
+            .search-btn {
+                width: 100%;
+            }
+
+            .ai-providers {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Three.js Canvas -->
+    <canvas id="canvas3d"></canvas>
+
+    <!-- Vignette Overlay -->
+    <div class="vignette"></div>
+
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">Initializing Multi-Provider AI</div>
+    </div>
+
+    <!-- Status Message -->
+    <div class="status-message" id="statusMessage">
+        <div class="status-spinner"></div>
+        <span id="statusText">Processing...</span>
+    </div>
+
+    <!-- Content Layer -->
+    <div class="content-layer">
+        <!-- Navigation -->
+        <nav class="nav">
+            <a href="https://blazesportsintel.com" class="logo-section">
+                <span class="logo-icon">🔥</span>
+                <div class="logo-text">
+                    <h1>BLAZE SPORTS INTEL</h1>
+                    <div class="logo-tagline">212 Real Games • Multi-Provider AI</div>
+                </div>
+            </a>
+            <div class="nav-links">
+                <a href="/analytics.html" class="nav-link">Analytics</a>
+                <a href="/copilot.html" class="nav-link">Copilot</a>
+                <a href="https://blazesportsintel.com" class="nav-link nav-btn">Main Site</a>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-badge">Production • 212 Games • 768D Embeddings</div>
+            <h1 class="hero-title">🔥 Scouting Intel Copilot</h1>
+            <p class="hero-subtitle">
+                Multi-Provider AI-Powered Semantic Search with RAG Insights
+            </p>
+
+            <div class="ai-providers">
+                <span class="provider-badge">🤖 Gemini 2.5 Pro</span>
+                <span class="provider-badge">🧠 GPT-5</span>
+                <span class="provider-badge">⚡ Claude 4.5</span>
+                <span class="provider-badge">🔥 Workers AI</span>
+            </div>
+
+            <div class="search-container">
+                <div class="glass-search">
+                    <div class="search-wrapper">
+                        <input
+                            type="text"
+                            class="search-input"
+                            id="searchInput"
+                            placeholder="Search 212 real games... (e.g., 'Chiefs blowout' or 'close games')"
+                            autocomplete="off"
+                        />
+                        <button class="search-btn" id="searchBtn">Search</button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <div class="filter-pill active" data-sport="">All Sports</div>
+                    <div class="filter-pill" data-sport="NFL">NFL (12)</div>
+                    <div class="filter-pill" data-sport="MLB">MLB (100)</div>
+                    <div class="filter-pill" data-sport="CFB">CFB (50)</div>
+                    <div class="filter-pill" data-sport="CBB">CBB (50)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Panel -->
+        <div class="stats-panel">
+            <div class="stats-title">Live Stats</div>
+            <div class="stat-item">
+                <div class="stat-label">FPS</div>
+                <div class="stat-value" id="fps">60</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Particles</div>
+                <div class="stat-value" id="particles">100K</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Engine</div>
+                <div class="stat-value" style="font-size: 16px;" id="engine">WebGL2</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Search Time</div>
+                <div class="stat-value" style="font-size: 16px;" id="searchTime">--</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">AI Provider</div>
+                <div class="stat-value" style="font-size: 12px;" id="aiProvider">Auto</div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <section class="results-section" id="results">
+            <div class="results-header">
+                <h2 class="results-title">Search Results</h2>
+                <p class="results-count" id="resultsCount">0 results found</p>
+            </div>
+
+            <div id="insightsContainer"></div>
+
+            <div class="results-grid" id="resultsGrid"></div>
+        </section>
+    </div>
+
+    <script>
+        // Configuration - 100K particles with auto-scaling
+        const CONFIG = {
+            PARTICLE_COUNT: 100000,
+            NODE_COUNT: 60,
+            CONNECTION_COUNT: 100,
+            ENABLE_PERFORMANCE_MODE: true
+        };
+
+        // Global state
+        let scene, camera, renderer, particles, dataNodes = [], connections = [];
+        let mouseX = 0, mouseY = 0;
+        let currentSport = '';
+        let frameCount = 0, lastTime = Date.now();
+        const PERFORMANCE = {
+            frameTimeHistory: [],
+            lowFPSThreshold: 30
+        };
+
+        // DOM Elements
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const statusText = document.getElementById('statusText');
+        const resultsSection = document.getElementById('results');
+        const resultsCountEl = document.getElementById('resultsCount');
+        const insightsContainer = document.getElementById('insightsContainer');
+        const resultsGrid = document.getElementById('resultsGrid');
+
+        // Initialize Three.js Scene
+        async function initThreeJS() {
+            const canvas = document.getElementById('canvas3d');
+
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x0f0f0f, 0.0005);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                75,
+                window.innerWidth / window.innerHeight,
+                1,
+                3000
+            );
+            camera.position.z = 1000;
+
+            // Renderer
+            try {
+                renderer = new THREE.WebGLRenderer({
+                    canvas: canvas,
+                    antialias: true,
+                    alpha: false,
+                    powerPreference: 'high-performance'
+                });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                document.getElementById('engine').textContent = 'WebGL2';
+            } catch (error) {
+                console.error('Renderer initialization failed:', error);
+            }
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+            scene.add(ambientLight);
+
+            const pointLight1 = new THREE.PointLight(0xff6b35, 1, 1000);
+            pointLight1.position.set(500, 500, 500);
+            scene.add(pointLight1);
+
+            const pointLight2 = new THREE.PointLight(0xf7931e, 0.8, 1000);
+            pointLight2.position.set(-500, -500, -500);
+            scene.add(pointLight2);
+
+            // Create particles
+            createParticles();
+
+            // Create data nodes
+            createDataNodes();
+
+            // Create connections
+            createConnections();
+
+            // Mouse tracking
+            document.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('resize', onWindowResize);
+
+            // Start animation
+            animate();
+
+            // Hide loading
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+            }, 1500);
+        }
+
+        // Create particle system with 100K particles
+        function createParticles() {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(CONFIG.PARTICLE_COUNT * 3);
+            const colors = new Float32Array(CONFIG.PARTICLE_COUNT * 3);
+
+            const color1 = new THREE.Color(0xff6b35);
+            const color2 = new THREE.Color(0xf7931e);
+
+            for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
+                const i3 = i * 3;
+
+                // Position
+                positions[i3] = (Math.random() - 0.5) * 2000;
+                positions[i3 + 1] = (Math.random() - 0.5) * 2000;
+                positions[i3 + 2] = (Math.random() - 0.5) * 2000;
+
+                // Color
+                const mixColor = Math.random() > 0.5 ? color1 : color2;
+                colors[i3] = mixColor.r;
+                colors[i3 + 1] = mixColor.g;
+                colors[i3 + 2] = mixColor.b;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            document.getElementById('particles').textContent =
+                (CONFIG.PARTICLE_COUNT / 1000).toFixed(0) + 'K';
+        }
+
+        // Create data nodes
+        function createDataNodes() {
+            const geometry = new THREE.SphereGeometry(8, 16, 16);
+
+            for (let i = 0; i < CONFIG.NODE_COUNT; i++) {
+                const material = new THREE.MeshPhongMaterial({
+                    color: i % 2 === 0 ? 0xff6b35 : 0xf7931e,
+                    emissive: i % 2 === 0 ? 0xff6b35 : 0xf7931e,
+                    emissiveIntensity: 0.5,
+                    transparent: true,
+                    opacity: 0.9
+                });
+
+                const node = new THREE.Mesh(geometry, material);
+
+                // Position
+                const radius = 400 + Math.random() * 400;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI;
+
+                node.position.x = radius * Math.sin(phi) * Math.cos(theta);
+                node.position.y = radius * Math.sin(phi) * Math.sin(theta);
+                node.position.z = radius * Math.cos(phi);
+
+                node.userData = {
+                    originalPosition: node.position.clone(),
+                    phase: Math.random() * Math.PI * 2,
+                    speed: 0.5 + Math.random() * 0.5
+                };
+
+                scene.add(node);
+                dataNodes.push(node);
+            }
+        }
+
+        // Create connections
+        function createConnections() {
+            for (let i = 0; i < CONFIG.CONNECTION_COUNT; i++) {
+                const node1 = dataNodes[Math.floor(Math.random() * dataNodes.length)];
+                const node2 = dataNodes[Math.floor(Math.random() * dataNodes.length)];
+
+                if (node1 !== node2) {
+                    const distance = node1.position.distanceTo(node2.position);
+
+                    if (distance < 700) {
+                        const geometry = new THREE.BufferGeometry().setFromPoints([
+                            node1.position.clone(),
+                            node2.position.clone()
+                        ]);
+
+                        const material = new THREE.LineBasicMaterial({
+                            color: 0x5555ff,
+                            transparent: true,
+                            opacity: 0.15,
+                            blending: THREE.AdditiveBlending
+                        });
+
+                        const line = new THREE.Line(geometry, material);
+                        scene.add(line);
+
+                        connections.push({ line, node1, node2 });
+                    }
+                }
+            }
+        }
+
+        // Performance monitoring with auto-scaling
+        function checkPerformance() {
+            const avgFrameTime = PERFORMANCE.frameTimeHistory.reduce((a, b) => a + b, 0) /
+                                 PERFORMANCE.frameTimeHistory.length;
+            const avgFPS = 1000 / avgFrameTime;
+
+            if (CONFIG.ENABLE_PERFORMANCE_MODE && avgFPS < PERFORMANCE.lowFPSThreshold) {
+                if (CONFIG.PARTICLE_COUNT > 25000) {
+                    console.log('Performance mode: Reducing particle count');
+                    CONFIG.PARTICLE_COUNT = Math.floor(CONFIG.PARTICLE_COUNT * 0.5);
+                    scene.remove(particles);
+                    createParticles();
+                }
+            }
+        }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = Date.now() * 0.0005;
+
+            // Update FPS
+            frameCount++;
+            const now = Date.now();
+            if (now - lastTime >= 1000) {
+                document.getElementById('fps').textContent = frameCount;
+
+                // Track performance
+                PERFORMANCE.frameTimeHistory.push(1000 / frameCount);
+                if (PERFORMANCE.frameTimeHistory.length > 60) {
+                    PERFORMANCE.frameTimeHistory.shift();
+                }
+
+                if (PERFORMANCE.frameTimeHistory.length >= 60) {
+                    checkPerformance();
+                }
+
+                frameCount = 0;
+                lastTime = now;
+            }
+
+            // Animate particles
+            if (particles) {
+                particles.rotation.x += 0.0002;
+                particles.rotation.y += 0.0003;
+            }
+
+            // Animate data nodes
+            dataNodes.forEach((node) => {
+                const userData = node.userData;
+                const angle = time * userData.speed + userData.phase;
+
+                node.position.x = userData.originalPosition.x + Math.cos(angle) * 30;
+                node.position.y = userData.originalPosition.y + Math.sin(angle) * 30;
+                node.position.z = userData.originalPosition.z + Math.sin(angle * 0.5) * 20;
+
+                node.rotation.x += 0.005;
+                node.rotation.y += 0.003;
+
+                const scale = 1 + Math.sin(time * 2 + userData.phase) * 0.1;
+                node.scale.set(scale, scale, scale);
+            });
+
+            // Update connections
+            connections.forEach(conn => {
+                const positions = conn.line.geometry.attributes.position.array;
+                positions[0] = conn.node1.position.x;
+                positions[1] = conn.node1.position.y;
+                positions[2] = conn.node1.position.z;
+                positions[3] = conn.node2.position.x;
+                positions[4] = conn.node2.position.y;
+                positions[5] = conn.node2.position.z;
+                conn.line.geometry.attributes.position.needsUpdate = true;
+            });
+
+            // Camera movement
+            camera.position.x += (mouseX - camera.position.x) * 0.02;
+            camera.position.y += (-mouseY - camera.position.y) * 0.02;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+
+        // Mouse move handler
+        function onMouseMove(event) {
+            mouseX = (event.clientX - window.innerWidth / 2) * 0.5;
+            mouseY = (event.clientY - window.innerHeight / 2) * 0.5;
+        }
+
+        // Window resize handler
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Show status
+        function showStatus(message) {
+            statusText.textContent = message;
+            statusMessage.classList.add('visible');
+        }
+
+        // Hide status
+        function hideStatus() {
+            statusMessage.classList.remove('visible');
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+
+        // Search functionality with enhanced endpoints
+        async function performSearch() {
+            const query = searchInput.value.trim();
+
+            if (!query) {
+                alert('Please enter a search query');
+                return;
+            }
+
+            const startTime = performance.now();
+            searchBtn.disabled = true;
+            showStatus('🔍 Semantic search with Gemini query expansion...');
+
+            try {
+                // Step 1: Enhanced Semantic Search with Gemini
+                const searchPayload = {
+                    query: query,
+                    limit: 10
+                };
+
+                if (currentSport) {
+                    searchPayload.sport = currentSport;
+                }
+
+                const searchResponse = await fetch('/api/copilot/enhanced-search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(searchPayload)
+                });
+
+                if (!searchResponse.ok) {
+                    throw new Error('Search failed');
+                }
+
+                const searchData = await searchResponse.json();
+                console.log('Enhanced Search Results:', searchData);
+
+                // Step 2: Get Multi-Provider RAG Insights
+                showStatus('🤖 Generating multi-provider AI insights...');
+                let insightData = null;
+
+                try {
+                    const insightResponse = await fetch('/api/copilot/enhanced-insights', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            query: query,
+                            sport: currentSport || undefined
+                        })
+                    });
+
+                    if (insightResponse.ok) {
+                        insightData = await insightResponse.json();
+                        console.log('Enhanced Insights:', insightData);
+                    }
+                } catch (error) {
+                    console.warn('Insight generation failed:', error);
+                }
+
+                const searchTime = ((performance.now() - startTime) / 1000).toFixed(2);
+                document.getElementById('searchTime').textContent = searchTime + 's';
+
+                if (insightData && insightData.provider) {
+                    document.getElementById('aiProvider').textContent = insightData.provider;
+                }
+
+                hideStatus();
+                displayResults(searchData, insightData);
+
+            } catch (error) {
+                console.error('Search error:', error);
+                hideStatus();
+                alert('Search failed. Please try again.');
+            } finally {
+                searchBtn.disabled = false;
+            }
+        }
+
+        // Display results with enhanced data
+        function displayResults(searchData, insightData) {
+            const { query, results, count, performance: perf, variations } = searchData;
+
+            console.log('Display Results:', { count, results: results?.length });
+
+            if (!results || results.length === 0) {
+                resultsCountEl.textContent = 'No results found. Try different keywords.';
+                resultsSection.classList.add('visible');
+                insightsContainer.innerHTML = '';
+                resultsGrid.innerHTML = '';
+                return;
+            }
+
+            // Show query variations if present
+            const variationText = variations && variations.length > 1
+                ? ` (searched: ${variations.join(', ')})`
+                : '';
+            resultsCountEl.textContent = `${count} result${count !== 1 ? 's' : ''} for "${query}"${variationText} • ${perf.searchTime}`;
+
+            // Display AI Insights with provider info
+            if (insightData && insightData.success && insightData.insight) {
+                const confidence = insightData.confidence || 0.8;
+                const confidenceClass = confidence > 0.7 ? 'high' : confidence > 0.4 ? 'medium' : 'low';
+                const confidenceLabel = confidence > 0.7 ? 'High' : confidence > 0.4 ? 'Medium' : 'Low';
+                const provider = insightData.provider || 'workers_ai';
+
+                const providerNames = {
+                    'gemini_pro': '🤖 Gemini 2.5 Pro',
+                    'gemini_flash': '⚡ Gemini 2.5 Flash',
+                    'gpt5': '🧠 GPT-5',
+                    'claude_sonnet_45': '⚡ Claude 4.5',
+                    'workers_ai_fallback': '🔥 Workers AI'
+                };
+
+                const formattedInsight = insightData.insight
+                    .replace(/\n\n/g, '</p><p>')
+                    .replace(/\n/g, '<br>');
+
+                insightsContainer.innerHTML = `
+                    <div class="insights-card">
+                        <div class="insights-header">
+                            <span class="insights-icon">🤖</span>
+                            <span class="insights-title">AI Insights</span>
+                            <span class="provider-tag">${providerNames[provider] || provider}</span>
+                        </div>
+                        <div class="insights-content">
+                            <p>${formattedInsight}</p>
+                        </div>
+                        <div class="insights-meta">
+                            <span class="confidence-badge confidence-${confidenceClass}">
+                                Confidence: ${confidenceLabel} (${(confidence * 100).toFixed(0)}%)
+                            </span>
+                            <span class="insights-sources">
+                                ${insightData.sources?.length || 0} sources • ${insightData.performance?.totalTime || 'N/A'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                insightsContainer.innerHTML = '';
+            }
+
+            // Display game cards
+            resultsGrid.innerHTML = '';
+
+            results.forEach((game, i) => {
+                const relevance = game.similarity?.relevanceScore || game.similarity?.vectorScore * 100 || 70;
+
+                const card = document.createElement('div');
+                card.className = 'glass-card';
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="card-badge">${game.sport}</span>
+                        <span class="card-score">Match: ${relevance.toFixed(0)}%</span>
+                    </div>
+                    <h3 class="card-title">${game.awayTeam} @ ${game.homeTeam}</h3>
+                    <p class="card-snippet">
+                        Final: ${game.homeScore}-${game.awayScore}
+                        ${game.description ? ' • ' + game.description.substring(0, 100) + '...' : ''}
+                    </p>
+                    <div class="card-meta">
+                        <span>📅 ${formatDate(game.gameDate)}</span>
+                        ${game.week ? `<span>Week ${game.week}</span>` : ''}
+                        ${game.season ? `<span>${game.season}</span>` : ''}
+                        ${game.similarity?.recency ? `<span>${game.similarity.recency}</span>` : ''}
+                    </div>
+                `;
+
+                resultsGrid.appendChild(card);
+
+                setTimeout(() => {
+                    card.classList.add('visible');
+                }, i * 100);
+            });
+
+            resultsSection.classList.add('visible');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Event listeners
+        searchBtn.addEventListener('click', performSearch);
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.filter-pill').forEach(p =>
+                    p.classList.remove('active'));
+                pill.classList.add('active');
+                currentSport = pill.dataset.sport;
+            });
+        });
+
+        // Keyboard shortcut: Cmd/Ctrl + K for search
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+
+        // Initialize
+        initThreeJS();
+    </script>
+</body>
+</html>
