@@ -588,6 +588,10 @@
         // ========== FEATURE FLAGS (Next-Gen Integration Safety System) ==========
         // Toggle these flags to enable/disable next-gen features during rollout
         // All flags default to false - enable one at a time after testing
+        //
+        // TESTING OPTIONS:
+        // 1. Browser console: FEATURE_FLAGS.realTimeDashboard = true; location.reload();
+        // 2. URL parameters: ?allFeatures=true or ?realTimeDashboard=true
         const FEATURE_FLAGS = {
             realTimeDashboard: false,      // Phase 2: Real-time dashboard with 5-6 cards, 200-400ms transitions
             mlbStatcast: false,             // Phase 3: MLB Statcast xBA, barrel rate, attack angles (2025 innovation)
@@ -596,6 +600,27 @@
             deckGLVisualization: false,     // Phase 6: deck.gl GPU-accelerated geospatial heatmaps
             plotlyWebGPU: false             // Phase 6: Plotly.js WebGPU for million-point scatter plots
         };
+
+        // URL Query Parameter Support (for testing without console access)
+        // Enables features via URL: ?allFeatures=true or ?realTimeDashboard=true
+        (() => {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Enable all features with ?allFeatures=true or ?testMode=true
+            if (urlParams.get('allFeatures') === 'true' || urlParams.get('testMode') === 'true') {
+                Object.keys(FEATURE_FLAGS).forEach(key => FEATURE_FLAGS[key] = true);
+                console.log('🧪 Test Mode: All features enabled via URL parameter');
+                return;
+            }
+
+            // Enable individual features via URL parameters
+            Object.keys(FEATURE_FLAGS).forEach(flag => {
+                if (urlParams.get(flag) === 'true') {
+                    FEATURE_FLAGS[flag] = true;
+                    console.log(`🧪 Feature enabled via URL: ${flag}`);
+                }
+            });
+        })();
 
         // Feature flag helper - returns true if feature is enabled
         const isFeatureEnabled = (feature) => FEATURE_FLAGS[feature] === true;
@@ -2773,6 +2798,9 @@
                     } else if (sport === 'NFL') {
                         // Use NFL standings endpoint to get teams with records
                         endpoint = '/api/nfl/standings';
+                    } else if (sport === 'NBA') {
+                        // Use NBA standings endpoint
+                        endpoint = '/api/nba/standings';
                     } else if (sport === 'CFB') {
                         endpoint = '/api/cfb/teams';
                     } else if (sport === 'CBB') {
@@ -2787,8 +2815,8 @@
                     const response = await fetch(endpoint);
                     const data = await response.json();
 
-                    // For NFL and MLB, extract teams from standings structure
-                    if ((sport === 'NFL' || sport === 'MLB') && data.standings) {
+                    // For NFL, MLB, and NBA, extract teams from standings structure
+                    if ((sport === 'NFL' || sport === 'MLB' || sport === 'NBA') && data.standings) {
                         const allTeams = [];
                         data.standings.forEach(leagueOrConference => {
                             leagueOrConference.divisions?.forEach(division => {
@@ -2796,7 +2824,7 @@
                             });
                         });
                         setTeams(allTeams);
-                        console.log(`Loaded ${allTeams.length} ${sport} teams from API`);
+                        console.log(`✅ Loaded ${allTeams.length} ${sport} teams from API`);
                     } else {
                         setTeams(data.teams || []);
                     }
@@ -2821,6 +2849,9 @@
                     } else if (sport === 'NFL') {
                         // Use NFL scores endpoint with current week
                         endpoint = '/api/nfl/scores?week=current';
+                    } else if (sport === 'NBA') {
+                        // Use NBA scores endpoint (today's games)
+                        endpoint = '/api/nba/scores';
                     } else if (sport === 'CFB') {
                         endpoint = '/api/cfb/scoreboard';
                     } else if (sport === 'CBB') {
@@ -3792,31 +3823,66 @@
                     { name: "Arizona Diamondbacks", div: "NL West", currentWins: 89, games: 162, baseWinProb: 0.549, gamesLeft: 0 },
                     { name: "San Francisco Giants", div: "NL West", currentWins: 80, games: 162, baseWinProb: 0.494, gamesLeft: 0 },
                     { name: "Colorado Rockies", div: "NL West", currentWins: 61, games: 162, baseWinProb: 0.377, gamesLeft: 0 },
+                ],
+                'NBA': [
+                    // Demo/fallback data - will be replaced by real API data
+                    // Eastern Conference (placeholder)
+                    { name: "Boston Celtics", div: "Eastern", currentWins: 12, games: 82, baseWinProb: 0.750, gamesLeft: 66 },
+                    { name: "Milwaukee Bucks", div: "Eastern", currentWins: 11, games: 82, baseWinProb: 0.688, gamesLeft: 66 },
+                    { name: "Philadelphia 76ers", div: "Eastern", currentWins: 10, games: 82, baseWinProb: 0.625, gamesLeft: 66 },
+                    { name: "Miami Heat", div: "Eastern", currentWins: 9, games: 82, baseWinProb: 0.563, gamesLeft: 66 },
+                    { name: "Cleveland Cavaliers", div: "Eastern", currentWins: 8, games: 82, baseWinProb: 0.500, gamesLeft: 66 },
+                    // Western Conference (placeholder)
+                    { name: "Denver Nuggets", div: "Western", currentWins: 12, games: 82, baseWinProb: 0.750, gamesLeft: 66 },
+                    { name: "Phoenix Suns", div: "Western", currentWins: 11, games: 82, baseWinProb: 0.688, gamesLeft: 66 },
+                    { name: "Los Angeles Lakers", div: "Western", currentWins: 10, games: 82, baseWinProb: 0.625, gamesLeft: 66 },
+                    { name: "Golden State Warriors", div: "Western", currentWins: 9, games: 82, baseWinProb: 0.563, gamesLeft: 66 },
+                    { name: "Memphis Grizzlies", div: "Western", currentWins: 8, games: 82, baseWinProb: 0.500, gamesLeft: 66 },
                 ]
             };
 
-            // Fetch real standings data
+            // Fetch real standings data from API
             const fetchRealStandings = async (league) => {
                 try {
                     let endpoint = '';
                     if (league === 'NFL') {
-                        endpoint = '/api/nfl/standings?season=2025';
+                        endpoint = '/api/nfl/standings';
                     } else if (league === 'MLB') {
-                        endpoint = '/api/mlb/standings?season=2025';
+                        endpoint = '/api/mlb/standings';
+                    } else if (league === 'NBA') {
+                        endpoint = '/api/nba/standings';
                     }
 
                     if (!endpoint) return null;
 
+                    console.log(`📊 Fetching ${league} standings from API...`);
                     const response = await fetch(endpoint);
                     const data = await response.json();
 
-                    if (data.data && data.data.length > 0) {
+                    // Extract teams from standings structure
+                    if (data.standings && data.standings.length > 0) {
+                        const allTeams = [];
+                        data.standings.forEach(leagueOrConference => {
+                            leagueOrConference.divisions?.forEach(division => {
+                                division.teams?.forEach(team => {
+                                    allTeams.push({
+                                        ...team,
+                                        divisionName: division.name,
+                                        divisionAbbr: division.abbreviation
+                                    });
+                                });
+                            });
+                        });
+
+                        console.log(`✅ Loaded ${allTeams.length} ${league} teams from API`);
                         setDataSource('live');
                         setRealData(data);
-                        return data.data;
+                        return allTeams;
+                    } else {
+                        console.warn(`⚠️ ${league} API returned invalid structure:`, data);
                     }
                 } catch (error) {
-                    console.error('Failed to fetch standings:', error);
+                    console.error(`❌ Failed to fetch ${league} standings:`, error);
                     setDataSource('demo');
                 }
                 return null;
@@ -3838,20 +3904,26 @@
                     // If we have real data, use it to calculate real win probabilities
                     if (realStandings) {
                         teams = realStandings.map(standing => {
-                            const wins = standing.Wins || standing.wins || 0;
-                            const losses = standing.Losses || standing.losses || 0;
-                            const games = wins + losses;
-                            const winProb = games > 0 ? wins / games : 0.500;
+                            // Extract wins/losses from API structure (NFL uses currentWins, MLB uses wins)
+                            const wins = standing.currentWins || standing.wins || standing.record?.wins || 0;
+                            const losses = standing.currentLosses || standing.losses || standing.record?.losses || 0;
+                            const gamesPlayed = standing.gamesPlayed || (wins + losses);
+                            const winProb = gamesPlayed > 0 ? wins / gamesPlayed : 0.500;
+
+                            // Determine total games based on league
+                            const totalGames = league === 'NFL' ? 17 : league === 'NBA' ? 82 : 162;
 
                             return {
-                                name: standing.Name || standing.team || standing.Team || 'Unknown',
-                                div: standing.Division || standing.Conference || 'Unknown',
+                                name: standing.name || standing.team || standing.displayName || 'Unknown',
+                                div: standing.divisionName || standing.division || standing.conference || 'Unknown',
                                 currentWins: wins,
-                                games: league === 'NFL' ? 17 : 162,
+                                games: totalGames,
                                 baseWinProb: winProb,
-                                gamesLeft: (league === 'NFL' ? 17 : 162) - games
+                                gamesLeft: totalGames - gamesPlayed
                             };
                         }).filter(team => team.gamesLeft > 0);
+
+                        console.log(`🎲 Running Monte Carlo simulations for ${teams.length} teams with games remaining`);
                     }
 
                     const results = {};
