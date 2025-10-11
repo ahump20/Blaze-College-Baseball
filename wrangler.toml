@@ -54,18 +54,19 @@ binding = "AI"
 # ============================================================================
 # ANALYTICS ENGINE (Performance Monitoring)
 # ============================================================================
-# NOTE: Analytics Engine is not directly supported in Cloudflare Pages Functions
-# Alternative: Use KV for analytics storage or external service
-# Metrics tracked in console logs and HTTP headers:
-#   - X-Total-Time: Total response time
-#   - X-Cache: Cache hit/miss status
-#   - X-Confidence: RAG confidence score
-#   - X-Sources-Count: Number of context sources
+# UPDATED: 2025-10-11 - Analytics Engine now enabled for Pages Functions
+# Tracks production metrics:
+#   - Request performance and response times
+#   - Error rates and types
+#   - Cache hit/miss ratios
+#   - Data validation success rates
+#   - Per-sport API usage patterns
 #
-# Future: Migrate to separate Worker with Analytics Engine support
-# [[analytics_engine_datasets]]
-# binding = "ANALYTICS"
-# dataset = "bsi-analytics"
+# Middleware location: functions/api/_middleware.js
+# Query with: wrangler analytics query bsi-analytics --start-date YYYY-MM-DD
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "bsi-analytics"
 
 # ============================================================================
 # ENVIRONMENT VARIABLES (Secrets)
