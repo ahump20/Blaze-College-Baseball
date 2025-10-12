@@ -1,42 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔥 Blaze Sports Intel | Championship Analytics Platform</title>
-    <meta name="description" content="Practice to Play. Blaze Data Wins the Day. Elite championship analytics platform delivering real-time data-driven intelligence for Baseball, Football, and Basketball. Professional scouting, performance metrics, and strategic insights from the Deep South Sports Authority powered by SportsDataIO.">
-    <meta name="keywords" content="sports analytics, championship intelligence, Deep South sports, Texas athletics, baseball analytics, football analytics, basketball analytics, MLB scouting, NFL strategy, NBA metrics, NCAA recruiting, Austin Humphrey, Blaze Sports Intel, Monte Carlo simulation, AI sports analysis, SportsDataIO">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blaze Sports Intel | Championship Analytics Platform</title>
+    <meta
+      name="description"
+      content="Practice to Play. Blaze Data Wins the Day. Elite championship analytics platform delivering real-time data-driven intelligence for Baseball, Football, and Basketball. Professional scouting, performance metrics, and strategic insights from the Deep South Sports Authority powered by SportsDataIO."
+    />
+    <meta
+      name="keywords"
+      content="sports analytics, championship intelligence, Deep South sports, Texas athletics, baseball analytics, football analytics, basketball analytics, MLB scouting, NFL strategy, NBA metrics, NCAA recruiting, Austin Humphrey, Blaze Sports Intel, AI sports analysis, SportsDataIO"
+    />
 
     <!-- Open Graph / Social Media -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://blazesportsintel.com/">
-    <meta property="og:title" content="🔥 Blaze Sports Intel | Deep South Sports Authority">
-    <meta property="og:description" content="Practice to Play. Blaze Data Wins the Day. Championship intelligence platform delivering elite analytics for professional and collegiate sports organizations.">
-    <meta property="og:site_name" content="Blaze Sports Intel">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://blazesportsintel.com/" />
+    <meta property="og:title" content="Blaze Sports Intel | Deep South Sports Authority" />
+    <meta
+      property="og:description"
+      content="Practice to Play. Blaze Data Wins the Day. Championship intelligence platform delivering elite analytics for professional and collegiate sports organizations."
+    />
+    <meta property="og:site_name" content="Blaze Sports Intel" />
 
     <!-- Twitter Card -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://blazesportsintel.com/">
-    <meta property="twitter:title" content="🔥 Blaze Sports Intel | Championship Intelligence">
-    <meta property="twitter:description" content="Practice to Play. Blaze Data Wins the Day. Elite sports intelligence platform delivering championship-caliber analytics.">
-    <meta property="twitter:creator" content="@BISportsIntel">
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://blazesportsintel.com/" />
+    <meta property="twitter:title" content="Blaze Sports Intel | Championship Intelligence" />
+    <meta
+      property="twitter:description"
+      content="Practice to Play. Blaze Data Wins the Day. Elite sports intelligence platform delivering championship-caliber analytics."
+    />
+    <meta property="twitter:creator" content="@BISportsIntel" />
 
     <!-- Theme -->
-    <meta name="theme-color" content="#BF5700">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#BF5700" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <!-- Canonical -->
-    <link rel="canonical" href="https://blazesportsintel.com/">
+    <link rel="canonical" href="https://blazesportsintel.com/" />
 
     <!-- Preconnect -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+
+    <!-- Design Tokens (Canonical) -->
+    <link rel="stylesheet" href="/css/bsi-tokens.css" />
 
     <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <!-- Three.js for particle background -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -44,1755 +62,2467 @@
     <!-- Postprocessing Library (pmndrs/postprocessing) -->
     <script src="https://cdn.jsdelivr.net/npm/postprocessing@6.35.3/build/postprocessing.umd.min.js"></script>
 
-    <!-- Blaze Graphics Modules -->
-    <script src="/lib/graphics/blaze-particle-engine.js"></script>
+    <!-- Blaze Graphics Modules V4 - WebGL2 Rendering Engine -->
+    <script src="/lib/graphics/blaze-particle-engine-v4.js"></script>
     <script src="/lib/graphics/blaze-postprocessing.js"></script>
+    <script src="/lib/graphics/blaze-cursor-interactions.js"></script>
 
     <!-- Chart.js for visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- AOS Animations -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <style>
-        /* ==================== CSS VARIABLES ==================== */
-        :root {
-            /* Sophisticated Burnt Orange Palette - Psychology Optimized */
-            --blaze-burnt-orange: #BF5700;
-            --blaze-ember: #CC6600;
-            --blaze-copper: #D97B38;
-            --blaze-sunset: #E69551;
-            --blaze-bronze: #A0522D;
-            --blaze-amber: #FFBF00;
-            --blaze-rust: #8B4513;
-            --blaze-terracotta: #E2725B;
+      /* ==================== CSS VARIABLES ==================== */
+      :root {
+        /* Sophisticated Burnt Orange Palette - Psychology Optimized */
+        --blaze-burnt-orange: #bf5700;
+        --blaze-ember: #cc6600;
+        --blaze-copper: #d97b38;
+        --blaze-sunset: #e69551;
+        --blaze-bronze: #a0522d;
+        --blaze-amber: #ffbf00;
+        --blaze-rust: #8b4513;
+        --blaze-terracotta: #e2725b;
 
-            /* Gradient Definitions */
-            --gradient-primary: linear-gradient(135deg, #BF5700 0%, #CC6600 50%, #D97B38 100%);
-            --gradient-ember: linear-gradient(135deg, #CC6600 0%, #E69551 100%);
-            --gradient-deep: linear-gradient(135deg, #8B4513 0%, #BF5700 50%, #CC6600 100%);
-            --gradient-glow: radial-gradient(circle at center, rgba(191, 87, 0, 0.3) 0%, transparent 70%);
+        /* Gradient Definitions */
+        --gradient-primary: linear-gradient(135deg, #bf5700 0%, #cc6600 50%, #d97b38 100%);
+        --gradient-ember: linear-gradient(135deg, #cc6600 0%, #e69551 100%);
+        --gradient-deep: linear-gradient(135deg, #8b4513 0%, #bf5700 50%, #cc6600 100%);
+        --gradient-glow: radial-gradient(circle at center, rgba(191, 87, 0, 0.3) 0%, transparent 70%);
 
-            /* Dark Theme - Enhanced Contrast */
-            --dark-charcoal: #0D0D12;
-            --dark-slate: #161620;
-            --dark-graphite: #1F1F2E;
-            --dark-midnight: #0A0A0F;
-            --dark-border: rgba(191, 87, 0, 0.15);
-            --dark-secondary: rgba(22, 22, 32, 0.7);
+        /* Dark Theme - Enhanced Contrast */
+        --dark-charcoal: #0d0d12;
+        --dark-slate: #161620;
+        --dark-graphite: #1f1f2e;
+        --dark-midnight: #0a0a0f;
+        --dark-border: rgba(191, 87, 0, 0.15);
+        --dark-secondary: rgba(22, 22, 32, 0.7);
 
-            /* Glass Morphism - Burnt Orange Tinted */
-            --glass-light: rgba(191, 87, 0, 0.08);
-            --glass-medium: rgba(191, 87, 0, 0.12);
-            --glass-heavy: rgba(191, 87, 0, 0.18);
-            --glass-border: rgba(191, 87, 0, 0.25);
-            --glass-glow: rgba(204, 102, 0, 0.15);
+        /* Glass Morphism - Burnt Orange Tinted */
+        --glass-light: rgba(191, 87, 0, 0.08);
+        --glass-medium: rgba(191, 87, 0, 0.12);
+        --glass-heavy: rgba(191, 87, 0, 0.18);
+        --glass-border: rgba(191, 87, 0, 0.25);
+        --glass-glow: rgba(204, 102, 0, 0.15);
 
-            /* Text - Warm Tinted */
-            --text-primary: #FFFFFF;
-            --text-secondary: rgba(255, 255, 255, 0.92);
-            --text-tertiary: rgba(255, 235, 215, 0.75);
-            --text-quaternary: rgba(255, 235, 215, 0.55);
+        /* Text - Warm Tinted */
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.92);
+        --text-tertiary: rgba(255, 235, 215, 0.75);
+        --text-quaternary: rgba(255, 235, 215, 0.55);
 
-            /* Semantic */
-            --success: #2ECC71;
-            --warning: #FFBF00;
-            --danger: #E74C3C;
-            --info: #3498DB;
+        /* Semantic (component-specific overrides) */
+        --danger: #e74c3c;
+        --info: #3498db;
 
-            /* Typography */
-            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            --font-display: 'Bebas Neue', 'Impact', sans-serif;
+        /* Typography */
+        --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --font-display: 'Bebas Neue', 'Impact', sans-serif;
 
-            /* Effects */
-            --transition-fast: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-base: 350ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 600ms cubic-bezier(0.4, 0, 0.2, 1);
+        /* Effects */
+        --transition-fast: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-base: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-slow: 600ms cubic-bezier(0.4, 0, 0.2, 1);
 
-            /* Glow Effects */
-            --glow-soft: 0 0 30px rgba(191, 87, 0, 0.4);
-            --glow-medium: 0 0 50px rgba(204, 102, 0, 0.5), 0 0 80px rgba(191, 87, 0, 0.3);
-            --glow-intense: 0 0 60px rgba(204, 102, 0, 0.6), 0 0 100px rgba(191, 87, 0, 0.4), 0 0 140px rgba(217, 123, 56, 0.2);
+        /* Glow Effects */
+        --glow-soft: 0 0 30px rgba(191, 87, 0, 0.4);
+        --glow-medium: 0 0 50px rgba(204, 102, 0, 0.5), 0 0 80px rgba(191, 87, 0, 0.3);
+        --glow-intense:
+          0 0 60px rgba(204, 102, 0, 0.6), 0 0 100px rgba(191, 87, 0, 0.4), 0 0 140px rgba(217, 123, 56, 0.2);
 
-            /* Shadow Depths */
-            --shadow-burnt: 0 8px 32px rgba(191, 87, 0, 0.3);
+        /* Shadow Depths */
+        --shadow-burnt: 0 8px 32px rgba(191, 87, 0, 0.3);
 
-            /* Spacing */
-            --radius-sm: 6px;
-            --radius-md: 10px;
-            --radius-lg: 14px;
-            --radius-xl: 20px;
-            --radius-2xl: 28px;
+        /* Spacing */
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --radius-xl: 20px;
+        --radius-2xl: 28px;
+      }
+
+      /* ==================== GLOBAL RESET ==================== */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body {
+        font-family: var(--font-primary);
+        background: var(--dark-charcoal);
+        background-image:
+          radial-gradient(circle at 20% 30%, rgba(191, 87, 0, 0.08) 0%, transparent 50%),
+          radial-gradient(circle at 80% 70%, rgba(204, 102, 0, 0.06) 0%, transparent 50%),
+          radial-gradient(circle at 50% 50%, rgba(160, 82, 45, 0.04) 0%, transparent 70%);
+        color: var(--text-primary);
+        overflow-x: hidden;
+        line-height: 1.6;
+        position: relative;
+        min-height: 100vh;
+      }
+
+      ::selection {
+        background: var(--blaze-ember);
+        color: var(--text-primary);
+        text-shadow: 0 0 8px rgba(204, 102, 0, 0.5);
+      }
+
+      ::-webkit-scrollbar {
+        width: 12px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--dark-slate);
+        border-left: 1px solid var(--dark-border);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--gradient-primary);
+        border-radius: var(--radius-md);
+        border: 2px solid var(--dark-slate);
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--gradient-ember);
+        box-shadow: var(--glow-soft);
+      }
+
+      /* ==================== THREE.JS CANVAS ==================== */
+      #particle-field {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: auto;
+      }
+
+      /* ==================== HEADER/NAV ==================== */
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: linear-gradient(180deg, rgba(22, 22, 32, 0.9) 0%, transparent 100%);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        box-shadow: 0 8px 32px 0 rgba(191, 87, 0, 0.1);
+        border-bottom: 1px solid var(--dark-border);
+        transition: all var(--transition-base);
+      }
+
+      .nav.scrolled {
+        background: rgba(17, 17, 22, 0.95);
+        backdrop-filter: blur(30px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .nav-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1.25rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        font-weight: 700;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 2px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all var(--transition-base);
+      }
+
+      .logo:hover {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 20px rgba(191, 87, 0, 0.6));
+        animation: logoGlow 1.5s ease-in-out infinite;
+      }
+
+      @keyframes logoGlow {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 20px rgba(191, 87, 0, 0.6));
         }
-
-        /* ==================== GLOBAL RESET ==================== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        50% {
+          filter: drop-shadow(0 0 30px rgba(204, 102, 0, 0.8)) drop-shadow(0 0 50px rgba(191, 87, 0, 0.4));
         }
+      }
 
-        html {
-            scroll-behavior: smooth;
-            -webkit-font-smoothing: antialiased;
+      .nav-menu {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+        list-style: none;
+      }
+
+      .nav-link {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition:
+          color var(--transition-fast),
+          transform var(--transition-fast);
+        position: relative;
+      }
+
+      .nav-link:hover {
+        color: var(--blaze-copper);
+        transform: translateY(-1px);
+      }
+
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--gradient-primary);
+        transition: width var(--transition-base) cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        box-shadow: var(--glow-soft);
+      }
+
+      .nav-link:hover::after {
+        width: 100%;
+      }
+
+      .nav-btn {
+        padding: 0.75rem 1.75rem;
+        border-radius: var(--radius-xl);
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all var(--transition-base);
+        border: none;
+        text-decoration: none;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .nav-btn-primary {
+        background: var(--gradient-primary);
+        color: var(--text-primary);
+        box-shadow: var(--shadow-burnt);
+        border: 1px solid rgba(217, 123, 56, 0.3);
+        position: relative;
+      }
+
+      .nav-btn-primary::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: var(--radius-xl);
+        background: var(--gradient-ember);
+        opacity: 0;
+        transition: opacity var(--transition-base);
+      }
+
+      .nav-btn-primary:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: var(--glow-medium);
+        animation: buttonPulse 1s ease-in-out infinite;
+      }
+
+      .nav-btn-primary:hover::before {
+        opacity: 0.3;
+      }
+
+      .nav-btn-primary:active {
+        transform: translateY(-1px) scale(1);
+        transition: transform 100ms;
+      }
+
+      @keyframes buttonPulse {
+        0%,
+        100% {
+          box-shadow: var(--glow-medium);
         }
-
-        body {
-            font-family: var(--font-primary);
-            background: var(--dark-charcoal);
-            background-image:
-                radial-gradient(circle at 20% 30%, rgba(191, 87, 0, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(204, 102, 0, 0.06) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(160, 82, 45, 0.04) 0%, transparent 70%);
-            color: var(--text-primary);
-            overflow-x: hidden;
-            line-height: 1.6;
-            position: relative;
-            min-height: 100vh;
+        50% {
+          box-shadow: var(--glow-intense);
         }
+      }
 
-        ::selection {
-            background: var(--blaze-ember);
-            color: var(--text-primary);
-            text-shadow: 0 0 8px rgba(204, 102, 0, 0.5);
+      /* Mobile Menu Toggle */
+      .mobile-toggle {
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        cursor: pointer;
+        padding: 0.5rem;
+      }
+
+      .mobile-toggle span {
+        width: 25px;
+        height: 3px;
+        background: var(--text-primary);
+        border-radius: 3px;
+        transition: all var(--transition-base);
+      }
+
+      /* ==================== HERO SECTION ==================== */
+      .hero {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6rem 2rem 4rem;
+        z-index: 10;
+        overflow: hidden;
+      }
+
+      /* Live Data Visualization Canvas */
+      .hero-data-viz {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        max-width: 1000px;
+        height: 500px;
+        z-index: 1;
+        opacity: 0.3;
+        pointer-events: none;
+      }
+
+      #live-data-canvas {
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Sports Action Imagery - Floating Icons */
+      .hero-sports-imagery {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      .sport-icon-float {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        opacity: 0.15;
+        animation: float-sports 6s ease-in-out infinite;
+        animation-delay: var(--delay, 0s);
+        filter: drop-shadow(0 0 30px rgba(191, 87, 0, 0.5));
+      }
+
+      .sport-icon-float:nth-child(1) {
+        top: 15%;
+        left: 10%;
+      }
+
+      .sport-icon-float:nth-child(2) {
+        top: 20%;
+        right: 15%;
+      }
+
+      .sport-icon-float:nth-child(3) {
+        bottom: 25%;
+        left: 15%;
+      }
+
+      .sport-icon-float img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      @keyframes float-sports {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg) scale(1);
+          opacity: 0.15;
         }
-
-        ::-webkit-scrollbar {
-            width: 12px;
+        25% {
+          transform: translateY(-20px) rotate(5deg) scale(1.05);
+          opacity: 0.25;
         }
-
-        ::-webkit-scrollbar-track {
-            background: var(--dark-slate);
-            border-left: 1px solid var(--dark-border);
+        50% {
+          transform: translateY(-30px) rotate(-5deg) scale(1.1);
+          opacity: 0.3;
         }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--gradient-primary);
-            border-radius: var(--radius-md);
-            border: 2px solid var(--dark-slate);
+        75% {
+          transform: translateY(-20px) rotate(3deg) scale(1.05);
+          opacity: 0.25;
         }
+      }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--gradient-ember);
-            box-shadow: var(--glow-soft);
+      .hero-content {
+        max-width: 1200px;
+        text-align: center;
+        z-index: 10;
+        position: relative;
+      }
+
+      /* Real-Time Stats Ticker */
+      .hero-stats-ticker {
+        display: flex;
+        justify-content: center;
+        gap: 3rem;
+        margin-top: 3rem;
+        padding: 1.5rem 2rem;
+        background: var(--glass-medium);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-2xl);
+        backdrop-filter: blur(20px);
+        box-shadow: var(--glow-soft);
+      }
+
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .stat-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--blaze-amber);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+      }
+
+      .stat-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        font-family: var(--font-display);
+        letter-spacing: 1px;
+      }
+
+      .hero-badge {
+        display: inline-block;
+        padding: 0.65rem 1.75rem;
+        background: var(--glass-medium);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-2xl);
+        color: var(--blaze-amber);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+        animation: float 3s ease-in-out infinite;
+        backdrop-filter: blur(12px);
+        box-shadow: var(--glow-soft);
+        position: relative;
+        overflow: hidden;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0) scale(1);
+          box-shadow: var(--glow-soft);
         }
-
-        /* ==================== THREE.JS CANVAS ==================== */
-        #particle-field {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
+        50% {
+          transform: translateY(-12px) scale(1.02);
+          box-shadow: var(--glow-medium);
         }
+      }
 
-        /* ==================== HEADER/NAV ==================== */
-        .nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: linear-gradient(180deg, rgba(22, 22, 32, 0.9) 0%, transparent 100%);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            box-shadow: 0 8px 32px 0 rgba(191, 87, 0, 0.1);
-            border-bottom: 1px solid var(--dark-border);
-            transition: all var(--transition-base);
+      .hero-title {
+        font-family: var(--font-display);
+        font-size: clamp(3rem, 8vw, 6rem);
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 2px;
+        filter: drop-shadow(0 0 40px rgba(191, 87, 0, 0.4)) drop-shadow(0 0 80px rgba(204, 102, 0, 0.2));
+        animation: titleGlow 4s ease-in-out infinite;
+      }
+
+      @keyframes titleGlow {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 40px rgba(191, 87, 0, 0.4)) drop-shadow(0 0 80px rgba(204, 102, 0, 0.2));
         }
-
-        .nav.scrolled {
-            background: rgba(17, 17, 22, 0.95);
-            backdrop-filter: blur(30px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        50% {
+          filter: drop-shadow(0 0 60px rgba(204, 102, 0, 0.6)) drop-shadow(0 0 100px rgba(191, 87, 0, 0.3));
         }
+      }
 
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 1.25rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+      .hero-subtitle {
+        font-size: clamp(1.1rem, 2vw, 1.5rem);
+        color: var(--text-tertiary);
+        margin-bottom: 3rem;
+        line-height: 1.7;
+        max-width: 700px; /* Reduced from 850px for optimal 60-75 character line length */
+        margin-left: auto;
+        margin-right: auto;
+        font-weight: 500; /* Increased from 400 for better visual presence */
+        letter-spacing: 0.3px; /* Improved readability */
+      }
+
+      .hero-cta {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .cta-btn {
+        padding: 1.35rem 2.75rem;
+        border-radius: var(--radius-xl);
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all var(--transition-base);
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.85rem;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .cta-btn-primary {
+        background: var(--gradient-primary);
+        color: var(--text-primary);
+        box-shadow: var(--shadow-burnt);
+        border: 2px solid rgba(217, 123, 56, 0.4);
+      }
+
+      .cta-btn-primary::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: var(--radius-xl);
+        background: var(--gradient-ember);
+        opacity: 0;
+        z-index: -1;
+        transition: opacity var(--transition-base);
+      }
+
+      .cta-btn-primary:hover {
+        transform: translateY(-5px) scale(1.03);
+        box-shadow: var(--glow-intense);
+        animation: ctaPulse 2s ease-in-out infinite;
+      }
+
+      .cta-btn-primary:hover::before {
+        opacity: 0.4;
+        animation: glowPulse 2s ease-in-out infinite;
+      }
+
+      .cta-btn-primary:active {
+        transform: translateY(-2px) scale(1);
+      }
+
+      .cta-btn-secondary {
+        background: var(--glass-medium);
+        color: var(--text-primary);
+        border: 2px solid var(--glass-border);
+        backdrop-filter: blur(12px);
+      }
+
+      .cta-btn-secondary::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: var(--radius-xl);
+        background: var(--gradient-primary);
+        opacity: 0;
+        z-index: -1;
+        transition: opacity var(--transition-base);
+      }
+
+      .cta-btn-secondary:hover {
+        background: var(--glass-heavy);
+        border-color: var(--blaze-ember);
+        transform: translateY(-5px) scale(1.03);
+        box-shadow: var(--glow-soft);
+      }
+
+      .cta-btn-secondary:hover::before {
+        opacity: 0.2;
+      }
+
+      .cta-btn-secondary:active {
+        transform: translateY(-2px) scale(1);
+      }
+
+      @keyframes ctaPulse {
+        0%,
+        100% {
+          box-shadow: var(--glow-intense);
         }
-
-        .logo {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            font-weight: 700;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            transition: all var(--transition-base);
+        50% {
+          box-shadow:
+            0 0 80px rgba(204, 102, 0, 0.7),
+            0 0 120px rgba(191, 87, 0, 0.5),
+            0 0 160px rgba(217, 123, 56, 0.3);
         }
+      }
 
-        .logo:hover {
-            transform: scale(1.05);
-            filter: drop-shadow(0 0 20px rgba(191, 87, 0, 0.6));
+      @keyframes glowPulse {
+        0%,
+        100% {
+          filter: blur(20px);
         }
+        50% {
+          filter: blur(30px);
+        }
+      }
 
+      /* ==================== PLATFORM ACCESS HUB ==================== */
+      .platform-access {
+        position: relative;
+        z-index: 10;
+        padding: 5rem 2rem;
+        background: linear-gradient(180deg, transparent 0%, rgba(13, 13, 18, 0.5) 100%);
+      }
+
+      .section-container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+      }
+
+      .section-badge {
+        display: inline-block;
+        padding: 0.6rem 1.5rem;
+        background: var(--glass-medium);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-2xl);
+        color: var(--blaze-amber);
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        backdrop-filter: blur(16px);
+        box-shadow: var(--glow-soft);
+      }
+
+      .section-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 900;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        letter-spacing: 2px; /* Increased from 1.5px for stronger display presence */
+      }
+
+      .section-title::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 4px;
+        background: var(--gradient-primary);
+        margin: 1rem auto 0;
+        border-radius: 2px;
+        box-shadow: var(--glow-soft);
+      }
+
+      .section-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-tertiary);
+        max-width: 650px; /* Reduced from 700px for tighter 60-70 character line length */
+        margin: 0 auto;
+        line-height: 1.7;
+        font-weight: 500; /* Increased from default 400 for better hierarchy */
+        letter-spacing: 0.2px; /* Subtle spacing for improved legibility */
+      }
+
+      .access-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .access-card {
+        background: var(--glass-medium);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 2.5rem;
+        transition: all var(--transition-base) cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(16px);
+        text-decoration: none;
+        display: block;
+      }
+
+      .access-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        box-shadow: 0 4px 12px rgba(191, 87, 0, 0.5);
+      }
+
+      .access-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+          rgba(191, 87, 0, 0.1) 0%,
+          transparent 50%
+        );
+        opacity: 0;
+        transition: opacity var(--transition-base);
+        pointer-events: none;
+      }
+
+      .access-card:hover {
+        background: var(--glass-heavy);
+        transform: translateY(-10px) scale(1.02);
+        box-shadow:
+          var(--glow-medium),
+          0 15px 35px rgba(0, 0, 0, 0.2);
+        border-color: var(--blaze-ember);
+        backdrop-filter: blur(24px);
+      }
+
+      .access-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .access-card:hover::after {
+        opacity: 1;
+      }
+
+      .access-card:active {
+        transform: translateY(-8px) scale(1);
+      }
+
+      .access-icon {
+        width: 70px;
+        height: 70px;
+        background: var(--gradient-primary);
+        border-radius: var(--radius-xl);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-burnt);
+        transition: all var(--transition-base) cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .access-card:hover .access-icon {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: var(--glow-medium);
+        animation: iconBounce 0.6s ease-in-out;
+      }
+
+      @keyframes iconBounce {
+        0%,
+        100% {
+          transform: scale(1.1) rotate(5deg);
+        }
+        50% {
+          transform: scale(1.15) rotate(5deg) translateY(-3px);
+        }
+      }
+
+      .access-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        letter-spacing: 0.5px; /* Enhanced spacing for title prominence */
+      }
+
+      .access-description {
+        color: var(--text-tertiary);
+        line-height: 1.65; /* Slightly tighter from 1.7 for better visual density */
+        margin-bottom: 1.5rem;
+        font-weight: 450; /* Subtle increase from 400 for better readability */
+        font-size: 0.98rem; /* Slightly refined sizing */
+      }
+
+      .access-link {
+        color: var(--blaze-copper);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition:
+          gap var(--transition-fast),
+          transform var(--transition-fast);
+      }
+
+      .access-card:hover .access-link {
+        gap: 1rem;
+        animation: linkSlide 0.6s ease-in-out infinite;
+      }
+
+      @keyframes linkSlide {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(4px);
+        }
+      }
+
+      /* ==================== STATS TICKER ==================== */
+      .ticker {
+        position: relative;
+        z-index: 10;
+        padding: 2rem 0;
+        background: var(--dark-graphite);
+        border-top: 1px solid var(--dark-border);
+        border-bottom: 1px solid var(--dark-border);
+        overflow: hidden;
+      }
+
+      .ticker-content {
+        display: flex;
+        animation: scroll 30s linear infinite;
+        white-space: nowrap;
+      }
+
+      @keyframes scroll {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
+      }
+
+      .ticker-item {
+        padding: 0 3rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: var(--text-tertiary);
+        font-weight: 500;
+      }
+
+      .ticker-item i {
+        color: var(--blaze-copper);
+      }
+
+      /* ==================== FEATURES GRID ==================== */
+      .features-section {
+        position: relative;
+        z-index: 10;
+        padding: 6rem 2rem;
+        background: var(--dark-slate);
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .feature-card {
+        background: var(--glass-medium);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 2.5rem;
+        transition: all var(--transition-base) cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(16px);
+      }
+
+      .feature-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+          rgba(204, 102, 0, 0.12) 0%,
+          transparent 50%
+        );
+        opacity: 0;
+        transition: opacity var(--transition-base);
+        pointer-events: none;
+      }
+
+      .feature-card:hover {
+        background: var(--glass-heavy);
+        transform: translateY(-10px) scale(1.02);
+        box-shadow:
+          var(--shadow-burnt),
+          0 15px 35px rgba(0, 0, 0, 0.2);
+        border-color: var(--blaze-ember);
+        backdrop-filter: blur(24px);
+      }
+
+      .feature-card:hover::after {
+        opacity: 1;
+      }
+
+      .feature-card:active {
+        transform: translateY(-8px) scale(1);
+      }
+
+      .feature-icon {
+        width: 70px;
+        height: 70px;
+        background: var(--gradient-primary);
+        border-radius: var(--radius-xl);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-burnt);
+        transition: all var(--transition-base) cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: var(--glow-medium);
+        animation: iconFloat 1.5s ease-in-out infinite;
+      }
+
+      @keyframes iconFloat {
+        0%,
+        100% {
+          transform: scale(1.1) rotate(5deg) translateY(0);
+        }
+        50% {
+          transform: scale(1.1) rotate(5deg) translateY(-5px);
+        }
+      }
+
+      .feature-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        letter-spacing: 0.5px; /* Enhanced spacing for title prominence */
+      }
+
+      .feature-description {
+        color: var(--text-tertiary);
+        line-height: 1.65; /* Slightly tighter from 1.7 for better visual density */
+        margin-bottom: 1.5rem;
+        font-weight: 450; /* Subtle increase from 400 for better readability */
+        font-size: 0.98rem; /* Slightly refined sizing */
+      }
+
+      .feature-link {
+        color: var(--blaze-copper);
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition:
+          gap var(--transition-fast),
+          transform var(--transition-fast);
+      }
+
+      .feature-link:hover {
+        gap: 1rem;
+      }
+
+      .feature-card:hover .feature-link {
+        animation: linkSlide 0.6s ease-in-out infinite;
+      }
+
+      /* ==================== SPORTS HUBS ==================== */
+      .sports-section {
+        position: relative;
+        z-index: 10;
+        padding: 6rem 2rem;
+        background: var(--dark-charcoal);
+      }
+
+      .sports-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .sport-card {
+        background: var(--glass-medium);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        text-align: center;
+        transition: all var(--transition-base) cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        display: block;
+      }
+
+      .sport-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(217, 123, 56, 0.15) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity var(--transition-base);
+        pointer-events: none;
+      }
+
+      .sport-card:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow:
+          0 20px 40px rgba(191, 87, 0, 0.4),
+          0 10px 20px rgba(0, 0, 0, 0.15);
+        border-color: var(--blaze-ember);
+        backdrop-filter: blur(24px);
+      }
+
+      .sport-card:hover::after {
+        opacity: 1;
+      }
+
+      .sport-card:active {
+        transform: translateY(-6px) scale(1);
+      }
+
+      .sport-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        transition: transform var(--transition-base);
+      }
+
+      .sport-card:hover .sport-icon {
+        transform: scale(1.1) rotate(5deg);
+        animation: sportIconSpin 0.8s ease-in-out;
+      }
+
+      @keyframes sportIconSpin {
+        0% {
+          transform: scale(1) rotate(0deg);
+        }
+        50% {
+          transform: scale(1.15) rotate(5deg);
+        }
+        100% {
+          transform: scale(1.1) rotate(5deg);
+        }
+      }
+
+      .sport-name {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        letter-spacing: 1px;
+      }
+
+      .sport-status {
+        color: var(--text-tertiary);
+        font-size: 0.9rem;
+      }
+
+      .sport-status.live {
+        color: var(--success);
+        font-weight: 600;
+      }
+
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.6;
+        }
+      }
+
+      /* ==================== ABOUT SECTION ==================== */
+      .about-section {
+        position: relative;
+        z-index: 10;
+        padding: 6rem 2rem;
+        background: linear-gradient(180deg, var(--dark-slate) 0%, var(--dark-graphite) 100%);
+      }
+
+      .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: start;
+      }
+
+      .about-text {
+        color: var(--text-secondary);
+        line-height: 1.75; /* Reduced from 1.8 for better visual rhythm */
+        margin-bottom: 1.5rem;
+        font-size: 1.05rem;
+        max-width: 650px; /* Added constraint for optimal line length */
+        font-weight: 450; /* Subtle weight increase for better presence */
+      }
+
+      .about-text strong {
+        color: var(--blaze-copper);
+        font-weight: 600;
+      }
+
+      .about-credentials {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: var(--glass-light);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--glass-border);
+      }
+
+      .credential-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+      }
+
+      .credential-item i {
+        color: var(--blaze-copper);
+        font-size: 1.1rem;
+        width: 24px;
+        text-align: center;
+      }
+
+      .team-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .team-card {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 1.25rem;
+        background: var(--glass-light);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--glass-border);
+        transition: all var(--transition-base) cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .team-card::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--gradient-primary);
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: transform 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      .team-card:hover {
+        background: var(--glass-medium);
+        border-color: var(--blaze-copper);
+        transform: translateX(8px);
+        box-shadow: 0 4px 12px rgba(191, 87, 0, 0.2);
+      }
+
+      .team-card:hover::before {
+        transform: scaleY(1);
+      }
+
+      .team-icon {
+        font-size: 2rem;
+        flex-shrink: 0;
+        transition: transform var(--transition-fast);
+      }
+
+      .team-card:hover .team-icon {
+        transform: scale(1.15) rotate(5deg);
+      }
+
+      .team-info h4 {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+      }
+
+      .team-info p {
+        color: var(--text-tertiary);
+        font-size: 0.9rem;
+        margin: 0;
+      }
+
+      /* ==================== FOOTER ==================== */
+      .footer {
+        position: relative;
+        z-index: 10;
+        background: var(--dark-graphite);
+        border-top: 1px solid var(--dark-border);
+        padding: 4rem 2rem 2rem;
+      }
+
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 3rem;
+        margin-bottom: 3rem;
+      }
+
+      .footer-section h3 {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        color: var(--blaze-copper);
+        margin-bottom: 1rem;
+        letter-spacing: 1px;
+      }
+
+      .footer-links {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .footer-link {
+        color: var(--text-tertiary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+      }
+
+      .footer-link:hover {
+        color: var(--blaze-copper);
+      }
+
+      .footer-bottom {
+        padding-top: 2rem;
+        border-top: 1px solid var(--dark-border);
+        text-align: center;
+        color: var(--text-quaternary);
+      }
+
+      .social-links {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+
+      .social-link {
+        width: 40px;
+        height: 40px;
+        background: var(--glass-medium);
+        border: 1px solid var(--glass-border);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: all var(--transition-base) cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+      }
+
+      .social-link::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        opacity: 0;
+        z-index: -1;
+        transition: opacity var(--transition-base);
+      }
+
+      .social-link:hover {
+        background: var(--blaze-burnt-orange);
+        border-color: var(--blaze-ember);
+        color: var(--text-primary);
+        transform: translateY(-4px) scale(1.1) rotate(5deg);
+        box-shadow: 0 8px 16px rgba(191, 87, 0, 0.4);
+      }
+
+      .social-link:hover::before {
+        opacity: 0.5;
+        animation: socialGlow 1.5s ease-in-out infinite;
+      }
+
+      .social-link:active {
+        transform: translateY(-2px) scale(1);
+      }
+
+      @keyframes socialGlow {
+        0%,
+        100% {
+          filter: blur(8px);
+        }
+        50% {
+          filter: blur(12px);
+        }
+      }
+
+      .text-gradient {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* ==================== RESPONSIVE ==================== */
+      @media (max-width: 768px) {
         .nav-menu {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            list-style: none;
+          position: fixed;
+          top: 70px;
+          left: -100%;
+          width: 100%;
+          height: calc(100vh - 70px);
+          background: rgba(17, 17, 22, 0.98);
+          backdrop-filter: blur(20px);
+          flex-direction: column;
+          padding: 2rem;
+          transition: left var(--transition-base);
         }
 
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color var(--transition-fast);
-            position: relative;
+        .nav-menu.active {
+          left: 0;
         }
 
-        .nav-link:hover {
-            color: var(--blaze-copper);
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gradient-primary);
-            transition: width var(--transition-base);
-            box-shadow: var(--glow-soft);
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        .nav-btn {
-            padding: 0.75rem 1.75rem;
-            border-radius: var(--radius-xl);
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all var(--transition-base);
-            border: none;
-            text-decoration: none;
-            display: inline-block;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-btn-primary {
-            background: var(--gradient-primary);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-burnt);
-            border: 1px solid rgba(217, 123, 56, 0.3);
-        }
-
-        .nav-btn-primary:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: var(--glow-medium);
-        }
-
-        /* Mobile Menu Toggle */
         .mobile-toggle {
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            cursor: pointer;
-            padding: 0.5rem;
+          display: flex;
         }
 
-        .mobile-toggle span {
-            width: 25px;
-            height: 3px;
-            background: var(--text-primary);
-            border-radius: 3px;
-            transition: all var(--transition-base);
-        }
-
-        /* ==================== HERO SECTION ==================== */
         .hero {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 6rem 2rem 4rem;
-            z-index: 10;
-        }
-
-        .hero-content {
-            max-width: 1200px;
-            text-align: center;
-            z-index: 10;
-            position: relative;
-        }
-
-        .hero-badge {
-            display: inline-block;
-            padding: 0.65rem 1.75rem;
-            background: var(--glass-medium);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-2xl);
-            color: var(--blaze-amber);
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
-            animation: float 3s ease-in-out infinite;
-            backdrop-filter: blur(12px);
-            box-shadow: var(--glow-soft);
-            position: relative;
-            overflow: hidden;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) scale(1);
-                box-shadow: var(--glow-soft);
-            }
-            50% {
-                transform: translateY(-12px) scale(1.02);
-                box-shadow: var(--glow-medium);
-            }
-        }
-
-        .hero-title {
-            font-family: var(--font-display);
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 2px;
-            filter: drop-shadow(0 0 40px rgba(191, 87, 0, 0.4)) drop-shadow(0 0 80px rgba(204, 102, 0, 0.2));
-            animation: titleGlow 4s ease-in-out infinite;
-        }
-
-        @keyframes titleGlow {
-            0%, 100% {
-                filter: drop-shadow(0 0 40px rgba(191, 87, 0, 0.4)) drop-shadow(0 0 80px rgba(204, 102, 0, 0.2));
-            }
-            50% {
-                filter: drop-shadow(0 0 60px rgba(204, 102, 0, 0.6)) drop-shadow(0 0 100px rgba(191, 87, 0, 0.3));
-            }
-        }
-
-        .hero-subtitle {
-            font-size: clamp(1.1rem, 2vw, 1.5rem);
-            color: var(--text-tertiary);
-            margin-bottom: 3rem;
-            line-height: 1.7;
-            max-width: 850px;
-            margin-left: auto;
-            margin-right: auto;
-            font-weight: 400;
+          padding: 5rem 1rem 3rem;
         }
 
         .hero-cta {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .cta-btn {
-            padding: 1.35rem 2.75rem;
-            border-radius: var(--radius-xl);
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all var(--transition-base);
-            border: none;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.85rem;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .cta-btn-primary {
-            background: var(--gradient-primary);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-burnt);
-            border: 2px solid rgba(217, 123, 56, 0.4);
-        }
-
-        .cta-btn-primary:hover {
-            transform: translateY(-5px) scale(1.03);
-            box-shadow: var(--glow-intense);
-        }
-
-        .cta-btn-secondary {
-            background: var(--glass-medium);
-            color: var(--text-primary);
-            border: 2px solid var(--glass-border);
-            backdrop-filter: blur(12px);
-        }
-
-        .cta-btn-secondary:hover {
-            background: var(--glass-heavy);
-            border-color: var(--blaze-ember);
-            transform: translateY(-5px) scale(1.03);
-            box-shadow: var(--glow-soft);
-        }
-
-        /* ==================== PLATFORM ACCESS HUB ==================== */
-        .platform-access {
-            position: relative;
-            z-index: 10;
-            padding: 5rem 2rem;
-            background: linear-gradient(180deg, transparent 0%, rgba(13, 13, 18, 0.5) 100%);
-        }
-
-        .section-container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-badge {
-            display: inline-block;
-            padding: 0.6rem 1.5rem;
-            background: var(--glass-medium);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-2xl);
-            color: var(--blaze-amber);
-            font-weight: 600;
-            font-size: 0.85rem;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            backdrop-filter: blur(16px);
-            box-shadow: var(--glow-soft);
-        }
-
-        .section-title {
-            font-family: var(--font-display);
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 900;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            letter-spacing: 1.5px;
-        }
-
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 80px;
-            height: 4px;
-            background: var(--gradient-primary);
-            margin: 1rem auto 0;
-            border-radius: 2px;
-            box-shadow: var(--glow-soft);
-        }
-
-        .section-subtitle {
-            font-size: 1.2rem;
-            color: var(--text-tertiary);
-            max-width: 700px;
-            margin: 0 auto;
-            line-height: 1.7;
-        }
-
-        .access-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .access-card {
-            background: var(--glass-medium);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            padding: 2.5rem;
-            transition: all var(--transition-base);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(16px);
-            text-decoration: none;
-            display: block;
-        }
-
-        .access-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gradient-primary);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform var(--transition-base);
-        }
-
-        .access-card:hover {
-            background: var(--glass-heavy);
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: var(--glow-medium);
-            border-color: var(--blaze-ember);
-        }
-
-        .access-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .access-icon {
-            width: 70px;
-            height: 70px;
-            background: var(--gradient-primary);
-            border-radius: var(--radius-xl);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2rem;
-            margin-bottom: 1.5rem;
-            box-shadow: var(--shadow-burnt);
-            transition: all var(--transition-base);
-        }
-
-        .access-card:hover .access-icon {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: var(--glow-medium);
-        }
-
-        .access-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-        }
-
-        .access-description {
-            color: var(--text-tertiary);
-            line-height: 1.7;
-            margin-bottom: 1.5rem;
-        }
-
-        .access-link {
-            color: var(--blaze-copper);
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: gap var(--transition-fast);
-        }
-
-        .access-card:hover .access-link {
-            gap: 1rem;
-        }
-
-        /* ==================== STATS TICKER ==================== */
-        .ticker {
-            position: relative;
-            z-index: 10;
-            padding: 2rem 0;
-            background: var(--dark-graphite);
-            border-top: 1px solid var(--dark-border);
-            border-bottom: 1px solid var(--dark-border);
-            overflow: hidden;
-        }
-
-        .ticker-content {
-            display: flex;
-            animation: scroll 30s linear infinite;
-            white-space: nowrap;
-        }
-
-        @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        .ticker-item {
-            padding: 0 3rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            color: var(--text-tertiary);
-            font-weight: 500;
-        }
-
-        .ticker-item i {
-            color: var(--blaze-copper);
-        }
-
-        /* ==================== FEATURES GRID ==================== */
-        .features-section {
-            position: relative;
-            z-index: 10;
-            padding: 6rem 2rem;
-            background: var(--dark-slate);
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .feature-card {
-            background: var(--glass-medium);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            padding: 2.5rem;
-            transition: all var(--transition-base);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(16px);
-        }
-
-        .feature-card:hover {
-            background: var(--glass-heavy);
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: var(--shadow-burnt);
-            border-color: var(--blaze-ember);
-        }
-
-        .feature-icon {
-            width: 70px;
-            height: 70px;
-            background: var(--gradient-primary);
-            border-radius: var(--radius-xl);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2rem;
-            margin-bottom: 1.5rem;
-            box-shadow: var(--shadow-burnt);
-            transition: all var(--transition-base);
-        }
-
-        .feature-card:hover .feature-icon {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: var(--glow-medium);
-        }
-
-        .feature-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-        }
-
-        .feature-description {
-            color: var(--text-tertiary);
-            line-height: 1.7;
-            margin-bottom: 1.5rem;
-        }
-
-        .feature-link {
-            color: var(--blaze-copper);
-            text-decoration: none;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: gap var(--transition-fast);
-        }
-
-        .feature-link:hover {
-            gap: 1rem;
-        }
-
-        /* ==================== SPORTS HUBS ==================== */
-        .sports-section {
-            position: relative;
-            z-index: 10;
-            padding: 6rem 2rem;
-            background: var(--dark-charcoal);
-        }
-
-        .sports-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .sport-card {
-            background: var(--glass-medium);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            padding: 2rem;
-            text-align: center;
-            transition: all var(--transition-base);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            text-decoration: none;
-            display: block;
-        }
-
-        .sport-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(191, 87, 0, 0.4);
-            border-color: var(--blaze-ember);
-        }
-
-        .sport-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        .sport-name {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-            letter-spacing: 1px;
-        }
-
-        .sport-status {
-            color: var(--text-tertiary);
-            font-size: 0.9rem;
-        }
-
-        .sport-status.live {
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
-        /* ==================== ABOUT SECTION ==================== */
-        .about-section {
-            position: relative;
-            z-index: 10;
-            padding: 6rem 2rem;
-            background: linear-gradient(180deg, var(--dark-slate) 0%, var(--dark-graphite) 100%);
+          flex-direction: column;
+          align-items: stretch;
         }
 
         .about-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: start;
+          grid-template-columns: 1fr;
+          gap: 3rem;
         }
 
-        .about-text {
-            color: var(--text-secondary);
-            line-height: 1.8;
-            margin-bottom: 1.5rem;
-            font-size: 1.05rem;
+        .access-grid,
+        .features-grid,
+        .sports-grid {
+          grid-template-columns: 1fr;
         }
-
-        .about-text strong {
-            color: var(--blaze-copper);
-            font-weight: 600;
-        }
-
-        .about-credentials {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: var(--glass-light);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--glass-border);
-        }
-
-        .credential-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-
-        .credential-item i {
-            color: var(--blaze-copper);
-            font-size: 1.1rem;
-            width: 24px;
-            text-align: center;
-        }
-
-        .team-cards {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .team-card {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            padding: 1.25rem;
-            background: var(--glass-light);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--glass-border);
-            transition: all var(--transition-base);
-            cursor: pointer;
-        }
-
-        .team-card:hover {
-            background: var(--glass-medium);
-            border-color: var(--blaze-copper);
-            transform: translateX(8px);
-        }
-
-        .team-icon {
-            font-size: 2rem;
-            flex-shrink: 0;
-        }
-
-        .team-info h4 {
-            color: var(--text-primary);
-            font-size: 1.1rem;
-            margin-bottom: 0.25rem;
-            font-weight: 600;
-        }
-
-        .team-info p {
-            color: var(--text-tertiary);
-            font-size: 0.9rem;
-            margin: 0;
-        }
-
-        /* ==================== FOOTER ==================== */
-        .footer {
-            position: relative;
-            z-index: 10;
-            background: var(--dark-graphite);
-            border-top: 1px solid var(--dark-border);
-            padding: 4rem 2rem 2rem;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 3rem;
-            margin-bottom: 3rem;
-        }
-
-        .footer-section h3 {
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            color: var(--blaze-copper);
-            margin-bottom: 1rem;
-            letter-spacing: 1px;
-        }
-
-        .footer-links {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .footer-link {
-            color: var(--text-tertiary);
-            text-decoration: none;
-            transition: color var(--transition-fast);
-        }
-
-        .footer-link:hover {
-            color: var(--blaze-copper);
-        }
-
-        .footer-bottom {
-            padding-top: 2rem;
-            border-top: 1px solid var(--dark-border);
-            text-align: center;
-            color: var(--text-quaternary);
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
-
-        .social-link {
-            width: 40px;
-            height: 40px;
-            background: var(--glass-medium);
-            border: 1px solid var(--glass-border);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: all var(--transition-base);
-        }
-
-        .social-link:hover {
-            background: var(--blaze-burnt-orange);
-            border-color: var(--blaze-ember);
-            color: var(--text-primary);
-            transform: translateY(-4px);
-        }
-
-        .text-gradient {
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* ==================== RESPONSIVE ==================== */
-        @media (max-width: 768px) {
-            .nav-menu {
-                position: fixed;
-                top: 70px;
-                left: -100%;
-                width: 100%;
-                height: calc(100vh - 70px);
-                background: rgba(17, 17, 22, 0.98);
-                backdrop-filter: blur(20px);
-                flex-direction: column;
-                padding: 2rem;
-                transition: left var(--transition-base);
-            }
-
-            .nav-menu.active {
-                left: 0;
-            }
-
-            .mobile-toggle {
-                display: flex;
-            }
-
-            .hero {
-                padding: 5rem 1rem 3rem;
-            }
-
-            .hero-cta {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .about-grid {
-                grid-template-columns: 1fr;
-                gap: 3rem;
-            }
-
-            .access-grid,
-            .features-grid,
-            .sports-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Three.js Particle Background -->
     <canvas id="particle-field"></canvas>
 
     <!-- Navigation -->
     <nav class="nav" id="nav">
-        <div class="nav-container">
-            <a href="/" class="logo" style="text-decoration: none;">
-                🔥 BLAZE SPORTS INTEL
+      <div class="nav-container">
+        <a href="/" class="logo" style="text-decoration: none">
+          <img
+            src="/icons/blaze-logo.svg"
+            alt="Blaze"
+            style="width: 24px; height: 24px; display: inline-block; margin-right: 0.25rem"
+          />
+          BLAZE SPORTS INTEL
+        </a>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="#access" class="nav-link">Platform</a></li>
+          <li><a href="/features" class="nav-link">Features</a></li>
+          <li><a href="/data-transparency" class="nav-link">Data</a></li>
+          <li><a href="#sports" class="nav-link">Sports</a></li>
+          <li>
+            <a href="/copilot" class="nav-link">
+              <img
+                src="/icons/robot.svg"
+                alt=""
+                style="width: 1rem; height: 1rem; display: inline-block; margin-right: 0.35rem; vertical-align: middle"
+              />AI Copilot
             </a>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="#access" class="nav-link">Platform</a></li>
-                <li><a href="#features" class="nav-link">Features</a></li>
-                <li><a href="#sports" class="nav-link">Sports</a></li>
-                <li><a href="/copilot" class="nav-link">
-                    <i class="fas fa-robot" style="margin-right: 0.35rem;"></i>AI Copilot
-                </a></li>
-                <li><a href="/about" class="nav-link">About</a></li>
-                <li><a href="/analytics" class="nav-btn nav-btn-primary">Launch Analytics</a></li>
-            </ul>
-            <div class="mobile-toggle" id="mobileToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+          </li>
+          <li><a href="/about" class="nav-link">About</a></li>
+          <li><a href="/analytics" class="nav-btn nav-btn-primary">Launch Analytics</a></li>
+        </ul>
+        <div class="mobile-toggle" id="mobileToggle">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
+      </div>
     </nav>
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-content" data-aos="fade-up">
-            <div class="hero-badge">
-                Built from Deep South observation
-            </div>
-            <h1 class="hero-title">
-                Practice to Play.<br>Blaze Data Wins the Day.
-            </h1>
-            <p class="hero-subtitle">
-                Most tools count what's convenient. Blaze captures what swings outcomes—situation, momentum, and adjustments under pressure—so coaches decide faster.
-            </p>
-            <div class="hero-cta">
-                <a href="/analytics" class="cta-btn cta-btn-primary">
-                    <i class="fas fa-chart-line"></i>
-                    View Analytics
-                </a>
-                <a href="/about" class="cta-btn cta-btn-secondary">
-                    <i class="fas fa-info-circle"></i>
-                    Why This Exists
-                </a>
-            </div>
+      <!-- Live Data Visualization Overlay -->
+      <div class="hero-data-viz" data-aos="fade-in" data-aos-delay="200">
+        <canvas id="live-data-canvas"></canvas>
+      </div>
+
+      <!-- Sports Action Imagery -->
+      <div class="hero-sports-imagery" data-aos="zoom-in" data-aos-delay="400">
+        <div class="sport-icon-float" style="--delay: 0s">
+          <img src="/icons/baseball.svg" alt="Baseball" />
         </div>
+        <div class="sport-icon-float" style="--delay: 0.5s">
+          <img src="/icons/football.svg" alt="Football" />
+        </div>
+        <div class="sport-icon-float" style="--delay: 1s">
+          <img src="/icons/basketball.svg" alt="Basketball" />
+        </div>
+      </div>
+
+      <div class="hero-content" data-aos="fade-up">
+        <div class="hero-badge">Built from Deep South observation</div>
+        <h1 class="hero-title">Practice to Play.<br />Blaze Data Wins the Day.</h1>
+        <p class="hero-subtitle">
+          Most tools count what's convenient. Blaze captures what swings outcomes—situation, momentum, and adjustments
+          under pressure—so coaches decide faster.
+        </p>
+        <div class="hero-cta">
+          <a href="/analytics" class="cta-btn cta-btn-primary">
+            <img src="/icons/chart-line.svg" alt="" style="width: 1.25rem; height: 1.25rem; display: inline-block" />
+            View Analytics
+          </a>
+          <a href="/about" class="cta-btn cta-btn-secondary">
+            <img src="/icons/info-circle.svg" alt="" style="width: 1.25rem; height: 1.25rem; display: inline-block" />
+            Why This Exists
+          </a>
+        </div>
+
+        <!-- Real-Time Stats Ticker -->
+        <div class="hero-stats-ticker" data-aos="fade-up" data-aos-delay="600">
+          <div class="stat-item" id="live-stat-1">
+            <span class="stat-label">MLB</span>
+            <span class="stat-value">Loading...</span>
+          </div>
+          <div class="stat-item" id="live-stat-2">
+            <span class="stat-label">NFL</span>
+            <span class="stat-value">Loading...</span>
+          </div>
+          <div class="stat-item" id="live-stat-3">
+            <span class="stat-label">NCAA</span>
+            <span class="stat-value">Loading...</span>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Platform Access Hub -->
     <section class="platform-access" id="access">
-        <div class="section-container">
-            <div class="section-header" data-aos="fade-up">
-                <div class="section-badge">Quick Access</div>
-                <h2 class="section-title">Platform Navigation</h2>
-                <p class="section-subtitle">
-                    Access all platform features and sports-specific analytics
-                </p>
-            </div>
-
-            <div class="access-grid">
-                <a href="/copilot" class="access-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="access-icon">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <h3 class="access-title">AI Copilot</h3>
-                    <p class="access-description">
-                        Natural language sports intelligence. Ask questions, get data-driven insights with semantic search and RAG technology.
-                    </p>
-                    <span class="access-link">
-                        Launch Copilot <i class="fas fa-arrow-right"></i>
-                    </span>
-                </a>
-
-                <a href="/analytics" class="access-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="access-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <h3 class="access-title">Analytics Dashboard</h3>
-                    <p class="access-description">
-                        Real-time standings, Monte Carlo simulations, 3D visualizations, and championship probability tracking.
-                    </p>
-                    <span class="access-link">
-                        View Analytics <i class="fas fa-arrow-right"></i>
-                    </span>
-                </a>
-
-                <a href="/mlb" class="access-card" data-aos="fade-up" data-aos-delay="300">
-                    <div class="access-icon">
-                        ⚾
-                    </div>
-                    <h3 class="access-title">MLB Baseball</h3>
-                    <p class="access-description">
-                        Complete Major League Baseball coverage with live scores, team stats, player analytics, and Perfect Game data.
-                    </p>
-                    <span class="access-link">
-                        View MLB Hub <i class="fas fa-arrow-right"></i>
-                    </span>
-                </a>
-
-                <a href="/nfl" class="access-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="access-icon">
-                        🏈
-                    </div>
-                    <h3 class="access-title">NFL Football</h3>
-                    <p class="access-description">
-                        Professional football analytics with real-time game data, team performance metrics, and playoff projections.
-                    </p>
-                    <span class="access-link">
-                        View NFL Hub <i class="fas fa-arrow-right"></i>
-                    </span>
-                </a>
-
-                <a href="/cfb" class="access-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="access-icon">
-                        🏈
-                    </div>
-                    <h3 class="access-title">College Football</h3>
-                    <p class="access-description">
-                        NCAA Football including Texas HS, conference standings, recruiting data, and championship scenarios.
-                    </p>
-                    <span class="access-link">
-                        View CFB Hub <i class="fas fa-arrow-right"></i>
-                    </span>
-                </a>
-
-                <a href="/cbb" class="access-card" data-aos="fade-up" data-aos-delay="300">
-                    <div class="access-icon">
-                        🏀
-                    </div>
-                    <h3 class="access-title">College Basketball</h3>
-                    <p class="access-description">
-                        NCAA Men's Basketball analytics, tournament projections, conference tracking, and player statistics.
-                    </p>
-                    <span class="access-link">
-                        View CBB Hub <i class="fas fa-arrow-right"></i>
-                    </span>
-                </a>
-
-                <a href="/contact" class="access-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="access-icon">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <h3 class="access-title">Contact Us</h3>
-                    <p class="access-description">
-                        Get in touch for partnerships, enterprise solutions, or platform support. We're here to help.
-                    </p>
-                    <span class="access-link">
-                        Contact Form <i class="fas fa-arrow-right"></i>
-                    </span>
-                </a>
-
-                <a href="/about" class="access-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="access-icon">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h3 class="access-title">About the Founder</h3>
-                    <p class="access-description">
-                        Learn about Austin Humphrey and the mission behind Blaze Sports Intel—from Memphis to Texas.
-                    </p>
-                    <span class="access-link">
-                        Read Story <i class="fas fa-arrow-right"></i>
-                    </span>
-                </a>
-
-                <a href="/legal/privacy" class="access-card" data-aos="fade-up" data-aos-delay="300">
-                    <div class="access-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3 class="access-title">Legal & Privacy</h3>
-                    <p class="access-description">
-                        Our commitment to data privacy, security, and transparency. View our privacy policy and terms.
-                    </p>
-                    <span class="access-link">
-                        Legal Info <i class="fas fa-arrow-right"></i>
-                    </span>
-                </a>
-            </div>
+      <div class="section-container">
+        <div class="section-header" data-aos="fade-up">
+          <div class="section-badge">Quick Access</div>
+          <h2 class="section-title">Platform Navigation</h2>
+          <p class="section-subtitle">Access all platform features and sports-specific analytics</p>
         </div>
+
+        <div class="access-grid">
+          <a href="/copilot" class="access-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="access-icon">
+              <img src="/icons/robot.svg" alt="AI Copilot" style="width: 2.2rem; height: 2.2rem" />
+            </div>
+            <h3 class="access-title">AI Copilot</h3>
+            <p class="access-description">
+              Natural language sports intelligence. Ask questions, get data-driven insights with semantic search and RAG
+              technology.
+            </p>
+            <span class="access-link">
+              Launch Copilot
+              <img
+                src="/icons/arrow-right.svg"
+                alt=""
+                style="width: 1rem; height: 1rem; display: inline-block; vertical-align: middle"
+              />
+            </span>
+          </a>
+
+          <a href="/analytics" class="access-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="access-icon">
+              <i class="fas fa-chart-bar"></i>
+            </div>
+            <h3 class="access-title">Analytics Dashboard</h3>
+            <p class="access-description">
+              Real-time standings, advanced analytics, 3D visualizations, and data-driven insights.
+            </p>
+            <span class="access-link"> View Analytics <i class="fas fa-arrow-right"></i> </span>
+          </a>
+
+          <a href="/mlb" class="access-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="access-icon">
+              <img src="/icons/baseball.svg" alt="Baseball" style="width: 2.2rem; height: 2.2rem" />
+            </div>
+            <h3 class="access-title">MLB Baseball</h3>
+            <p class="access-description">
+              Complete Major League Baseball coverage with live scores, team stats, player analytics, and Perfect Game
+              data.
+            </p>
+            <span class="access-link"> View MLB Hub <i class="fas fa-arrow-right"></i> </span>
+          </a>
+
+          <a href="/nfl" class="access-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="access-icon">
+              <img src="/icons/football.svg" alt="Football" style="width: 2.2rem; height: 2.2rem" />
+            </div>
+            <h3 class="access-title">NFL Football</h3>
+            <p class="access-description">
+              Professional football analytics with real-time game data, team performance metrics, and playoff
+              projections.
+            </p>
+            <span class="access-link"> View NFL Hub <i class="fas fa-arrow-right"></i> </span>
+          </a>
+
+          <a href="/cfb" class="access-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="access-icon">
+              <img src="/icons/football.svg" alt="Football" style="width: 2.2rem; height: 2.2rem" />
+            </div>
+            <h3 class="access-title">College Football</h3>
+            <p class="access-description">
+              NCAA Football including Texas HS, conference standings, recruiting data, and championship scenarios.
+            </p>
+            <span class="access-link"> View CFB Hub <i class="fas fa-arrow-right"></i> </span>
+          </a>
+
+          <a href="/cbb" class="access-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="access-icon">
+              <img src="/icons/basketball.svg" alt="Basketball" style="width: 2.2rem; height: 2.2rem" />
+            </div>
+            <h3 class="access-title">College Basketball</h3>
+            <p class="access-description">
+              NCAA Men's Basketball analytics, tournament projections, conference tracking, and player statistics.
+            </p>
+            <span class="access-link"> View CBB Hub <i class="fas fa-arrow-right"></i> </span>
+          </a>
+
+          <a href="/contact" class="access-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="access-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <h3 class="access-title">Contact Us</h3>
+            <p class="access-description">
+              Get in touch for partnerships, enterprise solutions, or platform support. We're here to help.
+            </p>
+            <span class="access-link"> Contact Form <i class="fas fa-arrow-right"></i> </span>
+          </a>
+
+          <a href="/about" class="access-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="access-icon">
+              <i class="fas fa-user"></i>
+            </div>
+            <h3 class="access-title">About the Founder</h3>
+            <p class="access-description">
+              Learn about Austin Humphrey and the mission behind Blaze Sports Intel—from Memphis to Texas.
+            </p>
+            <span class="access-link"> Read Story <i class="fas fa-arrow-right"></i> </span>
+          </a>
+
+          <a href="/legal/privacy" class="access-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="access-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 class="access-title">Legal & Privacy</h3>
+            <p class="access-description">
+              Our commitment to data privacy, security, and transparency. View our privacy policy and terms.
+            </p>
+            <span class="access-link"> Legal Info <i class="fas fa-arrow-right"></i> </span>
+          </a>
+        </div>
+      </div>
     </section>
 
     <!-- Stats Ticker -->
     <div class="ticker">
-        <div class="ticker-content">
-            <div class="ticker-item">
-                <i class="fas fa-chart-line"></i>
-                <span>Monte Carlo simulations</span>
-            </div>
-            <div class="ticker-item">
-                <i class="fas fa-database"></i>
-                <span>Live API integration</span>
-            </div>
-            <div class="ticker-item">
-                <i class="fas fa-table"></i>
-                <span>Unified league data</span>
-            </div>
-            <div class="ticker-item">
-                <i class="fas fa-code-branch"></i>
-                <span>Historical archives</span>
-            </div>
-            <div class="ticker-item">
-                <i class="fas fa-filter"></i>
-                <span>Multi-filter search</span>
-            </div>
-            <div class="ticker-item">
-                <i class="fas fa-robot"></i>
-                <span>AI-powered insights</span>
-            </div>
-            <!-- Duplicate for seamless loop -->
-            <div class="ticker-item">
-                <i class="fas fa-chart-line"></i>
-                <span>Monte Carlo simulations</span>
-            </div>
-            <div class="ticker-item">
-                <i class="fas fa-database"></i>
-                <span>Live API integration</span>
-            </div>
-            <div class="ticker-item">
-                <i class="fas fa-table"></i>
-                <span>Unified league data</span>
-            </div>
-            <div class="ticker-item">
-                <i class="fas fa-code-branch"></i>
-                <span>Historical archives</span>
-            </div>
-            <div class="ticker-item">
-                <i class="fas fa-filter"></i>
-                <span>Multi-filter search</span>
-            </div>
-            <div class="ticker-item">
-                <i class="fas fa-robot"></i>
-                <span>AI-powered insights</span>
-            </div>
+      <div class="ticker-content">
+        <div class="ticker-item">
+          <i class="fas fa-chart-line"></i>
+          <span>Statistical modeling</span>
         </div>
+        <div class="ticker-item">
+          <i class="fas fa-database"></i>
+          <span>Live API integration</span>
+        </div>
+        <div class="ticker-item">
+          <i class="fas fa-table"></i>
+          <span>Unified league data</span>
+        </div>
+        <div class="ticker-item">
+          <i class="fas fa-code-branch"></i>
+          <span>Historical archives</span>
+        </div>
+        <div class="ticker-item">
+          <i class="fas fa-filter"></i>
+          <span>Multi-filter search</span>
+        </div>
+        <div class="ticker-item">
+          <i class="fas fa-robot"></i>
+          <span>AI-powered insights</span>
+        </div>
+        <!-- Duplicate for seamless loop -->
+        <div class="ticker-item">
+          <i class="fas fa-chart-line"></i>
+          <span>Statistical modeling</span>
+        </div>
+        <div class="ticker-item">
+          <i class="fas fa-database"></i>
+          <span>Live API integration</span>
+        </div>
+        <div class="ticker-item">
+          <i class="fas fa-table"></i>
+          <span>Unified league data</span>
+        </div>
+        <div class="ticker-item">
+          <i class="fas fa-code-branch"></i>
+          <span>Historical archives</span>
+        </div>
+        <div class="ticker-item">
+          <i class="fas fa-filter"></i>
+          <span>Multi-filter search</span>
+        </div>
+        <div class="ticker-item">
+          <i class="fas fa-robot"></i>
+          <span>AI-powered insights</span>
+        </div>
+      </div>
     </div>
 
     <!-- Features Section -->
     <section class="features-section" id="features">
-        <div class="section-container">
-            <div class="section-header" data-aos="fade-up">
-                <div class="section-badge">Platform</div>
-                <h2 class="section-title">What exists</h2>
-                <p class="section-subtitle">
-                    Multi-sport data aggregation and analytics powered by SportsDataIO. MLB, NFL, NBA, NCAA Football, and NCAA Basketball.
-                </p>
-            </div>
-
-            <div class="features-grid">
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3 class="feature-title">Monte Carlo Simulations</h3>
-                    <p class="feature-description">
-                        Playoff probability calculations based on current standings, remaining schedule strength, and historical performance patterns. Not predictions—just math on what the numbers say.
-                        <br><small style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">Sources: MLB Stats API, ESPN API · Method: 10,000 simulations per team</small>
-                    </p>
-                    <a href="/analytics" class="feature-link">
-                        View Projections <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="feature-icon">
-                        <i class="fas fa-database"></i>
-                    </div>
-                    <h3 class="feature-title">Live Data Integration</h3>
-                    <p class="feature-description">
-                        Real-time game feeds from ESPN API, MLB Stats API, SportsDataIO. Scores update during games. Injury reports when they're filed. No manual refresh required.
-                        <br><small style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">Update frequency: 30-60 seconds during live games</small>
-                    </p>
-                    <a href="/analytics" class="feature-link">
-                        See Live Data <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
-                    <div class="feature-icon">
-                        <i class="fas fa-table"></i>
-                    </div>
-                    <h3 class="feature-title">Unified League Tables</h3>
-                    <p class="feature-description">
-                        Standings, schedules, box scores across MLB, NFL, NBA, NCAA in one interface. Same data structure whether you're looking at the Cardinals or the Longhorns.
-                    </p>
-                    <a href="/analytics" class="feature-link">
-                        Browse Leagues <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="feature-icon">
-                        <i class="fas fa-code-branch"></i>
-                    </div>
-                    <h3 class="feature-title">Historical Comparisons</h3>
-                    <p class="feature-description">
-                        Team performance over time, player stat trends, season-over-season changes. Pulled from official league databases. Useful for spotting patterns before they become obvious.
-                    </p>
-                    <a href="/analytics" class="feature-link">
-                        View Archives <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="feature-icon">
-                        <i class="fas fa-filter"></i>
-                    </div>
-                    <h3 class="feature-title">Multi-Filter Search</h3>
-                    <p class="feature-description">
-                        Query by team, player, position, date range, stat threshold. Find specific matchups or performance scenarios without clicking through fifty pages.
-                    </p>
-                    <a href="/analytics#teams" class="feature-link">
-                        Browse Opponents <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
-                    <div class="feature-icon">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <h3 class="feature-title">Youth & College Data</h3>
-                    <p class="feature-description">
-                        Perfect Game tournament results, high school rosters, NCAA player stats. Aggregated from public sources. No proprietary recruiting rankings—just the official data points that exist.
-                        <br><small style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">Sources: Perfect Game, MaxPreps, NCAA.org · Texas & Deep South focus</small>
-                    </p>
-                    <a href="/analytics" class="feature-link">
-                        Browse Youth Data <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
+      <div class="section-container">
+        <div class="section-header" data-aos="fade-up">
+          <div class="section-badge">Platform</div>
+          <h2 class="section-title">What exists</h2>
+          <p class="section-subtitle">
+            Multi-sport data aggregation and analytics powered by SportsDataIO. MLB, NFL, NBA, NCAA Football, and NCAA
+            Basketball.
+          </p>
         </div>
+
+        <div class="features-grid">
+          <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="feature-icon">
+              <img src="/icons/chart-line.svg" alt="Monte Carlo" style="width: 2.2rem; height: 2.2rem" />
+            </div>
+            <h3 class="feature-title">Statistical Projections</h3>
+            <p class="feature-description">
+              Pythagorean win expectancy and statistical projections based on current standings and team performance
+              metrics.
+              <br /><small style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem"
+                >Sources: MLB Stats API, ESPN API · Method: Bill James Pythagorean formula (1.83 exponent)</small
+              >
+            </p>
+            <a href="/analytics" class="feature-link">
+              View Projections
+              <img
+                src="/icons/arrow-right.svg"
+                alt=""
+                style="width: 0.9rem; height: 0.9rem; display: inline-block; vertical-align: middle"
+              />
+            </a>
+          </div>
+
+          <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="feature-icon">
+              <img src="/icons/database.svg" alt="Database" style="width: 2.2rem; height: 2.2rem" />
+            </div>
+            <h3 class="feature-title">Live Data Integration</h3>
+            <p class="feature-description">
+              Real-time game feeds from ESPN API, MLB Stats API, SportsDataIO. Scores update during games. Injury
+              reports when they're filed. No manual refresh required.
+              <br /><small style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem"
+                >Update frequency: 30-60 seconds during live games</small
+              >
+            </p>
+            <a href="/analytics" class="feature-link">
+              See Live Data
+              <img
+                src="/icons/arrow-right.svg"
+                alt=""
+                style="width: 0.9rem; height: 0.9rem; display: inline-block; vertical-align: middle"
+              />
+            </a>
+          </div>
+
+          <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="feature-icon">
+              <i class="fas fa-table"></i>
+            </div>
+            <h3 class="feature-title">Unified League Tables</h3>
+            <p class="feature-description">
+              Standings, schedules, box scores across MLB, NFL, NBA, NCAA in one interface. Same data structure whether
+              you're looking at the Cardinals or the Longhorns.
+            </p>
+            <a href="/analytics" class="feature-link"> Browse Leagues <i class="fas fa-arrow-right"></i> </a>
+          </div>
+
+          <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="feature-icon">
+              <i class="fas fa-code-branch"></i>
+            </div>
+            <h3 class="feature-title">Historical Comparisons</h3>
+            <p class="feature-description">
+              Team performance over time, player stat trends, season-over-season changes. Pulled from official league
+              databases. Useful for spotting patterns before they become obvious.
+            </p>
+            <a href="/analytics" class="feature-link"> View Archives <i class="fas fa-arrow-right"></i> </a>
+          </div>
+
+          <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="feature-icon">
+              <i class="fas fa-filter"></i>
+            </div>
+            <h3 class="feature-title">Multi-Filter Search</h3>
+            <p class="feature-description">
+              Query by team, player, position, date range, stat threshold. Find specific matchups or performance
+              scenarios without clicking through fifty pages.
+            </p>
+            <a href="/analytics#teams" class="feature-link"> Browse Opponents <i class="fas fa-arrow-right"></i> </a>
+          </div>
+
+          <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="feature-icon">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h3 class="feature-title">Youth & College Data</h3>
+            <p class="feature-description">
+              Perfect Game tournament results, high school rosters, NCAA player stats. Aggregated from public sources.
+              No proprietary recruiting rankings—just the official data points that exist.
+              <br /><small style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem"
+                >Sources: Perfect Game, MaxPreps, NCAA.org · Texas & Deep South focus</small
+              >
+            </p>
+            <a href="/analytics" class="feature-link"> Browse Youth Data <i class="fas fa-arrow-right"></i> </a>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Sports Hubs Section -->
     <section class="sports-section" id="sports">
-        <div class="section-container">
-            <div class="section-header" data-aos="fade-up">
-                <div class="section-badge">Coverage</div>
-                <h2 class="section-title">Three sports</h2>
-                <p class="section-subtitle">
-                    Baseball → Football → Basketball. Youth through professional levels.
-                </p>
-            </div>
-
-            <div class="sports-grid">
-                <a href="/mlb" class="sport-card" data-aos="zoom-in" data-aos-delay="100">
-                    <div class="sport-icon">⚾</div>
-                    <h3 class="sport-name">BASEBALL</h3>
-                    <p class="sport-status">MLB • NCAA D1 • Perfect Game</p>
-                </a>
-
-                <a href="/nfl" class="sport-card" data-aos="zoom-in" data-aos-delay="200">
-                    <div class="sport-icon">🏈</div>
-                    <h3 class="sport-name">FOOTBALL</h3>
-                    <p class="sport-status live pulse">
-                        <i class="fas fa-circle"></i> NFL • NCAA • Texas HS
-                    </p>
-                </a>
-
-                <a href="/cbb" class="sport-card" data-aos="zoom-in" data-aos-delay="300">
-                    <div class="sport-icon">🏀</div>
-                    <h3 class="sport-name">BASKETBALL</h3>
-                    <p class="sport-status">NBA • NCAA D1</p>
-                </a>
-            </div>
+      <div class="section-container">
+        <div class="section-header" data-aos="fade-up">
+          <div class="section-badge">Coverage</div>
+          <h2 class="section-title">Three sports</h2>
+          <p class="section-subtitle">Baseball → Football → Basketball. Youth through professional levels.</p>
         </div>
+
+        <div class="sports-grid">
+          <a href="/mlb" class="sport-card" data-aos="zoom-in" data-aos-delay="100">
+            <div class="sport-icon">
+              <img src="/icons/baseball.svg" alt="Baseball" style="width: 4rem; height: 4rem" />
+            </div>
+            <h3 class="sport-name">BASEBALL</h3>
+            <p class="sport-status">MLB • NCAA D1 • Perfect Game</p>
+          </a>
+
+          <a href="/nfl" class="sport-card" data-aos="zoom-in" data-aos-delay="200">
+            <div class="sport-icon">
+              <img src="/icons/football.svg" alt="Football" style="width: 4rem; height: 4rem" />
+            </div>
+            <h3 class="sport-name">FOOTBALL</h3>
+            <p class="sport-status live pulse"><i class="fas fa-circle"></i> NFL • NCAA • Texas HS</p>
+          </a>
+
+          <a href="/cbb" class="sport-card" data-aos="zoom-in" data-aos-delay="300">
+            <div class="sport-icon">
+              <img src="/icons/basketball.svg" alt="Basketball" style="width: 4rem; height: 4rem" />
+            </div>
+            <h3 class="sport-name">BASKETBALL</h3>
+            <p class="sport-status">NBA • NCAA D1</p>
+          </a>
+        </div>
+      </div>
     </section>
 
     <!-- About the Founder Section -->
     <section class="about-section" id="about">
-        <div class="section-container">
-            <div class="about-grid">
-                <div class="about-content" data-aos="fade-right">
-                    <div class="section-badge">Who We Are</div>
-                    <h2 class="section-title">Built by Someone Who Gets It</h2>
-                    <p class="about-text">
-                        <strong>Austin Humphrey</strong> grew up in Memphis, moved to Texas, and spent years watching
-                        coaches struggle with outdated tools and scattered data. As a University of Texas graduate
-                        who loves the Cardinals, Titans, Longhorns, and Grizzlies, he knew there had to be a better way.
-                    </p>
-                    <p class="about-text">
-                        So he built Blaze Sports Intel—the platform he always wished existed. No BS. No fluff.
-                        Just the intelligence you need to prepare your team, evaluate talent, and make the right
-                        call when it matters most. From Boerne, Texas to programs across the Deep South,
-                        Blaze is helping teams win more games.
-                    </p>
-                    <div class="about-credentials">
-                        <div class="credential-item">
-                            <i class="fas fa-graduation-cap"></i>
-                            <span>University of Texas at Austin</span>
-                        </div>
-                        <div class="credential-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Boerne, Texas</span>
-                        </div>
-                        <div class="credential-item">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Born August 17, 1995</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="about-teams" data-aos="fade-left">
-                    <div class="section-badge" style="margin-bottom: 1.5rem;">Championship Focus</div>
-                    <h3 style="font-size: 1.75rem; margin-bottom: 1.5rem; color: var(--text-primary);">
-                        Our Core Teams
-                    </h3>
-                    <div class="team-cards">
-                        <div class="team-card">
-                            <div class="team-icon">⚾</div>
-                            <div class="team-info">
-                                <h4>St. Louis Cardinals</h4>
-                                <p>MLB • 11x World Series Champions</p>
-                            </div>
-                        </div>
-                        <div class="team-card">
-                            <div class="team-icon">🤘</div>
-                            <div class="team-info">
-                                <h4>Texas Longhorns</h4>
-                                <p>NCAA • All Sports Coverage</p>
-                            </div>
-                        </div>
-                        <div class="team-card">
-                            <div class="team-icon">🏀</div>
-                            <div class="team-info">
-                                <h4>Memphis Grizzlies</h4>
-                                <p>NBA • Grit & Grind</p>
-                            </div>
-                        </div>
-                        <div class="team-card">
-                            <div class="team-icon">🏈</div>
-                            <div class="team-info">
-                                <h4>Tennessee Titans</h4>
-                                <p>NFL • Titan Up</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="about-contact" style="margin-top: 2rem; padding: 1.5rem; background: var(--glass-light); border-radius: var(--radius-lg); border: 1px solid var(--glass-border);">
-                        <p style="color: var(--text-secondary); margin-bottom: 0.75rem; font-size: 0.95rem;">
-                            <i class="fas fa-envelope"></i> <a href="mailto:austin@blazesportsintel.com" style="color: var(--blaze-copper); text-decoration: none;">austin@blazesportsintel.com</a>
-                        </p>
-                        <p style="color: var(--text-secondary); font-size: 0.95rem;">
-                            <i class="fas fa-phone"></i> (210) 273-5538
-                        </p>
-                    </div>
-                </div>
+      <div class="section-container">
+        <div class="about-grid">
+          <div class="about-content" data-aos="fade-right">
+            <div class="section-badge">Who We Are</div>
+            <h2 class="section-title">Built by Someone Who Gets It</h2>
+            <p class="about-text">
+              <strong>Austin Humphrey</strong> grew up in Memphis, moved to Texas, and spent years watching coaches
+              struggle with outdated tools and scattered data. As a University of Texas graduate who loves the
+              Cardinals, Titans, Longhorns, and Grizzlies, he knew there had to be a better way.
+            </p>
+            <p class="about-text">
+              So he built Blaze Sports Intel—the platform he always wished existed. No BS. No fluff. Just the
+              intelligence you need to prepare your team, evaluate talent, and make the right call when it matters most.
+              From Boerne, Texas to programs across the Deep South, Blaze is helping teams win more games.
+            </p>
+            <div class="about-credentials">
+              <div class="credential-item">
+                <i class="fas fa-graduation-cap"></i>
+                <span>University of Texas at Austin</span>
+              </div>
+              <div class="credential-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Boerne, Texas</span>
+              </div>
+              <div class="credential-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Born August 17, 1995</span>
+              </div>
             </div>
+          </div>
 
-            <div class="heritage-banner" data-aos="fade-up" style="margin-top: 4rem; padding: 2.5rem; background: linear-gradient(135deg, rgba(191, 87, 0, 0.12), rgba(204, 102, 0, 0.08), rgba(217, 123, 56, 0.06)); border-radius: var(--radius-xl); border: 2px solid rgba(217, 123, 56, 0.3); text-align: center; box-shadow: var(--glow-soft);">
-                <p style="font-size: 1.15rem; color: var(--text-primary); line-height: 1.8; max-width: 900px; margin: 0 auto;">
-                    <strong style="color: var(--blaze-copper); text-shadow: 0 0 20px rgba(217, 123, 56, 0.5);">Where Southern Grit Meets Silicon Valley Analytics.</strong><br>
-                    From Memphis roots to Texas soil, Blaze Sports Intel honors Deep South sports tradition
-                    with championship-caliber technology. Born on the same day as Davy Crockett, built for champions
-                    who refuse to settle for second place.
-                </p>
+          <div class="about-teams" data-aos="fade-left">
+            <div class="section-badge" style="margin-bottom: 1.5rem">Championship Focus</div>
+            <h3 style="font-size: 1.75rem; margin-bottom: 1.5rem; color: var(--text-primary)">Our Core Teams</h3>
+            <div class="team-cards">
+              <div class="team-card">
+                <div class="team-icon">
+                  <img src="/icons/baseball.svg" alt="Baseball" style="width: 2rem; height: 2rem" />
+                </div>
+                <div class="team-info">
+                  <h4>St. Louis Cardinals</h4>
+                  <p>MLB • 11x World Series Champions</p>
+                </div>
+              </div>
+              <div class="team-card">
+                <div class="team-icon">
+                  <img src="/icons/longhorns.svg" alt="Texas Longhorns" style="width: 2rem; height: 2rem" />
+                </div>
+                <div class="team-info">
+                  <h4>Texas Longhorns</h4>
+                  <p>NCAA • All Sports Coverage</p>
+                </div>
+              </div>
+              <div class="team-card">
+                <div class="team-icon">
+                  <img src="/icons/basketball.svg" alt="Basketball" style="width: 2rem; height: 2rem" />
+                </div>
+                <div class="team-info">
+                  <h4>Memphis Grizzlies</h4>
+                  <p>NBA • Grit & Grind</p>
+                </div>
+              </div>
+              <div class="team-card">
+                <div class="team-icon">
+                  <img src="/icons/football.svg" alt="Football" style="width: 2rem; height: 2rem" />
+                </div>
+                <div class="team-info">
+                  <h4>Tennessee Titans</h4>
+                  <p>NFL • Titan Up</p>
+                </div>
+              </div>
             </div>
+            <div
+              class="about-contact"
+              style="
+                margin-top: 2rem;
+                padding: 1.5rem;
+                background: var(--glass-light);
+                border-radius: var(--radius-lg);
+                border: 1px solid var(--glass-border);
+              "
+            >
+              <p style="color: var(--text-secondary); margin-bottom: 0.75rem; font-size: 0.95rem">
+                <i class="fas fa-envelope"></i>
+                <a href="mailto:austin@blazesportsintel.com" style="color: var(--blaze-copper); text-decoration: none"
+                  >austin@blazesportsintel.com</a
+                >
+              </p>
+              <p style="color: var(--text-secondary); font-size: 0.95rem">
+                <i class="fas fa-phone"></i> (210) 273-5538
+              </p>
+            </div>
+          </div>
         </div>
+
+        <div
+          class="heritage-banner"
+          data-aos="fade-up"
+          style="
+            margin-top: 4rem;
+            padding: 2.5rem;
+            background: linear-gradient(
+              135deg,
+              rgba(191, 87, 0, 0.12),
+              rgba(204, 102, 0, 0.08),
+              rgba(217, 123, 56, 0.06)
+            );
+            border-radius: var(--radius-xl);
+            border: 2px solid rgba(217, 123, 56, 0.3);
+            text-align: center;
+            box-shadow: var(--glow-soft);
+          "
+        >
+          <p style="font-size: 1.15rem; color: var(--text-primary); line-height: 1.8; max-width: 900px; margin: 0 auto">
+            <strong style="color: var(--blaze-copper); text-shadow: 0 0 20px rgba(217, 123, 56, 0.5)"
+              >Where Southern Grit Meets Silicon Valley Analytics.</strong
+            ><br />
+            From Memphis roots to Texas soil, Blaze Sports Intel honors Deep South sports tradition with
+            championship-caliber technology. Born on the same day as Davy Crockett, built for champions who refuse to
+            settle for second place.
+          </p>
+        </div>
+      </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>Blaze Sports Intel</h3>
-                    <p style="color: var(--text-tertiary); line-height: 1.7;">
-                        Elite championship analytics platform delivering data-driven intelligence
-                        for professional and collegiate sports organizations.
-                    </p>
-                    <div class="social-links" style="justify-content: flex-start; margin-top: 1.5rem;">
-                        <a href="https://x.com/BISportsIntel" class="social-link" target="_blank" rel="noopener">
-                            <i class="fab fa-x-twitter"></i>
-                        </a>
-                        <a href="https://github.com/ahump20" class="social-link" target="_blank" rel="noopener">
-                            <i class="fab fa-github"></i>
-                        </a>
-                        <a href="https://linkedin.com/in/austinhumphrey20" class="social-link" target="_blank" rel="noopener">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="footer-section">
-                    <h3>Platform</h3>
-                    <ul class="footer-links">
-                        <li><a href="/copilot" class="footer-link">
-                            <i class="fas fa-robot" style="margin-right: 0.5rem;"></i>AI Copilot
-                        </a></li>
-                        <li><a href="/analytics" class="footer-link">Analytics Dashboard</a></li>
-                        <li><a href="/mlb" class="footer-link">MLB Hub</a></li>
-                        <li><a href="/nfl" class="footer-link">NFL Hub</a></li>
-                        <li><a href="/cfb" class="footer-link">College Football Hub</a></li>
-                        <li><a href="/cbb" class="footer-link">College Basketball Hub</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-section">
-                    <h3>Resources</h3>
-                    <ul class="footer-links">
-                        <li><a href="#features" class="footer-link">Features</a></li>
-                        <li><a href="#sports" class="footer-link">Sports Coverage</a></li>
-                        <li><a href="/about" class="footer-link">About the Founder</a></li>
-                        <li><a href="/contact" class="footer-link">Contact</a></li>
-                        <li><a href="/legal/privacy" class="footer-link">Privacy Policy</a></li>
-                        <li><a href="/legal/terms" class="footer-link">Terms of Service</a></li>
-                    </ul>
-                </div>
+      <div class="footer-container">
+        <div class="footer-grid">
+          <div class="footer-section">
+            <h3>Blaze Sports Intel</h3>
+            <p style="color: var(--text-tertiary); line-height: 1.7">
+              Elite championship analytics platform delivering data-driven intelligence for professional and collegiate
+              sports organizations.
+            </p>
+            <div class="social-links" style="justify-content: flex-start; margin-top: 1.5rem">
+              <a href="https://x.com/BISportsIntel" class="social-link" target="_blank" rel="noopener">
+                <i class="fab fa-x-twitter"></i>
+              </a>
+              <a href="https://github.com/ahump20" class="social-link" target="_blank" rel="noopener">
+                <i class="fab fa-github"></i>
+              </a>
+              <a href="https://linkedin.com/in/austinhumphrey20" class="social-link" target="_blank" rel="noopener">
+                <i class="fab fa-linkedin"></i>
+              </a>
             </div>
+          </div>
 
-            <div class="footer-bottom">
-                <p>&copy; 2025 Blaze Sports Intel. Built with <span class="text-gradient">🔥</span> in Boerne, Texas.</p>
-                <p style="margin-top: 0.5rem; font-size: 0.85rem;">
-                    Deep South Sports Authority • Championship Analytics Platform
-                </p>
-            </div>
+          <div class="footer-section">
+            <h3>Platform</h3>
+            <ul class="footer-links">
+              <li>
+                <a href="/copilot" class="footer-link">
+                  <i class="fas fa-robot" style="margin-right: 0.5rem"></i>AI Copilot
+                </a>
+              </li>
+              <li><a href="/analytics" class="footer-link">Analytics Dashboard</a></li>
+              <li><a href="/mlb" class="footer-link">MLB Hub</a></li>
+              <li><a href="/nfl" class="footer-link">NFL Hub</a></li>
+              <li><a href="/cfb" class="footer-link">College Football Hub</a></li>
+              <li><a href="/cbb" class="footer-link">College Basketball Hub</a></li>
+              <li><a href="/historicalcomparisons" class="footer-link">Historical Comparisons</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>Resources</h3>
+            <ul class="footer-links">
+              <li><a href="#features" class="footer-link">Features</a></li>
+              <li><a href="#sports" class="footer-link">Sports Coverage</a></li>
+              <li><a href="/about" class="footer-link">About the Founder</a></li>
+              <li><a href="/contact" class="footer-link">Contact</a></li>
+              <li><a href="/legal/privacy" class="footer-link">Privacy Policy</a></li>
+              <li><a href="/legal/terms" class="footer-link">Terms of Service</a></li>
+              <li><a href="/cookies" class="footer-link">Cookie Policy</a></li>
+            </ul>
+          </div>
         </div>
+
+        <div class="footer-bottom">
+          <p>
+            &copy; 2025 Blaze Sports Intel. Built with
+            <img
+              src="/icons/blaze-logo.svg"
+              alt="Blaze"
+              style="width: 1rem; height: 1rem; display: inline-block; vertical-align: middle"
+            />
+            in Boerne, Texas.
+          </p>
+          <p style="margin-top: 0.5rem; font-size: 0.85rem">
+            Deep South Sports Authority • Championship Analytics Platform
+          </p>
+        </div>
+      </div>
     </footer>
 
     <!-- Scripts -->
     <script>
-        // ==================== INITIALIZE AOS ====================
-        document.addEventListener('DOMContentLoaded', () => {
-            AOS.init({
-                duration: 1000,
-                once: true,
-                offset: 100,
-                easing: 'ease-out'
+      // ==================== INITIALIZE AOS ====================
+      document.addEventListener('DOMContentLoaded', () => {
+        AOS.init({
+          duration: 1000,
+          once: true,
+          offset: 100,
+          easing: 'ease-out',
+        });
+      });
+
+      // ==================== NAVIGATION SCROLL EFFECT ====================
+      const nav = document.getElementById('nav');
+      let lastScroll = 0;
+
+      window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+
+        if (currentScroll > 100) {
+          nav.classList.add('scrolled');
+        } else {
+          nav.classList.remove('scrolled');
+        }
+
+        lastScroll = currentScroll;
+      });
+
+      // ==================== MOBILE MENU TOGGLE ====================
+      const mobileToggle = document.getElementById('mobileToggle');
+      const navMenu = document.getElementById('navMenu');
+
+      mobileToggle.addEventListener('click', () => {
+        mobileToggle.classList.toggle('active');
+        navMenu.classList.toggle('active');
+      });
+
+      // Close mobile menu when clicking a link
+      document.querySelectorAll('.nav-link').forEach((link) => {
+        link.addEventListener('click', () => {
+          mobileToggle.classList.remove('active');
+          navMenu.classList.remove('active');
+        });
+      });
+
+      // ==================== SMOOTH SCROLL ====================
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
             });
+          }
         });
+      });
 
-        // ==================== NAVIGATION SCROLL EFFECT ====================
-        const nav = document.getElementById('nav');
-        let lastScroll = 0;
+      // ==================== BLAZE ADVANCED GRAPHICS SYSTEM ====================
+      // Global references for graphics engines
+      let blazeParticles = null;
+      let blazePostprocessing = null;
+      let blazeCursorInteractions = null;
 
-        window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
+      async function initAdvancedGraphics() {
+        const canvas = document.getElementById('particle-field');
+        if (!canvas || typeof THREE === 'undefined') {
+          console.warn('Three.js or canvas not available');
+          return;
+        }
 
-            if (currentScroll > 100) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
-            }
+        try {
+          console.log('🔥 Initializing Blaze Advanced Graphics System...');
 
-            lastScroll = currentScroll;
-        });
+          // Initialize V4 Particle Engine with automatic mobile detection
+          // Engine will auto-configure: 25K particles (mobile) vs 150K (desktop)
+          blazeParticles = new BlazeParticleEngineV4('particle-field');
 
-        // ==================== MOBILE MENU TOGGLE ====================
-        const mobileToggle = document.getElementById('mobileToggle');
-        const navMenu = document.getElementById('navMenu');
+          await blazeParticles.init();
+          console.log(`✅ Particle Engine initialized with ${blazeParticles.useWebGPU ? 'WebGPU' : 'WebGL2'}`);
 
-        mobileToggle.addEventListener('click', () => {
-            mobileToggle.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-
-        // Close mobile menu when clicking a link
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileToggle.classList.remove('active');
-                navMenu.classList.remove('active');
+          // Initialize Cursor Interactions (click ripples, velocity-based force, particle trails)
+          if (typeof BlazeCursorInteractions !== 'undefined') {
+            blazeCursorInteractions = new BlazeCursorInteractions(blazeParticles, {
+              enableRipples: true,
+              enableVelocityForce: true,
+              enableTrails: true,
+              rippleRadius: 300,
+              rippleForce: 2.0,
+              rippleDuration: 1000,
+              trailLength: 20,
+              velocityMultiplier: 3.0,
             });
-        });
+            console.log('✅ Cursor interactions initialized (ripples, velocity force, trails)');
+          } else {
+            console.warn('⚠️ BlazeCursorInteractions not available');
+          }
 
-        // ==================== SMOOTH SCROLL ====================
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // ==================== BLAZE ADVANCED GRAPHICS SYSTEM ====================
-        // Global references for graphics engines
-        let blazeParticles = null;
-        let blazePostprocessing = null;
-
-        async function initAdvancedGraphics() {
-            const canvas = document.getElementById('particle-field');
-            if (!canvas || typeof THREE === 'undefined') {
-                console.warn('Three.js or canvas not available');
-                return;
-            }
-
+          // Initialize Postprocessing Effects
+          // Check if postprocessing library is available
+          if (typeof blazeParticles.renderer !== 'undefined') {
             try {
-                console.log('🔥 Initializing Blaze Advanced Graphics System...');
+              blazePostprocessing = new BlazePostprocessing(
+                blazeParticles.scene,
+                blazeParticles.camera,
+                blazeParticles.renderer
+              );
 
-                // Initialize WebGPU/WebGL2 Particle Engine with 500K particles
-                blazeParticles = new BlazeParticleEngine('particle-field', {
-                    maxParticles: 500000,
-                    particleSize: 3,
-                    particleOpacity: 0.8,
-                    enableMorphing: true,
-                    enablePhysics: true,
-                    enableMouseInteraction: true,
-                    morphShapes: ['logo', 'baseball', 'football', 'basketball'],
-                    morphInterval: 8000, // Change shape every 8 seconds
-                });
+              const postprocessingInitialized = await blazePostprocessing.init();
+              if (postprocessingInitialized) {
+                console.log(
+                  '✅ Postprocessing pipeline initialized (bloom, DOF, chromatic aberration, grain, vignette, color grading)'
+                );
 
-                await blazeParticles.init();
-                console.log(`✅ Particle Engine initialized with ${blazeParticles.useWebGPU ? 'WebGPU' : 'WebGL2'}`);
+                // Replace render method to use postprocessing + cursor interactions
+                const originalRender = blazeParticles.render.bind(blazeParticles);
+                blazeParticles.render = function (deltaTime) {
+                  // Update particles
+                  this.update(deltaTime);
 
-                // Initialize Postprocessing Effects
-                // Check if postprocessing library is available
-                if (typeof blazeParticles.renderer !== 'undefined') {
-                    try {
-                        blazePostprocessing = new BlazePostprocessing(
-                            blazeParticles.scene,
-                            blazeParticles.camera,
-                            blazeParticles.renderer
-                        );
+                  // Update cursor interactions (ripples, velocity force, trails)
+                  if (blazeCursorInteractions) {
+                    blazeCursorInteractions.updateParticles(deltaTime, performance.now() / 1000);
+                  }
 
-                        const postprocessingInitialized = await blazePostprocessing.init();
-                        if (postprocessingInitialized) {
-                            console.log('✅ Postprocessing pipeline initialized (bloom, DOF, chromatic aberration, grain, vignette, color grading)');
-
-                            // Replace render method to use postprocessing
-                            const originalRender = blazeParticles.render.bind(blazeParticles);
-                            blazeParticles.render = function(deltaTime) {
-                                // Update particles
-                                this.update(deltaTime);
-
-                                // Render with postprocessing
-                                if (blazePostprocessing && blazePostprocessing.initialized) {
-                                    blazePostprocessing.render(deltaTime);
-                                } else {
-                                    originalRender(deltaTime);
-                                }
-                            };
-                        } else {
-                            console.log('⚠️ Postprocessing library not available, using basic renderer');
-                        }
-                    } catch (postError) {
-                        console.warn('Postprocessing initialization failed, using basic renderer:', postError);
-                    }
-                }
-
-                // Setup scroll-driven effects
-                let lastScrollProgress = 0;
-                window.addEventListener('scroll', () => {
-                    if (blazePostprocessing && blazePostprocessing.initialized) {
-                        const scrollProgress = Math.min(
-                            window.scrollY / (document.documentElement.scrollHeight - window.innerHeight),
-                            1
-                        );
-
-                        // Only update if scroll changed significantly (performance optimization)
-                        if (Math.abs(scrollProgress - lastScrollProgress) > 0.01) {
-                            blazePostprocessing.updateOnScroll(scrollProgress);
-                            lastScrollProgress = scrollProgress;
-                        }
-                    }
-                });
-
-                // Setup hover effects for cards
-                document.querySelectorAll('.access-card, .feature-card, .sport-card').forEach(card => {
-                    card.addEventListener('mouseenter', () => {
-                        if (blazePostprocessing && blazePostprocessing.initialized) {
-                            blazePostprocessing.onCardHover(true);
-                        }
-                    });
-
-                    card.addEventListener('mouseleave', () => {
-                        if (blazePostprocessing && blazePostprocessing.initialized) {
-                            blazePostprocessing.onCardHover(false);
-                        }
-                    });
-                });
-
-                // Start morphing animation cycle
-                if (blazeParticles.config.enableMorphing) {
-                    setInterval(() => {
-                        const shapes = blazeParticles.config.morphShapes;
-                        blazeParticles.currentShapeIndex = (blazeParticles.currentShapeIndex + 1) % shapes.length;
-                        const nextShape = shapes[blazeParticles.currentShapeIndex];
-                        blazeParticles.morphToShape(nextShape);
-                    }, blazeParticles.config.morphInterval);
-                }
-
-                console.log('🎉 Blaze Advanced Graphics System ready!');
-                console.log(`   • Particles: ${blazeParticles.currentParticleCount.toLocaleString()}`);
-                console.log(`   • Renderer: ${blazeParticles.useWebGPU ? 'WebGPU Compute Shaders' : 'WebGL2'}`);
-                console.log(`   • Postprocessing: ${blazePostprocessing && blazePostprocessing.initialized ? 'Enabled' : 'Disabled'}`);
-                console.log(`   • Morphing: ${blazeParticles.config.enableMorphing ? 'Active' : 'Disabled'}`);
-
-            } catch (error) {
-                console.error('❌ Error initializing advanced graphics:', error);
-                // Fallback to basic Three.js if advanced features fail
-                console.log('⚠️ Falling back to basic particle system...');
-                initBasicParticleSystem();
+                  // Render with postprocessing
+                  if (blazePostprocessing && blazePostprocessing.initialized) {
+                    blazePostprocessing.render(deltaTime);
+                  } else {
+                    originalRender(deltaTime);
+                  }
+                };
+              } else {
+                console.log('⚠️ Postprocessing library not available, using basic renderer');
+              }
+            } catch (postError) {
+              console.warn('Postprocessing initialization failed, using basic renderer:', postError);
             }
-        }
+          }
 
-        // Fallback basic particle system (for compatibility)
-        function initBasicParticleSystem() {
-            const canvas = document.getElementById('particle-field');
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+          // Setup scroll-driven effects
+          let lastScrollProgress = 0;
+          window.addEventListener('scroll', () => {
+            if (blazePostprocessing && blazePostprocessing.initialized) {
+              const scrollProgress = Math.min(
+                window.scrollY / (document.documentElement.scrollHeight - window.innerHeight),
+                1
+              );
 
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(0x000000, 0);
-            camera.position.z = 500;
-
-            const particleCount = 50000;
-            const particles = new THREE.BufferGeometry();
-            const positions = new Float32Array(particleCount * 3);
-            const colors = new Float32Array(particleCount * 3);
-
-            const blazeColors = [
-                new THREE.Color(0xBF5700),
-                new THREE.Color(0xCC6600),
-                new THREE.Color(0xD97B38),
-            ];
-
-            for (let i = 0; i < particleCount; i++) {
-                const i3 = i * 3;
-                positions[i3] = (Math.random() - 0.5) * 2000;
-                positions[i3 + 1] = (Math.random() - 0.5) * 2000;
-                positions[i3 + 2] = (Math.random() - 0.5) * 1000;
-
-                const color = blazeColors[Math.floor(Math.random() * blazeColors.length)];
-                colors[i3] = color.r;
-                colors[i3 + 1] = color.g;
-                colors[i3 + 2] = color.b;
+              // Only update if scroll changed significantly (performance optimization)
+              if (Math.abs(scrollProgress - lastScrollProgress) > 0.01) {
+                blazePostprocessing.updateOnScroll(scrollProgress);
+                lastScrollProgress = scrollProgress;
+              }
             }
+          });
 
-            particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-            const particleMaterial = new THREE.PointsMaterial({
-                size: 2,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.7,
-                blending: THREE.AdditiveBlending
+          // Setup hover effects for cards
+          document.querySelectorAll('.access-card, .feature-card, .sport-card').forEach((card) => {
+            card.addEventListener('mouseenter', () => {
+              if (blazePostprocessing && blazePostprocessing.initialized) {
+                blazePostprocessing.onCardHover(true);
+              }
             });
 
-            const particleSystem = new THREE.Points(particles, particleMaterial);
-            scene.add(particleSystem);
-
-            function animate() {
-                requestAnimationFrame(animate);
-                particleSystem.rotation.y += 0.0005;
-                particleSystem.rotation.x += 0.0002;
-                renderer.render(scene, camera);
-            }
-
-            animate();
-
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
+            card.addEventListener('mouseleave', () => {
+              if (blazePostprocessing && blazePostprocessing.initialized) {
+                blazePostprocessing.onCardHover(false);
+              }
             });
+          });
 
-            console.log('✅ Basic particle system initialized (fallback mode)');
+          console.log('🎉 Blaze Advanced Graphics System V4 Ready - WebGL2 Rendering!');
+          console.log(`   • Particles: 150,000 (gradient color palette)`);
+          console.log(`   • Data Nodes: 80 (varied geometries with PBR materials)`);
+          console.log(`   • Dynamic Connections: 150 (pulsing animations)`);
+          console.log(`   • Lighting System: 5-point cinematic lighting`);
+          console.log(`   • Renderer: ${blazeParticles.useWebGPU ? 'WebGPU' : 'WebGL2'} with ACES tone mapping`);
+          console.log(
+            `   • Postprocessing: ${blazePostprocessing && blazePostprocessing.initialized ? 'Bloom, DOF, Chromatic Aberration, Grain, Vignette, Color Grading' : 'Disabled'}`
+          );
+          console.log(`   • Interactive: Mouse parallax + particle repulsion + fog`);
+        } catch (error) {
+          console.error('❌ Error initializing advanced graphics:', error);
+          // Fallback to basic Three.js if advanced features fail
+          console.log('⚠️ Falling back to basic particle system...');
+          initBasicParticleSystem();
+        }
+      }
+
+      // Fallback basic particle system (for compatibility)
+      function initBasicParticleSystem() {
+        const canvas = document.getElementById('particle-field');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+        camera.position.z = 500;
+
+        const particleCount = 50000;
+        const particles = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
+
+        const blazeColors = [new THREE.Color(0xbf5700), new THREE.Color(0xcc6600), new THREE.Color(0xd97b38)];
+
+        for (let i = 0; i < particleCount; i++) {
+          const i3 = i * 3;
+          positions[i3] = (Math.random() - 0.5) * 2000;
+          positions[i3 + 1] = (Math.random() - 0.5) * 2000;
+          positions[i3 + 2] = (Math.random() - 0.5) * 1000;
+
+          const color = blazeColors[Math.floor(Math.random() * blazeColors.length)];
+          colors[i3] = color.r;
+          colors[i3 + 1] = color.g;
+          colors[i3 + 2] = color.b;
         }
 
-        // Initialize on load
-        window.addEventListener('load', initAdvancedGraphics);
+        particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-        // ==================== CONSOLE BRANDING ====================
-        console.log(`
-%c🔥 BLAZE SPORTS INTEL %c
-%cChampionship Analytics Platform
+        const particleMaterial = new THREE.PointsMaterial({
+          size: 2,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.7,
+          blending: THREE.AdditiveBlending,
+        });
+
+        const particleSystem = new THREE.Points(particles, particleMaterial);
+        scene.add(particleSystem);
+
+        function animate() {
+          requestAnimationFrame(animate);
+          particleSystem.rotation.y += 0.0005;
+          particleSystem.rotation.x += 0.0002;
+          renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        console.log('✅ Basic particle system initialized (fallback mode)');
+      }
+
+      // Initialize on load
+      window.addEventListener('load', initAdvancedGraphics);
+
+      // ==================== HERO LIVE DATA VISUALIZATION ====================
+      function initHeroDataVisualization() {
+        const canvas = document.getElementById('live-data-canvas');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        // Data structure for live standings visualization
+        const dataPoints = [];
+        const numPoints = 30;
+
+        // Initialize with sample data (will be replaced with real API data)
+        for (let i = 0; i < numPoints; i++) {
+          dataPoints.push({
+            x: (canvas.width / numPoints) * i,
+            y: canvas.height / 2 + Math.random() * 100 - 50,
+            targetY: canvas.height / 2,
+            velocity: 0,
+            value: 0.5 + Math.random() * 0.5,
+          });
+        }
+
+        // Animate data visualization
+        function animateDataViz() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Draw gradient background
+          const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+          gradient.addColorStop(0, 'rgba(191, 87, 0, 0.1)');
+          gradient.addColorStop(0.5, 'rgba(204, 102, 0, 0.2)');
+          gradient.addColorStop(1, 'rgba(217, 123, 56, 0.1)');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Draw connecting lines
+          ctx.strokeStyle = 'rgba(191, 87, 0, 0.4)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          dataPoints.forEach((point, i) => {
+            if (i === 0) ctx.moveTo(point.x, point.y);
+            else ctx.lineTo(point.x, point.y);
+          });
+          ctx.stroke();
+
+          // Draw area under curve
+          ctx.fillStyle = 'rgba(191, 87, 0, 0.15)';
+          ctx.beginPath();
+          dataPoints.forEach((point, i) => {
+            if (i === 0) ctx.moveTo(point.x, point.y);
+            else ctx.lineTo(point.x, point.y);
+          });
+          ctx.lineTo(canvas.width, canvas.height);
+          ctx.lineTo(0, canvas.height);
+          ctx.closePath();
+          ctx.fill();
+
+          // Draw data points
+          dataPoints.forEach((point, i) => {
+            // Update physics
+            const spring = (point.targetY - point.y) * 0.05;
+            point.velocity = (point.velocity + spring) * 0.95;
+            point.y += point.velocity;
+
+            // Add subtle wave motion
+            point.targetY = canvas.height / 2 + Math.sin(Date.now() / 1000 + i * 0.5) * 30;
+
+            // Draw point
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(204, 102, 0, 0.8)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 191, 28, 0.6)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          });
+
+          requestAnimationFrame(animateDataViz);
+        }
+
+        animateDataViz();
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+          canvas.width = canvas.offsetWidth;
+          canvas.height = canvas.offsetHeight;
+          dataPoints.forEach((point, i) => {
+            point.x = (canvas.width / numPoints) * i;
+          });
+        });
+      }
+
+      // ==================== HERO LIVE STATS TICKER ====================
+      async function initHeroStatsTicker() {
+        try {
+          // Fetch real-time standings data
+          const [mlbResponse, nflResponse] = await Promise.allSettled([
+            fetch('/api/mlb/standings').then((r) => (r.ok ? r.json() : null)),
+            fetch('/api/nfl/standings').then((r) => (r.ok ? r.json() : null)),
+          ]);
+
+          // MLB stat
+          if (mlbResponse.status === 'fulfilled' && mlbResponse.value) {
+            const mlbData = mlbResponse.value;
+            const topTeam = mlbData.standings?.[0]?.teams?.[0];
+            if (topTeam) {
+              document.getElementById('live-stat-1').innerHTML = `
+                            <span class="stat-label">MLB</span>
+                            <span class="stat-value">${topTeam.name} ${topTeam.wins}-${topTeam.losses}</span>
+                        `;
+            }
+          } else {
+            document.getElementById('live-stat-1').innerHTML = `
+                        <span class="stat-label">MLB</span>
+                        <span class="stat-value">162 games</span>
+                    `;
+          }
+
+          // NFL stat
+          if (nflResponse.status === 'fulfilled' && nflResponse.value) {
+            const nflData = nflResponse.value;
+            const topTeam = nflData.standings?.[0]?.teams?.[0];
+            if (topTeam) {
+              document.getElementById('live-stat-2').innerHTML = `
+                            <span class="stat-label">NFL</span>
+                            <span class="stat-value">${topTeam.name} ${topTeam.wins}-${topTeam.losses}</span>
+                        `;
+            }
+          } else {
+            document.getElementById('live-stat-2').innerHTML = `
+                        <span class="stat-label">NFL</span>
+                        <span class="stat-value">17 games</span>
+                    `;
+          }
+
+          // NCAA stat (static for now)
+          document.getElementById('live-stat-3').innerHTML = `
+                    <span class="stat-label">NCAA</span>
+                    <span class="stat-value">350+ teams</span>
+                `;
+        } catch (error) {
+          console.error('Error fetching hero stats:', error);
+          // Fallback to generic stats
+          document.getElementById('live-stat-1').innerHTML = `
+                    <span class="stat-label">MLB</span>
+                    <span class="stat-value">30 teams</span>
+                `;
+          document.getElementById('live-stat-2').innerHTML = `
+                    <span class="stat-label">NFL</span>
+                    <span class="stat-value">32 teams</span>
+                `;
+          document.getElementById('live-stat-3').innerHTML = `
+                    <span class="stat-label">NCAA</span>
+                    <span class="stat-value">350+ teams</span>
+                `;
+        }
+      }
+
+      // Initialize hero visualizations
+      window.addEventListener('load', () => {
+        initHeroDataVisualization();
+        initHeroStatsTicker();
+      });
+
+      // ==================== CONSOLE BRANDING ====================
+      console.log(
+        `
+%c🔥 BLAZE SPORTS INTEL V4 %c
+%cChampionship Analytics Platform - WebGL2 Rendering
 %cBuilt with WebGPU, Three.js, Babylon.js, React, and Cloudflare Workers
-%cAdvanced Graphics System:
-%c• 500,000 particle WebGPU compute shader system
-%c• Particle morphing (logo → baseball → football → basketball)
-%c• Postprocessing: Bloom, DOF, Chromatic Aberration, Film Grain, Vignette
-%c• Real-time physics simulation with curl noise
-%c• Adaptive performance monitoring and auto-scaling
+%cPremium Graphics System V4:
+%c• 150,000 particles with gradient color palette (powder blue, red, orange, navy)
+%c• 80 premium data nodes (varied geometries: sphere, octahedron, icosahedron, tetrahedron)
+%c• PBR materials (metalness 0.8, roughness 0.2) for photorealistic rendering
+%c• 5-point cinematic lighting system (key, fill, rim, ambient, accent)
+%c• 150 dynamic connections with pulsing animations
+%c• Postprocessing: Bloom, DOF, Chromatic Aberration, Film Grain, Vignette, Color Grading
+%c• Mouse parallax, particle repulsion, fog effects
+%c• ACES Filmic tone mapping with exposure 1.2
+%c• Adaptive performance monitoring with auto-scaling
 %c
 Deep South Sports Authority • Est. 2025
         `,
@@ -1807,10 +2537,10 @@ Deep South Sports Authority • Est. 2025
         'font-size: 10px; color: #D97B38;',
         'font-size: 10px; color: #D97B38;',
         'font-size: 11px; color: #666; font-style: italic;'
-        );
+      );
     </script>
 
     <!-- Blaze Chat Assistant -->
     <script src="/lib/chat-widget.js"></script>
-</body>
+  </body>
 </html>
