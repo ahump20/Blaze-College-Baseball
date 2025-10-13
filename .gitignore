@@ -23,3 +23,19 @@ test-api-keys.cjs
 validated-keys.env
 *.env
 .env*
+
+# Prisma
+prisma/migrations/
+.prisma/
+
+# Build artifacts
+apps/*/dist/
+apps/*/.next/
+apps/*/out/
+*.tsbuildinfo
+
+# Archive (don't commit screenshots)
+archive/designs/screenshots/*.png
+
+# Temporary files
+/tmp/

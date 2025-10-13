@@ -1,0 +1,1 @@
+export const metadata = { title: 'Sign Up — Diamond Insights' }; export default function SignupPage() { return <main className="p-4 max-w-[400px] mx-auto"><h1 className="text-2xl font-bold mb-4">Sign Up</h1></main>; }

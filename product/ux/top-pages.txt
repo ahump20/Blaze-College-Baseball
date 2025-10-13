@@ -1,0 +1,8 @@
+# Top pages to monitor for 404s
+# Add your most critical user-facing URLs here
+https://blazesportsintel.com/
+https://blazesportsintel.com/baseball/ncaab
+https://blazesportsintel.com/baseball/ncaab/games
+https://blazesportsintel.com/baseball/ncaab/teams
+https://blazesportsintel.com/baseball/ncaab/standings
+https://blazesportsintel.com/baseball/ncaab/rankings
