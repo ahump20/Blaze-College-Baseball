@@ -1,0 +1,17 @@
+name = "bsi-ingest"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+[triggers]
+crons = ["*/5 * * * *", "0 */1 * * *", "0 2 * * *"]
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "YOUR_KV_NAMESPACE_ID"
+
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "blazesportsintel-assets"
+
+[vars]
+TZ = "America/Chicago"

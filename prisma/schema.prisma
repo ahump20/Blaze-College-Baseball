@@ -1,0 +1,229 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Team {
+  id             String        @id @default(cuid())
+  sport          String        // "baseball"
+  division       String        // "D1"
+  name           String
+  slug           String        @unique
+  schoolName     String
+  conferenceId   String?
+  logoUrl        String?
+  primaryColor   String?
+  secondaryColor String?
+  conference     Conference?   @relation(fields: [conferenceId], references: [id])
+  players        Player[]
+  homeGames      Game[]        @relation("HomeTeam")
+  awayGames      Game[]        @relation("AwayTeam")
+  teamStats      TeamStats[]
+  rankings       Ranking[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([slug])
+  @@index([sport, division])
+}
+
+model Conference {
+  id           String   @id @default(cuid())
+  sport        String
+  name         String
+  slug         String   @unique
+  abbreviation String?
+  logoUrl      String?
+  teams        Team[]
+  createdAt    DateTime @default(now())
+
+  @@index([slug])
+}
+
+model Player {
+  id          String        @id @default(cuid())
+  externalId  String?       @unique
+  teamId      String
+  firstName   String
+  lastName    String
+  jerseyNumber String?
+  position    String?
+  classYear   String?
+  heightIn    Int?
+  weightLb    Int?
+  bats        String?
+  throws      String?
+  headshotUrl String?
+  active      Boolean       @default(true)
+  team        Team          @relation(fields: [teamId], references: [id])
+  stats       PlayerStats[]
+  boxes       BoxLine[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([teamId])
+  @@index([lastName, firstName])
+}
+
+model Game {
+  id            String       @id @default(cuid())
+  sport         String
+  externalId    String?      @unique
+  seasonYear    Int
+  scheduledAt   DateTime
+  venue         String?
+  status        GameStatus   @default(SCHEDULED)
+  homeTeamId    String
+  awayTeamId    String
+  homeScore     Int          @default(0)
+  awayScore     Int          @default(0)
+  inning        Int          @default(0)
+  inningHalf    String?      // "top" | "bottom"
+  isConference  Boolean      @default(false)
+  isPostseason  Boolean      @default(false)
+  broadcast     Json?
+  feedPrecision FeedPrecision @default(EVENT)
+  homeTeam      Team         @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam      Team         @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  events        Event[]
+  boxes         BoxLine[]
+  articles      Article[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([scheduledAt, status])
+  @@index([status])
+  @@index([seasonYear])
+}
+
+enum GameStatus {
+  SCHEDULED
+  LIVE
+  FINAL
+  POSTPONED
+}
+
+enum FeedPrecision {
+  EVENT
+  PITCH
+}
+
+model Event {
+  id            String   @id @default(cuid())
+  gameId        String
+  inning        Int
+  half          String   // top/bottom
+  sequence      Int
+  type          String   // plateAppearance, steal, pitchingChange, etc.
+  batterId      String?
+  pitcherId     String?
+  runnersBefore Json?
+  runnersAfter  Json?
+  description   String?
+  rbi           Int?     @default(0)
+  wpaDelta      Float?   // Win Probability delta
+  reDelta       Float?   // Run Expectancy delta
+  game          Game     @relation(fields: [gameId], references: [id])
+  createdAt     DateTime @default(now())
+
+  @@index([gameId, inning, sequence])
+}
+
+model BoxLine {
+  id       String @id @default(cuid())
+  gameId   String
+  playerId String
+  role     String // batting | pitching
+  line     Json   // stat columns
+  contexts Json?  // RISP, 2-out RBI, IR/IS, etc.
+  game     Game   @relation(fields: [gameId], references: [id])
+  player   Player @relation(fields: [playerId], references: [id])
+
+  @@unique([gameId, playerId, role])
+}
+
+model TeamStats {
+  id               String   @id @default(cuid())
+  teamId           String
+  seasonYear       Int
+  wins             Int      @default(0)
+  losses           Int      @default(0)
+  conferenceWins   Int      @default(0)
+  conferenceLosses Int      @default(0)
+  battingAvg       Float?
+  era              Float?
+  runsScored       Int?
+  runsAllowed      Int?
+  stats            Json?
+  team             Team     @relation(fields: [teamId], references: [id])
+  updatedAt        DateTime @default(now())
+
+  @@unique([teamId, seasonYear])
+}
+
+model PlayerStats {
+  id         String   @id @default(cuid())
+  playerId   String
+  seasonYear Int
+  games      Int      @default(0)
+  // Batting
+  atBats     Int?
+  hits       Int?
+  doubles    Int?
+  triples    Int?
+  homeRuns   Int?
+  rbi        Int?
+  sb         Int?
+  avg        Float?
+  obp        Float?
+  slg        Float?
+  // Pitching
+  ip         Float?
+  wins       Int?
+  losses     Int?
+  saves      Int?
+  so         Int?
+  bb         Int?
+  era        Float?
+  whip       Float?
+  stats      Json?
+  player     Player   @relation(fields: [playerId], references: [id])
+  updatedAt  DateTime @default(now())
+
+  @@unique([playerId, seasonYear])
+}
+
+model Ranking {
+  id         String   @id @default(cuid())
+  pollName   String
+  week       Int
+  seasonYear Int
+  teamId     String
+  rank       Int
+  previous   Int?
+  votes      Int?
+  team       Team     @relation(fields: [teamId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@index([pollName, seasonYear, week])
+}
+
+model Article {
+  id          String   @id @default(cuid())
+  type        String   // autoPreview | autoRecap
+  gameId      String?  @unique
+  game        Game?    @relation(fields: [gameId], references: [id])
+  teamIds     String[] // array of team ids
+  headline    String
+  summary     String
+  body        String
+  keyStats    Json?
+  publishedAt DateTime @default(now())
+
+  @@index([type, publishedAt])
+}

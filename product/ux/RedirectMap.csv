@@ -1,0 +1,11 @@
+legacy_url,new_url,type,notes
+/college-baseball,/baseball/ncaab,301,Primary college baseball hub
+/college-baseball/scores,/baseball/ncaab/games/scores,301,Scores page
+/college-baseball/teams,/baseball/ncaab/teams,301,Team directory
+/teams,/baseball/ncaab/teams,301,Alternative team route
+/team/{slug},/baseball/ncaab/teams/{slug},301,Individual team pages
+/game/{id},/baseball/ncaab/games/{id},301,Game center pages
+/games,/baseball/ncaab/games,301,Games listing
+/news,/baseball/ncaab/news,301,News and recaps
+/standings,/baseball/ncaab/standings,301,Standings page
+/rankings,/baseball/ncaab/rankings,301,Rankings page
