@@ -1,7 +1,5 @@
 import type { ReactNode } from 'react';
-
-const cx = (...values: Array<string | false | null | undefined>): string => values.filter(Boolean).join(' ');
-
+import { cx } from '../utils/cx';
 export interface PaywallCalloutProps {
   title: string;
   description: string;
