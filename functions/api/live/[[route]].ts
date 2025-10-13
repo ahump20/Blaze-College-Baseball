@@ -389,7 +389,7 @@ async function streamNCAABaseball(url: URL, env: Env) {
   if (env.SPORTS_CACHE) {
     if (frames.length > 0) {
       const latestFrame = frames[frames.length - 1];
-      await env.SPORTS_CACHE.put(cacheKey, JSON.stringify(latestFrame), { expirationTtl: 2 });
+      await env.SPORTS_CACHE.put(cacheKey, JSON.stringify(latestFrame), { expirationTtl: 10 });
     } else {
       const cachedFrame = (await env.SPORTS_CACHE.get(cacheKey, 'json')) as LiveFrame | null;
       if (cachedFrame && cachedFrame.sequence > sinceSequence) {
