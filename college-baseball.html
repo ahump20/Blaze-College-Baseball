@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>College Baseball - Blaze Sports Intel</title>
+    <meta
+      name="description"
+      content="NCAA Division I Baseball coverage with live scores, standings, analytics, and recruiting pipeline tracking. SEC, Big 12, and ACC focus."
+    />
+    <link rel="icon" type="image/x-icon" href="/icons/baseball.svg" />
+    <style>
+      :root {
+        --primary-color: #ff4500;
+        --secondary-color: #1e3a8a;
+        --background-dark: #0a0e1a;
+        --card-background: rgba(30, 41, 59, 0.6);
+        --text-primary: #ffffff;
+        --text-secondary: #94a3b8;
+        --border-color: rgba(148, 163, 184, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: var(--background-dark);
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      header {
+        padding: 2rem 0;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 2rem;
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, var(--primary-color), #fbbf24);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        margin-top: 0.5rem;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .nav-link {
+        padding: 0.5rem 1rem;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link:hover {
+        background: rgba(255, 69, 0, 0.1);
+        border-color: var(--primary-color);
+      }
+
+      .hero-section {
+        background: linear-gradient(135deg, rgba(255, 69, 0, 0.1), rgba(30, 58, 138, 0.1));
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 3rem;
+        margin-bottom: 3rem;
+        text-align: center;
+      }
+
+      .hero-section h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      .hero-section p {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        max-width: 800px;
+        margin: 0 auto 2rem;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: rgba(251, 191, 36, 0.1);
+        border: 1px solid #fbbf24;
+        border-radius: 8px;
+        color: #fbbf24;
+        font-weight: 600;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+      }
+
+      .feature-card {
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+      }
+
+      .feature-card:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-4px);
+      }
+
+      .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+      }
+
+      .feature-card p {
+        color: var(--text-secondary);
+      }
+
+      .conference-section {
+        margin-bottom: 3rem;
+      }
+
+      .conference-section h2 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .teams-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+
+      .team-card {
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .team-card:hover {
+        border-color: var(--primary-color);
+      }
+
+      .team-card h4 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .team-meta {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
+
+      .cta-section {
+        background: linear-gradient(135deg, rgba(255, 69, 0, 0.05), rgba(30, 58, 138, 0.05));
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 3rem;
+        text-align: center;
+      }
+
+      .cta-section h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      .cta-section p {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+      }
+
+      .cta-button {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .cta-button:hover {
+        background: #e03e00;
+        transform: scale(1.05);
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2rem;
+        }
+
+        .hero-section {
+          padding: 2rem 1rem;
+        }
+
+        .hero-section h2 {
+          font-size: 1.5rem;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="header-content">
+          <div>
+            <h1>⚾ College Baseball</h1>
+            <p class="subtitle">NCAA Division I Baseball Analytics & Coverage</p>
+          </div>
+          <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/analytics" class="nav-link">Analytics</a>
+            <a href="/mlb" class="nav-link">MLB</a>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero-section">
+          <h2>Deep South Baseball Authority</h2>
+          <p>
+            Comprehensive NCAA Division I baseball coverage featuring SEC, Big 12, and ACC programs with live scoring,
+            advanced analytics, recruiting pipeline tracking, and College World Series projections.
+          </p>
+          <span class="status-badge">🚧 Coming February 2026 - Season Launch</span>
+        </section>
+
+        <section class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Live Scoring</h3>
+            <p>
+              Real-time game updates with pitch-by-pitch tracking, inning-by-inning scoring, and comprehensive box
+              scores for all D1 matchups.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🏆</div>
+            <h3>Conference Standings</h3>
+            <p>
+              Complete conference standings for SEC, Big 12, and ACC with series records, win percentages, and head-to-head
+              matchups updated every 15 minutes.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📈</div>
+            <h3>RPI/ISR Rankings</h3>
+            <p>
+              Daily RPI and ISR rankings with strength of schedule metrics, regional seeding projections, and tournament
+              bracket predictions.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">⭐</div>
+            <h3>Player Statistics</h3>
+            <p>
+              Detailed batting, pitching, and fielding statistics with conference leaders, career stats, and player
+              comparison tools.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🎓</div>
+            <h3>Recruiting Pipeline</h3>
+            <p>
+              Perfect Game commits, transfer portal tracking, JUCO pipeline analysis, and recruiting class rankings for
+              all D1 programs.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>CWS Predictions</h3>
+            <p>
+              Advanced analytics and predictive modeling for College World Series qualification, regional hosting odds,
+              and championship projections.
+            </p>
+          </div>
+        </section>
+
+        <section class="conference-section">
+          <h2>Featured SEC Programs</h2>
+          <div class="teams-grid" id="teams-container">
+            <div class="team-card">
+              <h4>🟣 LSU Tigers</h4>
+              <p class="team-meta">7 National Championships • 19 CWS Appearances</p>
+              <p class="team-meta">Alex Box Stadium • Baton Rouge, LA</p>
+            </div>
+
+            <div class="team-card">
+              <h4>🟠 Tennessee Volunteers</h4>
+              <p class="team-meta">10 CWS Appearances • SEC East</p>
+              <p class="team-meta">Lindsey Nelson Stadium • Knoxville, TN</p>
+            </div>
+
+            <div class="team-card">
+              <h4>🔴 Arkansas Razorbacks</h4>
+              <p class="team-meta">11 CWS Appearances • SEC West</p>
+              <p class="team-meta">Baum-Walker Stadium • Fayetteville, AR</p>
+            </div>
+
+            <div class="team-card">
+              <h4>⚫ Vanderbilt Commodores</h4>
+              <p class="team-meta">2 National Championships • 12 CWS Appearances</p>
+              <p class="team-meta">Hawkins Field • Nashville, TN</p>
+            </div>
+
+            <div class="team-card">
+              <h4>🔵 Florida Gators</h4>
+              <p class="team-meta">1 National Championship • 13 CWS Appearances</p>
+              <p class="team-meta">Florida Ballpark • Gainesville, FL</p>
+            </div>
+
+            <div class="team-card">
+              <h4>🟧 Texas Longhorns</h4>
+              <p class="team-meta">6 National Championships • 38 CWS Appearances</p>
+              <p class="team-meta">UFCU Disch-Falk Field • Austin, TX</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="cta-section">
+          <h2>Launch February 2026</h2>
+          <p>
+            College baseball season begins February 2026. Check back for live scores, standings, analytics, and more when
+            the season starts.
+          </p>
+          <a href="/" class="cta-button">Explore Other Sports</a>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // Test API endpoint
+      fetch('/api/college-baseball/teams?conference=SEC')
+        .then(response => response.json())
+        .then(data => {
+          console.log('College Baseball API:', data);
+        })
+        .catch(error => {
+          console.log('API endpoint will be available soon');
+        });
+    </script>
+  </body>
+</html>

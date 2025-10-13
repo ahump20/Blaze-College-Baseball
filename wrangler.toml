@@ -87,6 +87,7 @@ dataset = "bsi-analytics"
 # - MLB: Every 10 minutes (Mar-Oct) - */10 * * 3-10 *
 # - CFB: Every 15 minutes (Aug-Jan) - */15 * * 8-12,1 *
 # - CBB: Every 20 minutes (Nov-Mar) - */20 * * 11-12,1-3 *
+# - College Baseball: Every 15 minutes (Feb-Jun) - */15 * * 2-6 *
 
 # ============================================================================
 # ROUTES & FUNCTIONS

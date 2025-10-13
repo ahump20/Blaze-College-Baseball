@@ -87,6 +87,47 @@ export const DATA_CONFIG = {
       }
     },
 
+    college_baseball: {
+      enabled: true,
+      status: 'in_development',
+      launch_date: '2026-02-01',
+      featured_conferences: ['SEC', 'Big 12', 'ACC'],
+      featured_teams: [
+        'LSU Tigers',
+        'Tennessee Volunteers',
+        'Texas Longhorns',
+        'Arkansas Razorbacks',
+        'Vanderbilt Commodores',
+        'Florida Gators'
+      ],
+      data_sources: [
+        'NCAA Statistics API',
+        'Conference Databases',
+        'Boyd\'s World RPI/ISR',
+        'D1Baseball',
+        'Perfect Game Collegiate',
+        'Baseball America'
+      ],
+      update_interval: 900, // 15 minutes during season
+      features: {
+        live_scoring: true,
+        pitch_tracking: true,
+        conference_standings: true,
+        rpi_rankings: true,
+        player_stats: true,
+        recruiting_pipeline: true,
+        cws_projections: true
+      },
+      endpoints: {
+        standings: '/college-baseball/standings',
+        teams: '/college-baseball/teams',
+        games: '/college-baseball/games',
+        players: '/college-baseball/players',
+        rankings: '/college-baseball/rankings',
+        recruiting: '/college-baseball/recruiting'
+      }
+    },
+
     perfect_game: {
       enabled: true,
       coverage: {
