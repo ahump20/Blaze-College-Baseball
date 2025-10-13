@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Conference {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  sport     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teams Team[]
+  games Game[]
+
+  @@index([sport, slug])
+}
+
+model Team {
+  id           String       @id @default(cuid())
+  name         String
+  slug         String       @unique
+  sport        String
+  record       String?
+  logoUrl      String?
+  conferenceId String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  conference Conference? @relation(fields: [conferenceId], references: [id])
+  players    Player[]
+  homeGames  Game[]      @relation("HomeGames")
+  awayGames  Game[]      @relation("AwayGames")
+  rankings   Ranking[]
+
+  @@index([sport, slug])
+}
+
+model Player {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  position  String
+  classYear String?
+  number    Int?
+  teamId    String
+  sport     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@index([teamId, sport])
+}
+
+model Game {
+  id           String      @id @default(cuid())
+  sport        String
+  startsAt     DateTime
+  status       String
+  venue        String?
+  conferenceId String?
+  homeTeamId   String
+  awayTeamId   String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  homeTeam   Team        @relation("HomeGames", fields: [homeTeamId], references: [id])
+  awayTeam   Team        @relation("AwayGames", fields: [awayTeamId], references: [id])
+  conference Conference? @relation(fields: [conferenceId], references: [id])
+
+  @@index([sport, startsAt])
+}
+
+model Ranking {
+  id        String   @id @default(cuid())
+  poll      String
+  week      Int
+  season    Int
+  rank      Int
+  points    Int?
+  teamId    String
+  sport     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@index([poll, season, week, sport])
+  @@unique([poll, season, week, rank, sport, teamId])
+}
+
+model StripeEvent {
+  id        String   @id @default(cuid())
+  eventId   String   @unique
+  type      String
+  payload   Json
+  processed DateTime @default(now())
+}
