@@ -11,9 +11,29 @@ type ConsentState = 'accepted' | 'unknown';
 
 const features = [
   {
+    title: 'College Baseball Hub',
+    description:
+      'Complete Division I coverage with live box scores, pitch-by-pitch data, player pages, and fully produced previews and recaps for every matchup.'
+  },
+  {
+    title: 'Every Team, Every Market',
+    description:
+      'Localized beat dashboards ensure pro clubs and collegiate programs receive equal attention with alerts tailored to each region.'
+  },
+  {
+    title: 'Emerging Sports Spotlight',
+    description:
+      'Dedicated desks elevate underserved NCAA sports so Baseball, Football, Basketball, and Track & Field insights stay front and center alongside women’s collegiate table tennis.'
+  },
+  {
+    title: 'Mobile-First Experience',
+    description:
+      'Optimized for phones with gesture-friendly navigation, offline scorecards, and push alerts tuned to game states.'
+  },
+  {
     title: 'Real-Time Scores',
     description:
-      'Live scoring updates for MLB, NFL, NCAA Division I, and Texas high school sports with minimal delay.'
+      'Live scoring updates for MLB, NFL, NCAA Division I, and Texas high school sports with college baseball pitch-by-pitch tracking and minimal delay.'
   },
   {
     title: 'Historical Analytics',
@@ -27,6 +47,43 @@ const features = [
     title: 'API Integration',
     description: 'RESTful API access with rate limiting, authentication, and comprehensive documentation.'
   }
+];
+
+const coverageFocusAreas = [
+  {
+    title: 'College Baseball Blueprint',
+    summary:
+      'Division I, II, III, and top JUCO pipelines are treated with the same depth and cadence as professional clubs.',
+    highlights: [
+      'Full box scores with pitch charts, player stat updates, and live RPI/ISR movement every inning.',
+      'Daily preview and recap packages for SEC, ACC, Big 12, Sun Belt, and WCC markets.',
+      'Video breakdowns, interviews, and scouting notes ensure LSU, Texas, and every program receive balanced storytelling.'
+    ]
+  },
+  {
+    title: 'Market-by-Market Intelligence',
+    summary: 'Dedicated editors monitor each region across pro and collegiate landscapes with parity.',
+    highlights: [
+      'Local dashboards tuned to recruiting pipelines, NIL shifts, and transfer portal movement.',
+      'Alert routing so fans in Austin, Baton Rouge, and Starkville never miss lineup changes or injury updates.',
+      'Community-sourced insights moderated for accuracy, competitive integrity, and athlete safety.'
+    ]
+  },
+  {
+    title: 'Underserved Sports Coverage',
+    summary: 'Structured coverage elevates sports national networks overlook without sacrificing analytical rigor.',
+    highlights: [
+      'Baseball to Football to Basketball to Track & Field storytelling prioritized before expanding daily features.',
+      'Women’s collegiate table tennis standings, results, and athlete spotlights refreshed alongside headline sports.',
+      'Data ingestion roadmap backed by conference partnerships, compliance reviews, and athlete consent workflows.'
+    ]
+  }
+];
+
+const mobileHighlights = [
+  'Native-quality interactions for iOS and Android with thumb-first navigation patterns.',
+  'Push notification engine delivering previews, live inning alerts, and final recap capsules without spam.',
+  'Offline caching keeps college baseball box scores, standings, and player cards available when reception drops.'
 ];
 
 const dataSources = [
@@ -229,6 +286,38 @@ export default function HoldingPage() {
               <p>{feature.description}</p>
             </article>
           ))}
+        </section>
+
+        <section className="coverage" aria-labelledby="coverage-heading">
+          <h2 id="coverage-heading">Coverage Priorities</h2>
+          <div className="coverage-grid">
+            {coverageFocusAreas.map((area) => (
+              <article key={area.title} className="coverage-card">
+                <h3>{area.title}</h3>
+                <p>{area.summary}</p>
+                <ul>
+                  {area.highlights.map((highlight) => (
+                    <li key={highlight}>{highlight}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="mobile-focus" aria-labelledby="mobile-heading">
+          <div className="mobile-focus-content">
+            <h2 id="mobile-heading">Mobile-First Delivery</h2>
+            <p>
+              Blaze Sports Intel prioritizes handheld experiences because fans consume scores, analysis, and clips on the go.
+              Every workflow is tuned for phones first, with desktop views following responsive best practices.
+            </p>
+            <ul>
+              {mobileHighlights.map((highlight) => (
+                <li key={highlight}>{highlight}</li>
+              ))}
+            </ul>
+          </div>
         </section>
 
         <section className="data-sources" aria-labelledby="sources-heading">
