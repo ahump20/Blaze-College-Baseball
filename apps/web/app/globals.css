@@ -191,6 +191,85 @@ h1 {
   text-align: center;
 }
 
+.coverage {
+  margin: 3rem 0;
+}
+
+.coverage h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--primary-color);
+}
+
+.coverage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.coverage-card {
+  padding: 1.75rem;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.coverage-card h3 {
+  margin-bottom: 0.75rem;
+  color: var(--primary-color);
+}
+
+.coverage-card p {
+  color: var(--text-light);
+  margin-bottom: 1rem;
+}
+
+.coverage-card ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.coverage-card li {
+  color: var(--primary-color);
+  line-height: 1.6;
+}
+
+.mobile-focus {
+  margin: 3rem 0;
+  background: var(--primary-color);
+  color: #fff;
+  border-radius: 12px;
+  padding: 2.5rem 1.5rem;
+}
+
+.mobile-focus-content {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.mobile-focus p {
+  margin: 1rem 0 1.5rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.mobile-focus ul {
+  list-style: none;
+  display: grid;
+  gap: 1rem;
+}
+
+.mobile-focus li {
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 .feature-card h2 {
   font-size: 1.25rem;
   margin-bottom: 0.75rem;
@@ -381,6 +460,14 @@ button:focus {
   .cookie-content {
     flex-direction: column;
     text-align: center;
+  }
+
+  .mobile-focus {
+    padding: 2rem 1.25rem;
+  }
+
+  .mobile-focus-content {
+    text-align: left;
   }
 }
 
