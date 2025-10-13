@@ -466,7 +466,7 @@ async function readQueueMessages(
   return [];
 }
 
-function normaliseQueuePayload(body: any): NCAABaseballQueuePayload | null {
+function normalizeQueuePayload(body: any): NCAABaseballQueuePayload | null {
   if (!body) {
     return null;
   }
