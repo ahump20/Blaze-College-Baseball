@@ -4,8 +4,23 @@
  * Tracking elite youth baseball from 13U through MLB Draft
  */
 
+import NCAALiveStatsClient from './adapters/ncaa-livestats-client.js';
+import DiamondKastClient from './adapters/diamondkast-client.js';
+import NCAABOXScoreScraper from './scrapers/ncaa_boxscore_scraper.js';
+
 export class PerfectGamePipeline {
-    constructor() {
+    constructor({
+        liveStatsClient = null,
+        diamondKastClient = null,
+        boxscoreScraper = null,
+        logger = console
+    } = {}) {
+        this.logger = logger;
+        this.liveStatsClient = liveStatsClient;
+        this.diamondKastClient = diamondKastClient;
+        this.boxscoreScraper = boxscoreScraper;
+        this.ncaaBoxscoreBaseUrl = process.env.NCAA_BOXSCORE_BASE_URL ?? 'https://stats.ncaa.org/game/baseball-game/';
+
         this.ageGroups = ['13U', '14U', '15U', '16U', '17U', '18U'];
         this.regions = {
             texas: ['Houston', 'Dallas', 'San Antonio', 'Austin', 'East Texas', 'West Texas', 'RGV'],
@@ -46,6 +61,205 @@ export class PerfectGamePipeline {
                 'Underclass All-American Games'
             ]
         };
+    }
+
+    withAdapters({ liveStatsClient, diamondKastClient, boxscoreScraper } = {}) {
+        if (typeof liveStatsClient !== 'undefined') {
+            this.liveStatsClient = liveStatsClient;
+        }
+        if (typeof diamondKastClient !== 'undefined') {
+            this.diamondKastClient = diamondKastClient;
+        }
+        if (typeof boxscoreScraper !== 'undefined') {
+            this.boxscoreScraper = boxscoreScraper;
+        }
+        return this;
+    }
+
+    ensureLiveStatsClient() {
+        if (!this.liveStatsClient && (process.env.LIVESTATS_HOST || process.env.LIVESTATS_PORT)) {
+            this.liveStatsClient = new NCAALiveStatsClient({}, { logger: this.logger });
+        }
+        return this.liveStatsClient;
+    }
+
+    ensureDiamondKastClient() {
+        if (!this.diamondKastClient && process.env.DIAMONDKAST_USERNAME) {
+            this.diamondKastClient = new DiamondKastClient({}, { logger: this.logger });
+        }
+        return this.diamondKastClient;
+    }
+
+    ensureBoxscoreScraper() {
+        if (!this.boxscoreScraper) {
+            this.boxscoreScraper = new NCAABOXScoreScraper({}, { logger: this.logger });
+        }
+        return this.boxscoreScraper;
+    }
+
+    buildBoxscoreUrl(gameId) {
+        if (!gameId) {
+            throw new Error('Game ID is required to build boxscore URL');
+        }
+        return this.ncaaBoxscoreBaseUrl.endsWith('/')
+            ? `${this.ncaaBoxscoreBaseUrl}${gameId}`
+            : `${this.ncaaBoxscoreBaseUrl}/${gameId}`;
+    }
+
+    normalizeAtBat(atBat, context = {}) {
+        if (!atBat) {
+            return null;
+        }
+
+        const gameId = context.gameId ?? null;
+        const source = context.source ?? 'diamondkast';
+        const sequence = context.sequence ?? null;
+
+        return {
+            id: `${source}-${gameId ?? 'unknown'}-${atBat.id ?? Date.now()}`,
+            type: 'at-bat',
+            source,
+            gameId,
+            sequence,
+            timestamp: atBat.updatedAt ?? new Date().toISOString(),
+            batter: atBat.batter ?? null,
+            pitcher: atBat.pitcher ?? null,
+            count: atBat.count ?? { balls: 0, strikes: 0, outs: 0 },
+            runners: atBat.runners ?? [],
+            result: atBat.result ?? { description: 'At-bat in progress' },
+            pitch: atBat.pitchMetrics ?? {},
+            raw: atBat.raw ?? atBat
+        };
+    }
+
+    normalizeLiveStatsEvent(event, context = {}) {
+        if (!event) {
+            return null;
+        }
+
+        const payload = event.payload && typeof event.payload === 'object' ? event.payload : { value: event.payload };
+        const gameId = context.gameId ?? null;
+        const source = context.source ?? 'livestats';
+        const identifier = payload.playId ?? payload.id ?? payload.eventId ?? payload.sequence ?? event.receivedAt;
+
+        return {
+            id: `${source}-${gameId ?? 'unknown'}-${identifier}`,
+            type: payload.eventType ?? payload.type ?? event.type ?? 'play',
+            source,
+            gameId,
+            sequence: payload.sequence ?? null,
+            timestamp: event.receivedAt,
+            batter: payload.batter ?? null,
+            pitcher: payload.pitcher ?? null,
+            count: {
+                balls: Number(payload.balls ?? payload.ball ?? 0),
+                strikes: Number(payload.strikes ?? payload.strike ?? 0),
+                outs: Number(payload.outs ?? payload.out ?? 0)
+            },
+            runners: payload.runners ?? payload.baserunners ?? [],
+            result: {
+                description: payload.description ?? payload.play ?? event.raw,
+                outcome: payload.outcome ?? payload.result ?? undefined
+            },
+            pitch: payload.pitch ?? payload.metrics ?? {},
+            raw: payload
+        };
+    }
+
+    normalizeBoxscore(boxscore, gameId) {
+        if (!boxscore) {
+            return null;
+        }
+
+        return {
+            id: `boxscore-${gameId ?? boxscore.gameId ?? Date.now()}`,
+            type: 'boxscore',
+            source: 'boxscore',
+            gameId: gameId ?? boxscore.gameId ?? null,
+            sequence: null,
+            timestamp: boxscore.lastUpdated ?? new Date().toISOString(),
+            status: boxscore.status,
+            teams: boxscore.teams,
+            linescore: boxscore.linescore ?? [],
+            raw: boxscore
+        };
+    }
+
+    async ingestGame({ gameId, source = 'diamondkast', signal, metadata = {} } = {}) {
+        if (!gameId) {
+            throw new Error('gameId is required for ingest');
+        }
+
+        const events = [];
+
+        if (source === 'diamondkast') {
+            const client = this.ensureDiamondKastClient();
+            if (!client || typeof client.streamAtBats !== 'function') {
+                throw new Error('DiamondKast client not configured');
+            }
+
+            let sequence = 0;
+            for await (const atBat of client.streamAtBats(gameId, { signal })) {
+                const normalized = this.normalizeAtBat(atBat, { gameId, source, sequence });
+                if (normalized) {
+                    events.push(normalized);
+                    sequence += 1;
+                }
+            }
+
+            return {
+                gameId,
+                source,
+                events,
+                metadata,
+                completed: Boolean(metadata.completed)
+            };
+        }
+
+        if (source === 'livestats') {
+            const client = this.ensureLiveStatsClient();
+            if (!client || typeof client.streamGame !== 'function') {
+                throw new Error('NCAA LiveStats client not configured');
+            }
+
+            let sequence = 0;
+            for await (const liveEvent of client.streamGame(gameId, { signal })) {
+                const normalized = this.normalizeLiveStatsEvent(liveEvent, { gameId, source, sequence });
+                if (normalized) {
+                    events.push(normalized);
+                    sequence += 1;
+                }
+            }
+
+            return {
+                gameId,
+                source,
+                events,
+                metadata,
+                completed: Boolean(metadata.completed)
+            };
+        }
+
+        if (source === 'boxscore') {
+            const scraper = this.ensureBoxscoreScraper();
+            if (!scraper || typeof scraper.scrapeBoxscore !== 'function') {
+                throw new Error('NCAA boxscore scraper not configured');
+            }
+
+            const targetUrl = metadata.url ?? this.buildBoxscoreUrl(gameId);
+            const boxscore = await scraper.scrapeBoxscore(targetUrl, { signal });
+            const normalized = this.normalizeBoxscore(boxscore, gameId);
+
+            return {
+                gameId,
+                source,
+                events: normalized ? [normalized] : [],
+                metadata: { ...metadata, boxscore },
+                completed: true
+            };
+        }
+
+        throw new Error(`Unsupported ingest source: ${source}`);
     }
 
     /**

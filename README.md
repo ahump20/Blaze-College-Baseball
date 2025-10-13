@@ -24,6 +24,22 @@ docker-compose up -d
 # API Docs: http://localhost:8000/docs
 ```
 
+## Data Adapter Configuration
+
+Set the following environment variables to enable live NCAA coverage inside the ingest pipeline:
+
+| Variable | Purpose |
+| --- | --- |
+| `LIVESTATS_HOST` / `LIVESTATS_PORT` | TCP endpoint for the NCAA LiveStats feed (defaults to `127.0.0.1:7677`). |
+| `LIVESTATS_HEARTBEAT_INTERVAL` | Optional override (ms) for the TCP heartbeat used to keep the socket alive. |
+| `DIAMONDKAST_BASE_URL` | Base URL for DiamondKast polling (defaults to the public API domain). |
+| `DIAMONDKAST_USERNAME` / `DIAMONDKAST_PASSWORD` | Credentials used to negotiate the session cookie. |
+| `DIAMONDKAST_RATE_LIMIT` | Maximum requests per minute when polling at-bat updates (defaults to 60). |
+| `NCAA_BOXSCORE_BASE_URL` | Root URL for HTML boxscore fallbacks. |
+| `NCAA_BOXSCORE_MAX_RETRIES` | Retry attempts for the scraper before failing hard. |
+
+All secrets must be injected via the runtime (dotenv, Vercel env, or worker secrets). Never commit credentials to the repository.
+
 ## Architecture
 
 ### Core Pipeline

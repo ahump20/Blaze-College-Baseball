@@ -10,6 +10,9 @@ import LoggerService from './services/logger-service.js';
 import CacheService from './services/cache-service.js';
 import HttpClient from './services/http-client.js';
 import SportsDataAdapter from './adapters/sports-data-adapter.js';
+import NCAALiveStatsClient from './adapters/ncaa-livestats-client.js';
+import DiamondKastClient from './adapters/diamondkast-client.js';
+import NCAABOXScoreScraper from './scrapers/ncaa_boxscore_scraper.js';
 import SportsAnalyticsModels from './models/sports-analytics-models.js';
 import MLPipelineService from './ml/ml-pipeline-service.js';
 import DatabaseConnectionService from './database/connection-service.js';
@@ -35,6 +38,32 @@ class SportsDataService {
 
         this.adapter = new SportsDataAdapter(this.cache, this.logger);
         this.analytics = new SportsAnalyticsModels(this.logger);
+
+        this.ncaaLiveStatsClient = new NCAALiveStatsClient(
+            {
+                host: env.LIVESTATS_HOST,
+                port: env.LIVESTATS_PORT ? Number(env.LIVESTATS_PORT) : undefined
+            },
+            { logger: this.logger }
+        );
+
+        this.diamondKastClient = new DiamondKastClient(
+            {
+                baseUrl: env.DIAMONDKAST_BASE_URL,
+                username: env.DIAMONDKAST_USERNAME,
+                password: env.DIAMONDKAST_PASSWORD,
+                rateLimitPerMinute: env.DIAMONDKAST_RATE_LIMIT ? Number(env.DIAMONDKAST_RATE_LIMIT) : undefined
+            },
+            { logger: this.logger }
+        );
+
+        this.ncaaBoxscoreScraper = new NCAABOXScoreScraper(
+            {
+                baseUrl: env.NCAA_BOXSCORE_BASE_URL,
+                maxRetries: env.NCAA_BOXSCORE_MAX_RETRIES ? Number(env.NCAA_BOXSCORE_MAX_RETRIES) : undefined
+            },
+            { logger: this.logger }
+        );
 
         // Initialize database connection
         this.database = new DatabaseConnectionService({
@@ -82,6 +111,12 @@ class SportsDataService {
             cacheHits: 0,
             apiCalls: 0,
             errors: 0
+        };
+
+        this.adapters = {
+            ncaaLiveStats: this.ncaaLiveStatsClient,
+            diamondKast: this.diamondKastClient,
+            ncaaBoxscoreScraper: this.ncaaBoxscoreScraper
         };
 
         this.logger.info('SportsDataService initialized with enterprise components and real analytics models');
