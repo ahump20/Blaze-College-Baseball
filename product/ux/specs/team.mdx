@@ -1,0 +1,41 @@
+---
+title: Team Hub Experience
+route: /baseball/ncaab/teams/[teamSlug]
+phase: Phase 2 – MVP
+status: Draft
+---
+
+## Purpose
+- Deliver a comprehensive, year-round team profile that blends current season metrics with historical context.
+- Serve as the anchor for recruiting, roster, and schedule data while providing Diamond Pro upsells.
+- Maintain modular sections so other sports can reuse the layout with minimal overrides.
+
+## Primary Components
+- **Team Overview Card:** Record, conference, rankings delta, next opponent.
+- **Trend Modules:** Rolling OPS, ERA, defensive efficiency charts with tooltips.
+- **Roster Table:** Sortable by position/class; integrates player headshots and quick links.
+- **Schedule Grid:** Upcoming vs. completed games with result tags and streaming info.
+- **Insights Rail:** Alerts for injuries, transfer portal updates, MLB draft projections.
+
+## Layout & Interaction Notes
+- Responsive stacked cards; charts collapse into sparkline rows below 360 px width.
+- Use sticky secondary nav (Overview, Roster, Schedule, Insights) once user scrolls.
+- Provide shareable metadata (OpenGraph/Twitter) featuring team colors while preserving contrast.
+
+## Acceptance Criteria
+1. Overview card displays latest record, ranking changes, and next game pulled from schedule API.
+2. Trend modules can toggle between 7/14/30-day windows without reloading the page.
+3. Roster table supports column sorting and filters by position/class.
+4. Schedule grid groups games by month; completed games show final score with link to Game Center.
+5. Insights rail hides gracefully when no alerts exist, showing `No current updates` copy.
+
+## Analytics Events
+- `team.tab_changed`
+- `team.roster_filter`
+- `team.schedule_game_opened`
+- `team.insight_alert_viewed`
+
+## Open Questions
+- Determine cadence for syncing transfer portal alerts (real-time vs. hourly batch).
+- Confirm whether Diamond Pro overlays should highlight premium sections within the roster.
+

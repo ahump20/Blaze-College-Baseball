@@ -1,0 +1,42 @@
+---
+title: Home Experience
+route: /baseball/ncaab
+phase: Phase 2 – MVP
+status: Draft
+---
+
+## Purpose
+- Establish the default landing surface for Division I baseball fans with live context and quick actions.
+- Reinforce the BlazeSportsIntel brand with dark-mode visuals, Inter UI typography, and gold accent highlights.
+- Surface Diamond Pro upsells without blocking free features.
+
+## Primary Components
+- **Hero Marquee:** Top 25 spotlight with live score pill, featured story, and CTA to Scoreboard.
+- **Live Capsule Rail:** Horizontally scrollable cards showing in-progress games, start times, and probability trend.
+- **Insights Stack:** Cards for standings snapshot, latest rankings movement, and premium projections.
+- **News Carousel:** Source Serif Pro for headlines, fallback image treatment for audio-only stories.
+- **Bottom Navigation:** Scores, Teams, Standings, News, Account icons with label text under 12 characters.
+
+## Layout & Interaction Notes
+- Mobile-first grid using Tailwind responsive utilities; default background `#1A202C` with elevated cards `#2D3748`.
+- Safe area padding for iOS/Android notches; sticky bottom nav with 56 px height.
+- Hero card should degrade gracefully with placeholder art if no featured image is available.
+- Live Capsule cards use swipe gestures and allow long-press to follow a team (Pro prompt if not subscribed).
+
+## Acceptance Criteria
+1. Hero Marquee renders with at least one Top 25 matchup and dynamic CTA text.
+2. Live Capsule data auto-refreshes every 60 seconds with smooth shimmer loading state.
+3. Insights Stack shows standings and rankings modules; errors fall back to explanatory empty states.
+4. Premium upsell chip appears only for unsigned users or free plans; Pro users see quick links.
+5. Navigation items remain accessible with WCAG 2.2 AA contrast.
+
+## Analytics Events
+- `home.hero_cta_clicked`
+- `home.live_capsule_follow`
+- `home.insight_card_view`
+- `paywall.pro_prompt_impression`
+
+## Open Questions
+- Should portal news appear above analytics during off-season campaigns?
+- Evaluate if hero should support video backgrounds without hurting performance metrics.
+

@@ -1,0 +1,41 @@
+---
+title: Scoreboard Experience
+route: /baseball/ncaab/scoreboard
+phase: Phase 2 – MVP
+status: Draft
+---
+
+## Purpose
+- Provide real-time coverage of all Division I games with mobile-friendly filters.
+- Highlight live matchups and quickly route users to the Game Center.
+- Maintain performance under heavy traffic spikes (p99 < 200 ms API latency).
+
+## Primary Components
+- **Date Selector:** Horizontal calendar strip with Today badge and swipe gesture support.
+- **Conference & Ranking Filters:** Chips with multi-select, persistent per session via local storage.
+- **Game Card:** Displays teams, rankings, records, inning status, win probability sparkline.
+- **Live Status Banner:** Sticky bar with count of active games and “View Live Games” anchor.
+- **Empty State:** Messaging for off days with CTA to news and historical content.
+
+## Layout & Interaction Notes
+- Single-column stack on mobile with 12 px gutters; on tablet, switches to two-column masonry.
+- Use Tailwind transitions for filter chips; ensure focus outlines meet WCAG AA.
+- Live games update via polling + SSE fallback (Upstash Redis caching to prevent thrash).
+
+## Acceptance Criteria
+1. Filters persist across navigation for 24 hours or until manually reset.
+2. Game cards display logos, rank badges, and scoreboard text with accessible contrast ratios.
+3. Live Status Banner collapses when no in-progress games exist.
+4. Tap on a game card routes to `/baseball/ncaab/games/[gameId]` with the correct ID.
+5. API failures show a retry CTA and log `scoreboard.load_failed` with error context (no PII).
+
+## Analytics Events
+- `scoreboard.filter_applied`
+- `scoreboard.game_card_opened`
+- `scoreboard.refresh_triggered`
+- `scoreboard.live_banner_click`
+
+## Open Questions
+- Evaluate lazy-loading older final scores for performance vs. completeness.
+- Determine if we need a “Favorites” tab before launch or post-MVP.
+

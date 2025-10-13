@@ -1,0 +1,41 @@
+---
+title: Rankings Experience
+route: /baseball/ncaab/rankings
+phase: Phase 2 – MVP
+status: Draft
+---
+
+## Purpose
+- Aggregate national polls, RPI, and BlazeSportsIntel power metrics in one interface.
+- Highlight movement week-over-week and provide context for postseason projections.
+- Offer Diamond Pro features like strength-of-schedule sliders and forecast scenarios.
+
+## Primary Components
+- **Poll Selector:** Tabs for Coaches, Media, RPI, BSI Power Index.
+- **Movement Indicators:** Up/down arrows with numeric delta and highlight color.
+- **Strength-of-Schedule Widget:** Slider toggles to simulate future outcomes (Pro only).
+- **Upcoming Spotlight:** Shows key series impacting rankings.
+- **Historical View:** Accordion for prior weeks to support archival research.
+
+## Layout & Interaction Notes
+- Default tab shows BSI Power Index with full analytics; others show condensed tables.
+- Provide inline explanations for proprietary metrics with tooltip modals.
+- Keep tables accessible via sticky headers and zebra striping.
+
+## Acceptance Criteria
+1. Poll selector switches tabs without full page reload; state persists in query param (`?poll=coaches`).
+2. Movement indicators show `—` for no change, with accessible sr-only text.
+3. Strength-of-schedule widget disabled for free users with upsell banner.
+4. Upcoming spotlight cards link to relevant team or game pages.
+5. Historical view caches prior week results for offline reference.
+
+## Analytics Events
+- `rankings.poll_changed`
+- `rankings.future_scenario_saved`
+- `rankings.spotlight_opened`
+- `paywall.pro_prompt_impression`
+
+## Open Questions
+- Need data contract confirmation for RPI timing (daily vs. hourly updates).
+- Determine if push notifications should trigger off ranking movement thresholds.
+

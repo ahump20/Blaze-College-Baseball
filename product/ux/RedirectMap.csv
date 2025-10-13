@@ -1,0 +1,16 @@
+legacy_url,new_url,status,notes
+/,/baseball/ncaab,301,Legacy marketing site root to new mobile-first home.
+/scoreboard,/baseball/ncaab/scoreboard,301,Main scoreboard redirect.
+/games,/baseball/ncaab/games,301,Legacy games index to structured list.
+/games/:gameId,/baseball/ncaab/games/:gameId,301,Direct game detail redirect.
+/live,/baseball/ncaab/scoreboard,301,Legacy live slug to scoreboard.
+/teams,/baseball/ncaab/teams,301,Team directory redirect.
+/teams/:teamSlug,/baseball/ncaab/teams/:teamSlug,301,Team detail redirect.
+/teams/:teamSlug/players/:playerSlug,/baseball/ncaab/players/:playerSlug,301,Team roster deep link to canonical player route.
+/players,/baseball/ncaab/players,301,Player directory redirect.
+/players/:playerSlug,/baseball/ncaab/players/:playerSlug,301,Player detail redirect.
+/standings,/baseball/ncaab/standings,301,Standings redirect.
+/rankings,/baseball/ncaab/rankings,301,Rankings redirect.
+/news,/baseball/ncaab/news,301,News hub redirect.
+/articles/:articleSlug,/baseball/ncaab/news/:articleSlug,301,Individual article redirect.
+/blog,/baseball/ncaab/news,301,Legacy blog to news hub.
