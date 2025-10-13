@@ -686,7 +686,7 @@ function buildInningSnapshots(frames: LiveFrame[]): InningSnapshot[] {
     });
 }
 
-function normaliseBaseState(bases?: NCAABaseballQueuePayload['state']['bases']): BaseState {
+function normalizeBaseState(bases?: NCAABaseballQueuePayload['state']['bases']): BaseState {
   return {
     first: Boolean(bases?.first ?? bases?.onFirst ?? false),
     second: Boolean(bases?.second ?? bases?.onSecond ?? false),
