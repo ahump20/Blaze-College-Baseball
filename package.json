@@ -1,97 +1,22 @@
 {
-  "name": "blaze-sports-intel-bsi",
-  "version": "2.1.0",
-  "description": "\ud83d\udd25 Blaze Sports Intel - Biomechanics Vision System & Championship Intelligence Platform",
-  "main": "index-enhanced-full.html",
-  "type": "module",
+  "name": "college-baseball-tracker",
+  "version": "1.0.0",
+  "description": "Mobile-first college baseball live tracker with full box scores",
   "scripts": {
-    "start": "python3 main.py",
-    "dev": "python3 -m http.server 8000",
-    "serve": "python3 -m http.server 8000",
-    "build": "npm run build:ts && npm run build:verify",
-    "build:ts": "tsc --project tsconfig.json",
-    "build:watch": "tsc --project tsconfig.json --watch",
-    "build:verify": "node scripts/verify-build.js",
-    "clean": "rm -rf dist && rm -rf lib/**/*.js lib/**/*.d.ts lib/**/*.js.map",
-    "prebuild": "npm run clean",
-    "deploy": "./deploy.sh",
-    "deploy:staging": "wrangler pages deploy --env staging",
-    "deploy:production": "wrangler pages deploy --env production",
-    "test": "python3 -m pytest test_biomech.py -v",
-    "test:integration": "node scripts/integration-test.js",
-    "test:all": "npm run test:integration && npm test",
-    "biomech": "python3 pose.py",
-    "monte-carlo": "python3 monte_carlo.py",
-    "vision": "python3 main.py --vision-mode",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "docker:build": "docker-compose build",
-    "format": "black *.py && prettier --write *.html *.js",
-    "lint": "flake8 *.py && eslint *.js",
-    "install": "pip install -r requirements.txt",
-    "setup:db": "node scripts/setup-database.js",
-    "setup:all": "npm run setup:db && npm run train:models",
-    "ml:train": "node scripts/train-models.js",
-    "ml:predict": "node scripts/run-predictions.js",
-    "ml:health": "node scripts/check-ml-health.js",
-    "api:start": "node api/server.js",
-    "api:dev": "node --watch api/server.js",
-    "api:test": "node api/test/run-tests.js",
-    "real:setup": "node setup-real-database.js",
-    "real:api": "node api/real-server.js",
-    "real:test": "open http://localhost:3000/api/docs && node api/real-server.js",
-    "real:verify": "node test-real-implementation.js",
-    "health": "node scripts/health-check.js",
-    "migrate": "node scripts/run-migrations.js",
-    "seed": "node scripts/seed-data.js",
-    "generate:charts": "node lib/mermaid-charts.js",
-    "generate:stackoverflow": "node lib/stackoverflow-integration.js",
-    "setup:neon": "node lib/neon-database.js",
-    "docs:generate": "npm run generate:charts && npm run generate:stackoverflow"
-  },
-  "keywords": [
-    "sports-analytics",
-    "biomechanics",
-    "computer-vision",
-    "3d-pose",
-    "championship-intelligence",
-    "deep-south-sports",
-    "machine-learning",
-    "performance-analysis"
-  ],
-  "author": "Austin Humphrey <austin@blazesportsintel.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ahump20/BSI.git"
-  },
-  "homepage": "https://blazesportsintel.com",
-  "bugs": {
-    "url": "https://github.com/ahump20/BSI/issues"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "python": ">=3.9.0"
-  },
-  "devDependencies": {
-    "eslint": "^8.0.0",
-    "prettier": "^3.0.0",
-    "wrangler": "^4.40.2",
-    "typescript": "^5.2.2",
-    "@types/node": "^20.8.0",
-    "ts-node": "^10.9.1",
-    "concurrently": "^8.2.2"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler pages deploy dist"
   },
   "dependencies": {
-    "compression": "^1.7.4",
-    "cors": "^2.8.5",
-    "dotenv": "^16.6.1",
-    "express": "^4.21.2",
-    "express-rate-limit": "^6.11.2",
-    "helmet": "^7.2.0",
-    "joi": "^17.10.2",
-    "node-fetch": "^3.3.2",
-    "pg": "^8.16.3",
-    "winston": "^3.10.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "vite": "^5.0.0",
+    "wrangler": "^3.22.0"
   }
 }
