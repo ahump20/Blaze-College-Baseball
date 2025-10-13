@@ -1,0 +1,41 @@
+---
+title: Player Detail Experience
+route: /baseball/ncaab/players/[playerSlug]
+phase: Phase 2 – MVP
+status: Draft
+---
+
+## Purpose
+- Showcase individual player performance, trends, and scouting intel in a mobile-first format.
+- Provide clear differentiation between free stats and Diamond Pro advanced analytics.
+- Support quick navigation between roster context and standalone player search results.
+
+## Primary Components
+- **Player Header:** Headshot, basic bio, handedness, eligibility, NIL prompt (if available).
+- **Season Snapshot:** Slash line, OPS+, WAR, recent trend indicator.
+- **Advanced Metrics Tabs:** Hitting, Pitching, Fielding sections with chart toggles.
+- **Spray Chart / Pitch Mix:** Rendered via canvas with dark-mode safe palette.
+- **Recruiting & Draft Notes:** Text modules with manual overrides for editorial insights.
+
+## Layout & Interaction Notes
+- Sticky segmented control switches between Overview, Advanced, and Notes without reflow.
+- Ensure data tables scroll horizontally inside safe container on smaller screens.
+- Provide Pro lock overlays with contextual copy and CTA to subscribe via Stripe checkout.
+
+## Acceptance Criteria
+1. Player header loads base information with fallback silhouette for missing headshots.
+2. Season snapshot displays last five games mini-trend with accessible color coding.
+3. Advanced metrics tab hides locked sections until authentication confirms Pro entitlement.
+4. Spray chart supports pinch-to-zoom and resets via “Reset View” button.
+5. Notes module supports markdown rendering with sanitized HTML to prevent XSS.
+
+## Analytics Events
+- `player.tab_changed`
+- `player.pro_lock_clicked`
+- `player.share_triggered`
+- `player.related_team_tap`
+
+## Open Questions
+- Need to confirm cadence for syncing TrackMan data for pitch-level insights.
+- Decide whether portal tracker tags should surface on the primary overview tab.
+

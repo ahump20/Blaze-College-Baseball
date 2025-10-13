@@ -1,0 +1,42 @@
+---
+title: News & Insights Experience
+route: /baseball/ncaab/news
+phase: Phase 2 – MVP
+status: Draft
+---
+
+## Purpose
+- Centralize editorial coverage, portal updates, and automated recaps.
+- Blend LLM-assisted summaries with verified data-driven storytelling.
+- Provide clear entry to Diamond Pro exclusive articles without frustrating free readers.
+
+## Primary Components
+- **Top Story Carousel:** Hero treatment with Source Serif Pro typography and gradient overlay.
+- **Latest Feed:** Infinite scroll list of articles with tags (Recap, Portal, Analysis, Pro).
+- **Portal Tracker:** Sticky card summarizing key transfer movement.
+- **Diamond Pro Section:** Highlighted block with premium content, locked teasers, and CTA.
+- **Newsletter Capture:** Dark-mode friendly form with success toast.
+
+## Layout & Interaction Notes
+- Carousel auto-advances every 8 seconds with pause-on-hover and accessible controls.
+- Feed cards include estimated read time, author, and quick share actions.
+- Ensure images lazy-load with blur placeholder to maintain performance.
+- LLM-generated content must pass verifier before publish; fallback to templated summary if verification fails.
+
+## Acceptance Criteria
+1. News feed supports query params for tag filtering (`?tag=portal`).
+2. Portal tracker updates at least twice daily and links to relevant team or player pages.
+3. Diamond Pro teasers display lock icon and lead to paywall if user lacks entitlement.
+4. Newsletter form validates email, stores in marketing list, and never logs PII.
+5. Articles older than 30 days archived but remain searchable via global search.
+
+## Analytics Events
+- `news.article_opened`
+- `news.tag_filter_applied`
+- `news.pro_teaser_clicked`
+- `news.newsletter_submitted`
+
+## Open Questions
+- Determine editorial workflow for mixing manual and automated recaps.
+- Evaluate adding audio recaps or podcasts within the MVP timeline.
+

@@ -1,0 +1,42 @@
+---
+title: Game Center Experience
+route: /baseball/ncaab/games/[gameId]
+phase: Phase 2 – MVP
+status: Draft
+---
+
+## Purpose
+- Deliver a live, data-rich game hub with intuitive navigation between box score, plays, and team stats.
+- Support real-time ingestion with Cloudflare Worker updates cached in Redis (≤60 second TTL).
+- Provide premium-only layers (spray charts, pitch sequencing) without degrading free access.
+
+## Primary Components
+- **Game Header:** Teams, scoreline, inning/status pill, location, broadcast info.
+- **Tabbed Navigator:** Box Score, Plays, Team Stats, with sticky tabs for mobile.
+- **Live Win Probability Chart:** Sparkline with tooltips, dark-mode friendly gradient.
+- **Play-by-Play Feed:** Virtualized list with play type icons and quick filters (All/Scoring/Defensive).
+- **Player Spotlight Drawer:** Slide-up module showing trending players with share action.
+
+## Layout & Interaction Notes
+- On mobile, header condenses into a compact card once user scrolls 120 px.
+- Use CSS variables for team colors but fall back to brand palette when contrast fails.
+- Tab change should maintain scroll position for each tab via stateful container.
+- Provide offline placeholder state that caches last known data for 5 minutes.
+
+## Acceptance Criteria
+1. Header surfaces latest score with auto-refresh and manual refresh CTA.
+2. Tab switch persists selection via URL hash (`#box`, `#plays`, `#team-stats`).
+3. Play-by-play feed supports virtualization (render window ≤ 30 items).
+4. Win probability chart gracefully handles missing data (display message + hide chart).
+5. Diamond Pro data is gated; unauthorized requests trigger `403` and fallback copy.
+
+## Analytics Events
+- `game.tab_changed`
+- `game.play_selected`
+- `game.share_triggered`
+- `paywall.pro_lock_visible`
+
+## Open Questions
+- Confirm whether pitch-level data is available in first data provider contract.
+- Determine latency budget for Worker → Redis pipeline under postseason load.
+

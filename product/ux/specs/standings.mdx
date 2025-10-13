@@ -1,0 +1,41 @@
+---
+title: Standings Experience
+route: /baseball/ncaab/standings
+phase: Phase 2 – MVP
+status: Draft
+---
+
+## Purpose
+- Present up-to-date conference standings with clear sorting and filtering controls.
+- Allow quick comparison between overall, conference, and home/away records.
+- Support historical lookback for postseason context.
+
+## Primary Components
+- **Conference Selector:** Dropdown or segmented control for SEC, ACC, etc.
+- **Standings Table:** Columns for overall, conference, home, away, streak, last 10.
+- **Trend Indicators:** Arrows showing movement compared to previous day.
+- **Postseason Outlook:** Bubble meter showing projected Regional seed (Diamond Pro).
+- **Context Modules:** Notes for tiebreakers, clinched berths, weather delays.
+
+## Layout & Interaction Notes
+- Default to conference-specific view with sticky selector at top of viewport.
+- Table should support horizontal scrolling with locked first column on small screens.
+- Provide colorblind-safe indicators for trends (use icons + text, not color only).
+
+## Acceptance Criteria
+1. Conference selector defaults to user’s favorite conference (if set) else SEC.
+2. Standings table sorts by conference win % descending and recalculates when filters change.
+3. Trend indicators include accessible text (e.g., “Up 2 spots”).
+4. Postseason outlook hides for free users, replaced with upsell CTA.
+5. Data freshness timestamp displayed within 1 minute of last update.
+
+## Analytics Events
+- `standings.conference_changed`
+- `standings.sort_applied`
+- `standings.pro_prompt_impression`
+- `standings.share_triggered`
+
+## Open Questions
+- Validate data provider includes conference-only splits in real time.
+- Determine storage approach for historical standings snapshots (S3 vs. Postgres table).
+
