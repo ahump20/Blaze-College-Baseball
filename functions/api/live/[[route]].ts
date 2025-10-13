@@ -409,7 +409,6 @@ async function streamNCAABaseball(url: URL, env: Env) {
     sport: 'ncaa-baseball',
     gameId,
     sequence: latestSequence,
-    nextSequence: latestSequence,
     frames,
     innings,
     meta: {
