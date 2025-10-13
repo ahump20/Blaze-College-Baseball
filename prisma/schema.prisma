@@ -1,0 +1,423 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Sport {
+  BASEBALL
+  SOFTBALL
+  OTHER
+}
+
+enum Handedness {
+  LEFT
+  RIGHT
+  SWITCH
+}
+
+enum SeasonType {
+  PRESEASON
+  REGULAR
+  POSTSEASON
+}
+
+enum GameStatus {
+  SCHEDULED
+  IN_PROGRESS
+  FINAL
+  DELAYED
+  POSTPONED
+  CANCELLED
+}
+
+enum InningHalf {
+  TOP
+  BOTTOM
+}
+
+enum EventType {
+  PITCH
+  SINGLE
+  DOUBLE
+  TRIPLE
+  HOMERUN
+  WALK
+  STRIKEOUT
+  FLYOUT
+  GROUNDOUT
+  FIELDERS_CHOICE
+  SACRIFICE
+  STEAL
+  PICKOFF
+  ERROR
+  WILD_PITCH
+  PASSED_BALL
+  BALK
+  RUN
+  REVIEW
+  OTHER
+}
+
+enum BoxLineRole {
+  BATTER
+  PITCHER
+  FIELDER
+}
+
+enum StatScope {
+  GAME
+  SERIES
+  SEASON
+  TOURNAMENT
+  OVERALL
+}
+
+enum RankingType {
+  D1_BASEBALL
+  USA_TODAY
+  COACHES
+  BASEBALL_AMERICA
+  INTERNAL_MODEL
+}
+
+enum ArticleStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+model Team {
+  id               String        @id @default(cuid())
+  externalId       String?       @unique
+  slug             String        @unique
+  name             String
+  nickname         String?
+  conference       String?
+  division         String?
+  league           String?
+  level            String?
+  city             String?
+  state            String?
+  country          String        @default("USA")
+  sport            Sport         @default(BASEBALL)
+  primaryColor     String?
+  secondaryColor   String?
+  accentColor      String?
+  logoUrl          String?
+  recordOverall    String?
+  recordConference String?
+  nationalRank     Int?
+  foundedYear      Int?
+  venueName        String?
+  venueCapacity    Int?
+  metadata         Json?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  players          Player[]
+  homeGames        Game[]        @relation("HomeTeam")
+  awayGames        Game[]        @relation("AwayTeam")
+  boxLines         BoxLine[]
+  teamStats        TeamStats[]
+  playerStats      PlayerStats[]
+  rankings         Ranking[]
+  articles         Article[]
+  events           Event[]
+
+  @@index([conference])
+  @@index([sport])
+}
+
+model Player {
+  id           String        @id @default(cuid())
+  externalId   String?       @unique
+  teamId       String?
+  team         Team?         @relation(fields: [teamId], references: [id])
+  slug         String?       @unique
+  fullName     String
+  firstName    String?
+  lastName     String?
+  jerseyNumber Int?
+  position     String?
+  bats         Handedness?
+  throws       Handedness?
+  classYear    String?
+  heightCm     Int?
+  weightKg     Int?
+  hometown     String?
+  homeState    String?
+  country      String        @default("USA")
+  dateOfBirth  DateTime?
+  arrivalYear  Int?
+  metadata     Json?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  events       Event[]
+  boxLines     BoxLine[]
+  playerStats  PlayerStats[]
+  articles     Article[]
+
+  @@index([teamId])
+  @@index([position])
+}
+
+model Game {
+  id               String      @id @default(cuid())
+  externalId       String?     @unique
+  season           Int
+  seasonType       SeasonType  @default(REGULAR)
+  sport            Sport       @default(BASEBALL)
+  startTime        DateTime
+  endTime          DateTime?
+  status           GameStatus  @default(SCHEDULED)
+  stage            String?
+  week             Int?
+  dayOfWeek        String?
+  neutralSite      Boolean     @default(false)
+  conferenceGame   Boolean     @default(false)
+  homeTeamId       String
+  awayTeamId       String
+  homeTeam         Team        @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam         Team        @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  homeScore        Int?        @default(0)
+  awayScore        Int?        @default(0)
+  homeHits         Int?        @default(0)
+  awayHits         Int?        @default(0)
+  homeErrors       Int?        @default(0)
+  awayErrors       Int?        @default(0)
+  inningsScheduled Int?        @default(9)
+  inningsPlayed    Int?
+  venueName        String?
+  venueCity        String?
+  venueState       String?
+  attendance       Int?
+  weather          Json?
+  broadcast        Json?
+  notes            String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  events           Event[]
+  boxLines         BoxLine[]
+  teamStats        TeamStats[]
+  articles         Article[]
+
+  @@index([season, seasonType])
+  @@index([startTime])
+  @@index([status])
+}
+
+model Event {
+  id              String      @id @default(cuid())
+  gameId          String
+  game            Game        @relation(fields: [gameId], references: [id])
+  teamId          String?
+  team            Team?       @relation(fields: [teamId], references: [id])
+  playerId        String?
+  player          Player?     @relation(fields: [playerId], references: [id])
+  sequence        Int
+  inning          Int
+  half            InningHalf
+  eventType       EventType
+  description     String
+  detail          Json?
+  outsBefore      Int?
+  outsAfter       Int?
+  balls           Int?
+  strikes         Int?
+  pitchNumber     Int?
+  batterHand      Handedness?
+  pitcherHand     Handedness?
+  baseStateBefore Json?
+  baseStateAfter  Json?
+  createdAt       DateTime    @default(now())
+
+  @@index([gameId, sequence])
+  @@index([teamId])
+  @@index([playerId])
+}
+
+model BoxLine {
+  id                 String      @id @default(cuid())
+  gameId             String
+  game               Game        @relation(fields: [gameId], references: [id])
+  teamId             String
+  team               Team        @relation(fields: [teamId], references: [id])
+  playerId           String?
+  player             Player?     @relation(fields: [playerId], references: [id])
+  role               BoxLineRole @default(BATTER)
+  battingOrder       Int?
+  started            Boolean     @default(false)
+  plateAppearances   Int?        @default(0)
+  atBats             Int?        @default(0)
+  runs               Int?        @default(0)
+  hits               Int?        @default(0)
+  doubles            Int?        @default(0)
+  triples            Int?        @default(0)
+  homeRuns           Int?        @default(0)
+  runsBattedIn       Int?        @default(0)
+  walks              Int?        @default(0)
+  strikeouts         Int?        @default(0)
+  hitByPitch         Int?        @default(0)
+  sacrificeFlies     Int?        @default(0)
+  sacrificeBunts     Int?        @default(0)
+  stolenBases        Int?        @default(0)
+  caughtStealing     Int?        @default(0)
+  totalBases         Int?        @default(0)
+  onBasePercentage   Decimal?    @db.Decimal(5, 3)
+  sluggingPercentage Decimal?    @db.Decimal(5, 3)
+  battingAverage     Decimal?    @db.Decimal(5, 3)
+  inningsPitched     Decimal?    @db.Decimal(4, 1)
+  battersFaced       Int?
+  hitsAllowed        Int?
+  runsAllowed        Int?
+  earnedRuns         Int?
+  walksAllowed       Int?
+  strikeoutsThrown   Int?
+  homeRunsAllowed    Int?
+  hitBatters         Int?
+  pitches            Int?
+  strikesThrown      Int?
+  decision           String?
+  save               Boolean     @default(false)
+  hold               Boolean     @default(false)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  @@index([gameId, teamId])
+  @@index([playerId])
+}
+
+model TeamStats {
+  id                 String    @id @default(cuid())
+  teamId             String
+  team               Team      @relation(fields: [teamId], references: [id])
+  gameId             String?
+  game               Game?     @relation(fields: [gameId], references: [id])
+  season             Int
+  scope              StatScope @default(SEASON)
+  split              String    @default("overall")
+  gamesPlayed        Int?      @default(0)
+  wins               Int?      @default(0)
+  losses             Int?      @default(0)
+  ties               Int?      @default(0)
+  runsScored         Int?      @default(0)
+  runsAllowed        Int?      @default(0)
+  battingAverage     Decimal?  @db.Decimal(5, 3)
+  onBasePercentage   Decimal?  @db.Decimal(5, 3)
+  sluggingPercentage Decimal?  @db.Decimal(5, 3)
+  era                Decimal?  @db.Decimal(5, 2)
+  whip               Decimal?  @db.Decimal(5, 2)
+  strikeouts         Int?      @default(0)
+  walks              Int?      @default(0)
+  stolenBases        Int?      @default(0)
+  opponentBattingAvg Decimal?  @db.Decimal(5, 3)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@unique([teamId, season, scope, split], map: "team_stats_scope_unique")
+  @@unique([teamId, gameId], map: "team_stats_game_unique")
+  @@index([teamId, season])
+  @@index([scope])
+}
+
+model PlayerStats {
+  id                 String    @id @default(cuid())
+  playerId           String
+  player             Player    @relation(fields: [playerId], references: [id])
+  teamId             String?
+  team               Team?     @relation(fields: [teamId], references: [id])
+  season             Int
+  scope              StatScope @default(SEASON)
+  split              String    @default("overall")
+  gamesPlayed        Int?      @default(0)
+  gamesStarted       Int?      @default(0)
+  plateAppearances   Int?      @default(0)
+  atBats             Int?      @default(0)
+  runs               Int?      @default(0)
+  hits               Int?      @default(0)
+  doubles            Int?      @default(0)
+  triples            Int?      @default(0)
+  homeRuns           Int?      @default(0)
+  runsBattedIn       Int?      @default(0)
+  walks              Int?      @default(0)
+  strikeouts         Int?      @default(0)
+  hitByPitch         Int?      @default(0)
+  stolenBases        Int?      @default(0)
+  caughtStealing     Int?      @default(0)
+  battingAverage     Decimal?  @db.Decimal(5, 3)
+  onBasePercentage   Decimal?  @db.Decimal(5, 3)
+  sluggingPercentage Decimal?  @db.Decimal(5, 3)
+  ops                Decimal?  @db.Decimal(5, 3)
+  totalBases         Int?
+  inningsPitched     Decimal?  @db.Decimal(5, 1)
+  wins               Int?      @default(0)
+  losses             Int?      @default(0)
+  saves              Int?      @default(0)
+  holds              Int?      @default(0)
+  gamesFinished      Int?      @default(0)
+  era                Decimal?  @db.Decimal(5, 2)
+  whip               Decimal?  @db.Decimal(5, 2)
+  strikeoutsPitched  Int?      @default(0)
+  walksAllowed       Int?      @default(0)
+  hitsAllowed        Int?      @default(0)
+  homeRunsAllowed    Int?      @default(0)
+  opponentBattingAvg Decimal?  @db.Decimal(5, 3)
+  appearances        Int?      @default(0)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@unique([playerId, season, scope, split])
+  @@index([playerId, season])
+  @@index([teamId])
+}
+
+model Ranking {
+  id              String      @id @default(cuid())
+  poll            RankingType
+  season          Int
+  week            Int
+  rank            Int
+  teamId          String
+  team            Team        @relation(fields: [teamId], references: [id])
+  points          Int?
+  firstPlaceVotes Int?
+  previousRank    Int?
+  trend           Int?
+  note            String?
+  publishedAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@unique([poll, season, week, rank])
+  @@index([teamId, season, week])
+}
+
+model Article {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  title       String
+  summary     String?
+  body        String
+  status      ArticleStatus @default(DRAFT)
+  source      String?
+  author      String?
+  tags        String[]
+  heroMedia   Json?
+  gameId      String?
+  game        Game?         @relation(fields: [gameId], references: [id])
+  teamId      String?
+  team        Team?         @relation(fields: [teamId], references: [id])
+  playerId    String?
+  player      Player?       @relation(fields: [playerId], references: [id])
+  publishedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([gameId])
+  @@index([teamId])
+  @@index([playerId])
+}
