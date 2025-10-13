@@ -714,7 +714,7 @@ function normaliseHalf(half?: string | null): 'top' | 'bottom' {
   return 'top';
 }
 
-function normaliseProbability(value: unknown): number | null {
+function normalizeProbability(value: unknown): number | null {
   if (value == null) {
     return null;
   }
