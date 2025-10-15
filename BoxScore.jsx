@@ -4,6 +4,7 @@ import './BoxScore.css';
 function BoxScore({ game, onBack }) {
   const [activeTab, setActiveTab] = useState('batting');
   const [boxScoreData, setBoxScoreData] = useState(null);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,18 +19,25 @@ function BoxScore({ game, onBack }) {
   const fetchBoxScore = async () => {
     try {
       const response = await fetch(`/api/games/${game.id}/boxscore`);
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
       const data = await response.json();
       setBoxScoreData(data);
+      setError(null);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching box score:', error);
+      setError('Unable to load the box score right now.');
+      setBoxScoreData(null);
       setLoading(false);
     }
   };
 
-  if (loading) {
-    return <div className="loading-state">Loading box score...</div>;
-  }
+  const handleRefresh = () => {
+    setLoading(true);
+    fetchBoxScore();
+  };
 
   const renderLineScore = () => {
     const innings = boxScoreData.lineScore.innings;
@@ -240,36 +248,73 @@ function BoxScore({ game, onBack }) {
     );
   };
 
+  const renderContent = () => {
+    if (loading) {
+      return <div className="loading-state">Loading box score...</div>;
+    }
+
+    if (error || !boxScoreData) {
+      return (
+        <div className="box-score-state">
+          <p>{error || 'Box score data is not available yet.'}</p>
+          <button
+            className="refresh-button"
+            onClick={handleRefresh}
+            disabled={loading}
+          >
+            ↻ Refresh
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        {renderLineScore()}
+
+        <div className="stats-tabs">
+          <button
+            className={activeTab === 'batting' ? 'active' : ''}
+            onClick={() => setActiveTab('batting')}
+          >
+            Batting
+          </button>
+          <button
+            className={activeTab === 'pitching' ? 'active' : ''}
+            onClick={() => setActiveTab('pitching')}
+          >
+            Pitching
+          </button>
+        </div>
+
+        <div className="stats-content">
+          {activeTab === 'batting' ? renderBattingStats() : renderPitchingStats()}
+        </div>
+      </>
+    );
+  };
+
   return (
     <div className="box-score">
       <div className="box-score-header">
-        <button className="back-button" onClick={onBack}>← Back</button>
+        <div className="header-top">
+          <button className="back-button" onClick={onBack}>← Back</button>
+          <button
+            className="refresh-button"
+            onClick={handleRefresh}
+            aria-label="Refresh box score"
+            disabled={loading}
+          >
+            ↻ Refresh
+          </button>
+        </div>
         <div className="game-info">
           <h2>{game.awayTeam.name} at {game.homeTeam.name}</h2>
           <span className="game-date">{game.date}</span>
         </div>
       </div>
 
-      {renderLineScore()}
-
-      <div className="stats-tabs">
-        <button 
-          className={activeTab === 'batting' ? 'active' : ''}
-          onClick={() => setActiveTab('batting')}
-        >
-          Batting
-        </button>
-        <button 
-          className={activeTab === 'pitching' ? 'active' : ''}
-          onClick={() => setActiveTab('pitching')}
-        >
-          Pitching
-        </button>
-      </div>
-
-      <div className="stats-content">
-        {activeTab === 'batting' ? renderBattingStats() : renderPitchingStats()}
-      </div>
+      {renderContent()}
     </div>
   );
 }
