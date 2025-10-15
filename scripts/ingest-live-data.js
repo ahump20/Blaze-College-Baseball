@@ -14,7 +14,7 @@
  * - Prepares data for embedding generation
  */
 
-const { SPORTSDATA_API_KEY, WRANGLER_PATH } = process.env;
+const { SPORTSDATA_API_KEY = '', WRANGLER_PATH = '' } = process.env;
 
 if (!SPORTSDATA_API_KEY) {
   console.error(
