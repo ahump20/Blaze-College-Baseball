@@ -15,7 +15,7 @@ CREATE TABLE teams (
     name VARCHAR(100) NOT NULL,
     abbreviation VARCHAR(10) NOT NULL,
     city VARCHAR(100),
-    sport VARCHAR(20) NOT NULL CHECK (sport IN ('mlb', 'nfl', 'nba', 'ncaa_football', 'ncaa_baseball', 'high_school')),
+    sport VARCHAR(20) NOT NULL CHECK (sport IN ('mlb', 'nfl', 'nba', 'ncaa_football', 'ncaa_baseball', 'ncaa_basketball', 'high_school')),
     league VARCHAR(50),
     division VARCHAR(50),
     conference VARCHAR(50),
@@ -75,6 +75,26 @@ CREATE TABLE game_stats (
     period VARCHAR(10), -- inning, quarter, half, etc.
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Game events - normalized play-by-play data
+CREATE TABLE IF NOT EXISTS game_events (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    game_id UUID REFERENCES games(id) ON DELETE CASCADE,
+    external_event_id VARCHAR(100),
+    sequence INTEGER NOT NULL,
+    period VARCHAR(20),
+    clock VARCHAR(20),
+    home_score INTEGER,
+    away_score INTEGER,
+    description TEXT,
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(game_id, sequence)
+);
+
+CREATE INDEX IF NOT EXISTS idx_game_events_game_id ON game_events(game_id);
+CREATE INDEX IF NOT EXISTS idx_game_events_sequence ON game_events(game_id, sequence);
 
 -- Team analytics - calculated metrics
 CREATE TABLE team_analytics (

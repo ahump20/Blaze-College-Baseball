@@ -1,418 +1,816 @@
+#!/usr/bin/env node
+
 /**
- * Blaze Sports Intel - Live Data Ingestion Script
+ * Blaze Sports Intel - Live Data Ingestion
+ * ----------------------------------------
  *
- * Fetches real, current sports data from SportsDataIO API and populates D1 database.
- * Replaces seed/mock data with live game information for accurate semantic search.
- *
- * Usage:
- *   SPORTSDATA_API_KEY=xxx node scripts/ingest-live-data.js
- *
- * Features:
- * - Fetches recent NFL, MLB, CFB, CBB games
- * - Generates rich, semantic descriptions for each game
- * - Stores in D1 database with proper normalization
- * - Prepares data for embedding generation
+ * Refactored ingestion workflow that relies on the shared
+ * DatabaseConnectionService rather than shelling out to Wrangler.
+ * The worker ingests game metadata alongside normalized play-by-play
+ * feeds and persists everything inside a single transactional boundary.
  */
 
-const SPORTSDATA_API_KEY = process.env.SPORTSDATA_API_KEY || '6ca2adb39404482da5406f0a6cd7aa37';
-const WRANGLER_PATH = process.env.WRANGLER_PATH || '/Users/AustinHumphrey/.npm-global/bin/wrangler';
-const DATABASE_NAME = 'blazesports-db';
+import DatabaseConnectionService from '../api/database/connection-service.js';
+import LoggerService from '../api/services/logger-service.js';
+import { insertGameEvents } from '../api/database/game-events-helper.js';
 
-// Current season years
-const CURRENT_SEASON = {
-  NFL: 2024,    // 2024 season (Sep 2024 - Feb 2025)
-  MLB: 2024,    // 2024 season (Apr - Oct 2024)
-  CFB: 2024,    // 2024 season (Aug - Jan 2025)
-  CBB: 2024     // 2024-2025 season (Nov 2024 - Apr 2025)
+const SPORTSDATA_API_KEY = process.env.SPORTSDATA_API_KEY || '6ca2adb39404482da5406f0a6cd7aa37';
+
+const DATABASE_CONFIG = {
+  host: process.env.DB_HOST || 'localhost',
+  port: Number(process.env.DB_PORT) || 5432,
+  database: process.env.DB_NAME || 'blaze_sports_intel',
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD,
+  ssl: process.env.NODE_ENV === 'production'
 };
 
-// API Configuration
+const CURRENT_SEASON = {
+  NFL: 2024,
+  MLB: 2024,
+  CFB: 2024,
+  CBB: 2024
+};
+
 const API_BASE = 'https://api.sportsdata.io/v3';
+
 const API_ENDPOINTS = {
   NFL: {
-    teams: `/nfl/scores/json/Teams`,
-    schedule: `/nfl/scores/json/Schedules/${CURRENT_SEASON.NFL}`,
-    scores: `/nfl/scores/json/ScoresByWeek/${CURRENT_SEASON.NFL}/5` // Week 5
+    games: `/nfl/scores/json/ScoresByWeek/${CURRENT_SEASON.NFL}/5`
   },
   MLB: {
-    teams: `/mlb/scores/json/teams`,
-    games: `/mlb/scores/json/Games/2024` // Full 2024 season
+    games: `/mlb/scores/json/Games/${CURRENT_SEASON.MLB}`
   },
   CFB: {
-    teams: `/cfb/scores/json/Teams`,
     games: `/cfb/scores/json/Games/${CURRENT_SEASON.CFB}`
   },
   CBB: {
-    teams: `/cbb/scores/json/Teams`,
     games: `/cbb/scores/json/Games/${CURRENT_SEASON.CBB}`
   }
 };
 
-/**
- * Map SportsDataIO season type codes to database values
- * @param {string|number} seasonType - API season type code
- * @returns {string} 'REG' or 'POST'
- */
-function mapSeasonType(seasonType) {
-  // SportsDataIO codes:
-  // 1 = Regular Season
-  // 2 = Preseason (treat as REG)
-  // 3 = Postseason/Playoffs
-  // 4 = All-Star (treat as REG)
-  if (!seasonType) return 'REG';
+const PLAY_BY_PLAY_ENDPOINTS = {
+  NFL: (game) => {
+    if (!game.week || !game.home?.abbreviation) return null;
+    return `/nfl/stats/json/PlayByPlay/${game.season}/${game.seasonType === 'postseason' ? 'POST' : 'REG'}/${game.week}/${game.home.abbreviation}`;
+  },
+  MLB: (game) => `/mlb/stats/json/PlayByPlay/${game.externalId}`,
+  CFB: (game) => {
+    if (!game.week || !game.home?.abbreviation) return null;
+    return `/cfb/stats/json/PlayByPlay/${game.season}/${game.week}/${game.home.abbreviation}`;
+  },
+  CBB: (game) => `/cbb/stats/json/PlayByPlay/${game.season}/${game.externalId}`
+};
 
-  const code = String(seasonType);
-  if (code === '3') return 'POST';
+const SPORT_METADATA_MAP = {
+  NFL: { sport: 'nfl', league: 'NFL' },
+  MLB: { sport: 'mlb', league: 'MLB' },
+  CFB: { sport: 'ncaa_football', league: 'NCAA' },
+  CBB: { sport: 'ncaa_basketball', league: 'NCAA' }
+};
 
-  // Default to REG for all other codes (1, 2, 4, etc.)
-  return 'REG';
+const logger = new LoggerService({
+  level: process.env.LOG_LEVEL || 'info',
+  environment: process.env.NODE_ENV || 'development',
+  service: 'live-data-ingestion',
+  version: '1.1.0'
+});
+
+const database = new DatabaseConnectionService(DATABASE_CONFIG, logger);
+
+function normalizeSeasonType(seasonType) {
+  if (!seasonType && seasonType !== 0) return 'regular';
+  const code = Number(seasonType);
+  if (code === 3) return 'postseason';
+  return 'regular';
 }
 
-/**
- * Fetch data from SportsDataIO API
- */
-async function fetchAPI(sport, endpoint) {
-  const url = `${API_BASE}${endpoint}?key=${SPORTSDATA_API_KEY}`;
-  console.log(`Fetching: ${sport} - ${endpoint}`);
+function normalizeStatus(status) {
+  if (!status) return 'scheduled';
+  const value = status.toLowerCase().replace(/\s+/g, '_');
+  if (value.includes('final') || value.includes('completed')) return 'completed';
+  if (value.includes('inprogress') || value.includes('in_progress') || value.includes('in-game')) return 'in_progress';
+  if (value.includes('postponed')) return 'postponed';
+  if (value.includes('cancelled')) return 'canceled';
+  return value;
+}
 
-  const response = await fetch(url);
+function parseDate(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function toNumber(value) {
+  if (value === null || value === undefined || value === '') return null;
+  const number = Number(value);
+  return Number.isNaN(number) ? null : number;
+}
+
+function normalizeTeam(sportKey, data = {}) {
+  const meta = SPORT_METADATA_MAP[sportKey];
+  if (!meta) return null;
+
+  const abbreviation = data.key || data.abbreviation || (data.name ? data.name.slice(0, 3) : null);
+  const externalId = data.id ?? data.externalId ?? data.key ?? data.name;
+
+  if (!externalId) {
+    return null;
+  }
+
+  const metadata = {
+    ...data.metadata,
+    state: data.state || data.metadata?.state || null,
+    record: data.record || null
+  };
+
+  return {
+    externalId: String(externalId),
+    name: data.name || data.fullName || data.abbreviation || 'Unknown Team',
+    abbreviation: abbreviation
+      ? String(abbreviation).toUpperCase()
+      : String(externalId).slice(0, 3).toUpperCase(),
+    sport: meta.sport,
+    league: meta.league,
+    location: {
+      city: data.city || null,
+      state: data.state || null
+    },
+    division: data.division || null,
+    conference: data.conference || null,
+    metadata,
+    score: toNumber(data.score)
+  };
+}
+
+function buildNormalizedGame(sportKey, payload) {
+  const sportMeta = SPORT_METADATA_MAP[sportKey];
+  if (!sportMeta) return null;
+
+  const home = normalizeTeam(sportKey, payload.homeTeam || {});
+  const away = normalizeTeam(sportKey, payload.awayTeam || {});
+
+  if (!home || !away) {
+    return null;
+  }
+
+  const season = Number(payload.season) || CURRENT_SEASON[sportKey];
+  const seasonType = normalizeSeasonType(payload.seasonType);
+  const status = normalizeStatus(payload.status);
+  const gameDate = parseDate(payload.gameDate || payload.startTime);
+
+  if (!payload.externalId || !gameDate) {
+    return null;
+  }
+
+  const normalized = {
+    externalId: String(payload.externalId),
+    sport: sportMeta.sport,
+    league: sportMeta.league,
+    season,
+    seasonType,
+    week: payload.week !== undefined && payload.week !== null ? Number(payload.week) : null,
+    status,
+    gameDate,
+    venue: {
+      name: payload.venueName || null,
+      city: payload.venueCity || home.location.city || null,
+      state: payload.venueState || home.location.state || null
+    },
+    weather: payload.weather || null,
+    home,
+    away,
+    metadata: {
+      source: 'sportsdataio',
+      seasonTypeCode: payload.seasonType,
+      statusDetail: payload.status,
+      week: payload.week || null,
+      ...payload.extraMetadata
+    }
+  };
+
+  normalized.description = generateGameDescription(normalized);
+  return normalized;
+}
+
+function normalizeNFLGame(game) {
+  return buildNormalizedGame('NFL', {
+    externalId: game.GameKey || game.ScoreID,
+    season: game.Season,
+    seasonType: game.SeasonType,
+    week: game.Week,
+    gameDate: game.Date || game.DateTime,
+    status: game.Status,
+    venueName: game.StadiumDetails?.Name || game.Stadium,
+    venueCity: game.StadiumDetails?.City,
+    venueState: game.StadiumDetails?.State,
+    weather: game.ForecastDescription ? {
+      summary: game.ForecastDescription,
+      temperature: toNumber(game.ForecastTemperature),
+      windChill: toNumber(game.ForecastWindChill),
+      windSpeed: toNumber(game.ForecastWindSpeed)
+    } : null,
+    homeTeam: {
+      id: game.HomeTeamID,
+      key: game.HomeTeam,
+      name: game.HomeTeamName || game.HomeTeam,
+      score: game.HomeScore,
+      city: game.StadiumDetails?.City,
+      state: game.StadiumDetails?.State,
+      record: game.HomeTeamWins !== undefined && game.HomeTeamLosses !== undefined
+        ? `${game.HomeTeamWins}-${game.HomeTeamLosses}`
+        : null
+    },
+    awayTeam: {
+      id: game.AwayTeamID,
+      key: game.AwayTeam,
+      name: game.AwayTeamName || game.AwayTeam,
+      score: game.AwayScore,
+      city: game.StadiumDetails?.City,
+      state: game.StadiumDetails?.State,
+      record: game.AwayTeamWins !== undefined && game.AwayTeamLosses !== undefined
+        ? `${game.AwayTeamWins}-${game.AwayTeamLosses}`
+        : null
+    },
+    extraMetadata: {
+      gameKey: game.GameKey,
+      broadcast: game.Channel || null
+    }
+  });
+}
+
+function normalizeMLBGame(game) {
+  return buildNormalizedGame('MLB', {
+    externalId: game.GameID,
+    season: game.Season,
+    seasonType: game.SeasonType,
+    week: null,
+    gameDate: game.Day || game.DateTime,
+    status: game.Status,
+    venueName: game.StadiumName || game.Stadium,
+    venueCity: game.StadiumDetails?.City,
+    venueState: game.StadiumDetails?.State,
+    weather: game.Weather || null,
+    homeTeam: {
+      id: game.HomeTeamID,
+      key: game.HomeTeam,
+      name: game.HomeTeamName || game.HomeTeam,
+      score: game.HomeTeamRuns,
+      city: game.HomeTeamCity,
+      state: game.HomeTeamState,
+      division: game.HomeTeamDivision,
+      metadata: {
+        probablePitcher: game.HomePitcher || null
+      }
+    },
+    awayTeam: {
+      id: game.AwayTeamID,
+      key: game.AwayTeam,
+      name: game.AwayTeamName || game.AwayTeam,
+      score: game.AwayTeamRuns,
+      city: game.AwayTeamCity,
+      state: game.AwayTeamState,
+      division: game.AwayTeamDivision,
+      metadata: {
+        probablePitcher: game.AwayPitcher || null
+      }
+    },
+    extraMetadata: {
+      attendance: game.Attendance,
+      gameNumber: game.GameNumber,
+      doubleHeader: game.IsDoubleHeader || false
+    }
+  });
+}
+
+function normalizeCFBGame(game) {
+  return buildNormalizedGame('CFB', {
+    externalId: game.GameID,
+    season: game.Season,
+    seasonType: game.SeasonType,
+    week: game.Week,
+    gameDate: game.Day || game.DateTime,
+    status: game.Status,
+    venueName: game.Stadium,
+    venueCity: game.StadiumDetails?.City,
+    venueState: game.StadiumDetails?.State,
+    weather: game.Weather || null,
+    homeTeam: {
+      id: game.HomeTeamID,
+      key: game.HomeTeam,
+      name: game.HomeTeamName || game.HomeTeam,
+      score: game.HomeTeamScore,
+      conference: game.HomeConference,
+      metadata: {
+        rank: game.HomeRank || null
+      }
+    },
+    awayTeam: {
+      id: game.AwayTeamID,
+      key: game.AwayTeam,
+      name: game.AwayTeamName || game.AwayTeam,
+      score: game.AwayTeamScore,
+      conference: game.AwayConference,
+      metadata: {
+        rank: game.AwayRank || null
+      }
+    },
+    extraMetadata: {
+      isConferenceGame: Boolean(game.ConferenceGame)
+    }
+  });
+}
+
+function normalizeCBBGame(game) {
+  return buildNormalizedGame('CBB', {
+    externalId: game.GameID,
+    season: game.Season,
+    seasonType: game.SeasonType,
+    week: null,
+    gameDate: game.Day || game.DateTime,
+    status: game.Status,
+    venueName: game.Stadium,
+    venueCity: game.StadiumDetails?.City,
+    venueState: game.StadiumDetails?.State,
+    homeTeam: {
+      id: game.HomeTeamID,
+      key: game.HomeTeam,
+      name: game.HomeTeamName || game.HomeTeam,
+      score: game.HomeTeamScore,
+      conference: game.HomeConference,
+      metadata: {
+        rank: game.HomeRank || null
+      }
+    },
+    awayTeam: {
+      id: game.AwayTeamID,
+      key: game.AwayTeam,
+      name: game.AwayTeamName || game.AwayTeam,
+      score: game.AwayTeamScore,
+      conference: game.AwayConference,
+      metadata: {
+        rank: game.AwayRank || null
+      }
+    },
+    extraMetadata: {
+      tournament: game.Tournament || null
+    }
+  });
+}
+
+const GAME_NORMALIZERS = {
+  NFL: normalizeNFLGame,
+  MLB: normalizeMLBGame,
+  CFB: normalizeCFBGame,
+  CBB: normalizeCBBGame
+};
+
+function generateGameDescription(game) {
+  const parts = [];
+
+  parts.push(`${game.away.name} at ${game.home.name}`);
+  parts.push(`${game.league} ${game.sport.toUpperCase()} game`);
+
+  if (game.home.score !== null && game.away.score !== null) {
+    parts.push(`Final score ${game.away.name} ${game.away.score}, ${game.home.name} ${game.home.score}`);
+    const margin = Math.abs(game.home.score - game.away.score);
+    if (margin <= 3) {
+      parts.push('Decided by one possession');
+    } else if (margin >= 10 && game.sport === 'mlb') {
+      parts.push('Run-rule margin');
+    }
+  } else if (game.status === 'in_progress') {
+    parts.push('In progress with live play-by-play updates');
+  } else {
+    parts.push(`Status: ${game.status}`);
+  }
+
+  if (game.gameDate) {
+    parts.push(`Played on ${game.gameDate.toLocaleString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    })}`);
+  }
+
+  if (game.venue?.name) {
+    parts.push(`Venue: ${game.venue.name}`);
+  }
+
+  return parts.join('. ');
+}
+
+async function fetchAPI(sportKey, endpoint) {
+  const url = new URL(`${API_BASE}${endpoint}`);
+  if (SPORTSDATA_API_KEY) {
+    url.searchParams.set('key', SPORTSDATA_API_KEY);
+  }
+
+  logger.debug('Fetching sports data feed', {
+    sport: sportKey,
+    endpoint: url.pathname,
+    query: Object.fromEntries(url.searchParams.entries())
+  });
+
+  const response = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'BlazeSportsIntel/1.0'
+    }
+  });
 
   if (!response.ok) {
-    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+    const error = new Error(`API request failed: ${response.status} ${response.statusText}`);
+    logger.error('API request failed', { sport: sportKey, endpoint: url.toString(), status: response.status }, error);
+    throw error;
   }
 
   return response.json();
 }
 
-/**
- * Generate rich semantic description for game (for better embeddings)
- */
-function generateGameDescription(game, sport) {
-  const parts = [];
-
-  // Basic matchup
-  parts.push(`${game.away_team_name} at ${game.home_team_name}`);
-
-  // Add sport context
-  parts.push(`${sport} game`);
-
-  // Score and outcome
-  if (game.status === 'Final' || game.status === 'Completed') {
-    const margin = Math.abs(game.home_score - game.away_score);
-    const winner = game.home_score > game.away_score ? game.home_team_name : game.away_team_name;
-
-    parts.push(`Final score: ${game.away_team_name} ${game.away_score}, ${game.home_team_name} ${game.home_score}`);
-    parts.push(`${winner} won by ${margin} ${sport === 'NFL' || sport === 'CFB' ? 'points' : 'runs'}`);
-
-    // Categorize game
-    if (margin <= 3 && (sport === 'NFL' || sport === 'CFB')) {
-      parts.push('close game');
-      parts.push('one-possession game');
-    } else if (margin <= 2 && (sport === 'MLB' || sport === 'CBB')) {
-      parts.push('close game');
-      parts.push('tight contest');
-    } else if (margin >= 20 && (sport === 'NFL' || sport === 'CFB')) {
-      parts.push('blowout');
-      parts.push('dominant victory');
-    } else if (margin >= 10 && (sport === 'MLB' || sport === 'CBB')) {
-      parts.push('decisive win');
-      parts.push('comfortable margin');
-    }
-  } else {
-    parts.push(`Status: ${game.status}`);
+async function fetchPlayByPlay(sportKey, game) {
+  const buildEndpoint = PLAY_BY_PLAY_ENDPOINTS[sportKey];
+  if (!buildEndpoint) {
+    return null;
   }
 
-  // Date and venue
-  const gameDate = new Date(game.game_date);
-  const month = gameDate.toLocaleDateString('en-US', { month: 'long' });
-  const day = gameDate.getDate();
-  const year = gameDate.getFullYear();
-
-  parts.push(`played on ${month} ${day}, ${year}`);
-
-  if (game.stadium_name) {
-    parts.push(`at ${game.stadium_name}`);
+  const endpoint = buildEndpoint(game);
+  if (!endpoint) {
+    logger.debug('Play-by-play endpoint unavailable for game', {
+      sport: sportKey,
+      externalId: game.externalId
+    });
+    return null;
   }
-
-  // Week context for football
-  if (game.week && (sport === 'NFL' || sport === 'CFB')) {
-    parts.push(`Week ${game.week}`);
-  }
-
-  // Season context
-  parts.push(`${game.season} season`);
-
-  return parts.join('. ');
-}
-
-/**
- * Normalize NFL game data from SportsDataIO
- */
-function normalizeNFLGame(game) {
-  return {
-    sport: 'NFL',
-    game_id: game.GameKey || game.ScoreID,
-    season: game.Season,
-    season_type: mapSeasonType(game.SeasonType),
-    week: game.Week,
-    game_date: game.Date || game.DateTime,
-    game_time: game.DateTime ? new Date(game.DateTime).toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: '2-digit', minute: '2-digit' }) : null,
-    status: game.Status,
-    home_team_id: game.HomeTeamID,
-    home_team_key: game.HomeTeam,
-    home_team_name: game.HomeTeamName || `${game.HomeTeam}`,
-    home_score: game.HomeScore,
-    away_team_id: game.AwayTeamID,
-    away_team_key: game.AwayTeam,
-    away_team_name: game.AwayTeamName || `${game.AwayTeam}`,
-    away_score: game.AwayScore,
-    stadium_name: game.StadiumDetails?.Name || game.Stadium,
-    winning_team_id: game.HomeScore > game.AwayScore ? game.HomeTeamID : game.AwayTeamID
-  };
-}
-
-/**
- * Normalize MLB game data from SportsDataIO
- */
-function normalizeMLBGame(game) {
-  return {
-    sport: 'MLB',
-    game_id: game.GameID,
-    season: game.Season,
-    season_type: mapSeasonType(game.SeasonType),
-    week: null,
-    game_date: game.Day || game.DateTime,
-    game_time: game.DateTime ? new Date(game.DateTime).toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: '2-digit', minute: '2-digit' }) : null,
-    status: game.Status,
-    home_team_id: game.HomeTeamID,
-    home_team_key: game.HomeTeam,
-    home_team_name: game.HomeTeamName || `${game.HomeTeam}`,
-    home_score: game.HomeTeamRuns,
-    away_team_id: game.AwayTeamID,
-    away_team_key: game.AwayTeam,
-    away_team_name: game.AwayTeamName || `${game.AwayTeam}`,
-    away_score: game.AwayTeamRuns,
-    stadium_name: game.StadiumName || game.Stadium,
-    winning_team_id: game.HomeTeamRuns > game.AwayTeamRuns ? game.HomeTeamID : game.AwayTeamID
-  };
-}
-
-/**
- * Normalize CFB game data from SportsDataIO
- */
-function normalizeCFBGame(game) {
-  return {
-    sport: 'CFB',
-    game_id: game.GameID,
-    season: game.Season,
-    season_type: mapSeasonType(game.SeasonType),
-    week: game.Week,
-    game_date: game.Day || game.DateTime,
-    game_time: game.DateTime ? new Date(game.DateTime).toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: '2-digit', minute: '2-digit' }) : null,
-    status: game.Status,
-    home_team_id: game.HomeTeamID,
-    home_team_key: game.HomeTeam,
-    home_team_name: game.HomeTeamName || game.HomeTeam,
-    home_score: game.HomeTeamScore,
-    away_team_id: game.AwayTeamID,
-    away_team_key: game.AwayTeam,
-    away_team_name: game.AwayTeamName || game.AwayTeam,
-    away_score: game.AwayTeamScore,
-    stadium_name: game.Stadium,
-    winning_team_id: game.HomeTeamScore > game.AwayTeamScore ? game.HomeTeamID : game.AwayTeamID
-  };
-}
-
-/**
- * Normalize CBB game data from SportsDataIO
- */
-function normalizeCBBGame(game) {
-  return {
-    sport: 'CBB',
-    game_id: game.GameID,
-    season: game.Season,
-    season_type: mapSeasonType(game.SeasonType),
-    week: null,
-    game_date: game.Day || game.DateTime,
-    game_time: game.DateTime ? new Date(game.DateTime).toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: '2-digit', minute: '2-digit' }) : null,
-    status: game.Status,
-    home_team_id: game.HomeTeamID,
-    home_team_key: game.HomeTeam,
-    home_team_name: game.HomeTeamName || game.HomeTeam,
-    home_score: game.HomeTeamScore,
-    away_team_id: game.AwayTeamID,
-    away_team_key: game.AwayTeam,
-    away_team_name: game.AwayTeamName || game.AwayTeam,
-    away_score: game.AwayTeamScore,
-    stadium_name: game.Stadium,
-    winning_team_id: game.HomeTeamScore > game.AwayTeamScore ? game.HomeTeamID : game.AwayTeamID
-  };
-}
-
-/**
- * Execute SQL command via wrangler
- */
-async function executeSQL(sql) {
-  const { execSync } = await import('child_process');
-
-  // Escape SQL for shell
-  const escapedSQL = sql.replace(/'/g, "'\\''");
-
-  const command = `${WRANGLER_PATH} d1 execute ${DATABASE_NAME} --remote --command='${escapedSQL}'`;
 
   try {
-    const output = execSync(command, { encoding: 'utf-8' });
-    return output;
+    return await fetchAPI(sportKey, endpoint);
   } catch (error) {
-    console.error('SQL execution failed:', error.message);
-    throw error;
+    logger.warn('Failed to fetch play-by-play feed', {
+      sport: sportKey,
+      externalId: game.externalId,
+      message: error.message
+    });
+    return null;
   }
 }
 
-/**
- * Insert games in batches (D1 has query limits)
- */
-async function insertGames(games) {
-  const BATCH_SIZE = 10; // Reduced for wrangler command length limits
+function normalizePlayByPlay(sportKey, feed, game) {
+  if (!feed) return [];
 
-  for (let i = 0; i < games.length; i += BATCH_SIZE) {
-    const batch = games.slice(i, i + BATCH_SIZE);
+  const rawPlays = Array.isArray(feed)
+    ? feed
+    : feed.plays || feed.Plays || feed.events || feed.Events || [];
 
-    const values = batch.map(game => {
-      const description = generateGameDescription(game, game.sport);
+  if (!Array.isArray(rawPlays)) return [];
 
-      // Ensure stadium_name is a string before processing
-      const stadiumName = game.stadium_name && typeof game.stadium_name === 'string'
-        ? game.stadium_name.replace(/'/g, "''")
-        : null;
+  return rawPlays.map((play, index) => {
+    const sequence = toNumber(play.Sequence) || index + 1;
+    const description = (play.Description || play.EventDescription || play.text || '').trim();
+    const homeScore = toNumber(play.HomeScore ?? play.homeScore ?? play.score?.home);
+    const awayScore = toNumber(play.AwayScore ?? play.awayScore ?? play.score?.away);
 
-      return `(
-        '${game.sport}',
-        '${game.game_id}',
-        ${game.season},
-        '${game.season_type}',
-        ${game.week || 'NULL'},
-        '${game.game_date}',
-        ${game.game_time ? `'${game.game_time}'` : 'NULL'},
-        '${game.status}',
-        ${game.home_team_id},
-        '${game.home_team_key}',
-        '${game.home_team_name.replace(/'/g, "''")}',
-        ${game.home_score || 'NULL'},
-        ${game.away_team_id},
-        '${game.away_team_key}',
-        '${game.away_team_name.replace(/'/g, "''")}',
-        ${game.away_score || 'NULL'},
-        ${stadiumName ? `'${stadiumName}'` : 'NULL'},
-        ${game.winning_team_id || 'NULL'},
-        '${description.replace(/'/g, "''")}'
-      )`;
-    }).join(',\n');
+    return {
+      externalEventId: String(play.PlayID || play.EventID || play.Id || `${game.externalId}-${sequence}`),
+      sequence,
+      period: play.Quarter || play.Inning || play.Period || play.period || null,
+      clock: play.TimeRemaining || play.Clock || play.clock || null,
+      homeScore,
+      awayScore,
+      description,
+      metadata: {
+        sport: sportKey,
+        type: play.Type || play.playType || null,
+        participants: play.Participants || play.players || null,
+        raw: sanitizeForJson(play)
+      }
+    };
+  }).sort((a, b) => a.sequence - b.sequence);
+}
 
-    const sql = `
+function sanitizeForJson(value) {
+  if (!value || typeof value !== 'object') {
+    return value ?? null;
+  }
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch (error) {
+    return null;
+  }
+}
+
+function createGameStats(game) {
+  const stats = [];
+
+  if (game.home.score !== null) {
+    stats.push({
+      teamExternalId: game.home.externalId,
+      statType: 'team_score',
+      statValue: game.home.score,
+      statCategory: 'score'
+    });
+  }
+
+  if (game.away.score !== null) {
+    stats.push({
+      teamExternalId: game.away.externalId,
+      statType: 'team_score',
+      statValue: game.away.score,
+      statCategory: 'score'
+    });
+  }
+
+  return stats;
+}
+
+async function ensureTeam(client, team) {
+  const existing = await client.query(
+    'SELECT id FROM teams WHERE external_id = $1',
+    [team.externalId]
+  );
+
+  if (existing.rowCount > 0) {
+    return existing.rows[0].id;
+  }
+
+  const result = await client.query(`
+    INSERT INTO teams (
+      external_id, name, abbreviation, city, sport, league, division, conference, metadata
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    ON CONFLICT (external_id) DO UPDATE SET
+      name = EXCLUDED.name,
+      abbreviation = EXCLUDED.abbreviation,
+      city = COALESCE(EXCLUDED.city, teams.city),
+      sport = EXCLUDED.sport,
+      league = COALESCE(EXCLUDED.league, teams.league),
+      division = COALESCE(EXCLUDED.division, teams.division),
+      conference = COALESCE(EXCLUDED.conference, teams.conference),
+      metadata = teams.metadata || EXCLUDED.metadata,
+      updated_at = NOW()
+    RETURNING id
+  `, [
+    team.externalId,
+    team.name,
+    team.abbreviation,
+    team.location.city,
+    team.sport,
+    team.league,
+    team.division || null,
+    team.conference || null,
+    JSON.stringify(team.metadata || {})
+  ]);
+
+  logger.debug('Team record upserted', {
+    externalId: team.externalId,
+    name: team.name
+  });
+
+  return result.rows[0].id;
+}
+
+function determineWinningTeamId(game, homeTeamId, awayTeamId) {
+  if (game.home.score === null || game.away.score === null) return null;
+  if (game.home.score > game.away.score) return homeTeamId;
+  if (game.away.score > game.home.score) return awayTeamId;
+  return null;
+}
+
+async function persistGamePackage(gamePackage) {
+  return database.transaction(async (client) => {
+    const { game, events, stats } = gamePackage;
+
+    const homeTeamId = await ensureTeam(client, game.home);
+    const awayTeamId = await ensureTeam(client, game.away);
+    const winningTeamId = determineWinningTeamId(game, homeTeamId, awayTeamId);
+
+    const metadata = {
+      ...game.metadata,
+      description: game.description,
+      playByPlayIngestedAt: new Date().toISOString(),
+      eventsIngested: events.length
+    };
+
+    const upsertResult = await client.query(`
       INSERT INTO games (
-        sport, game_id, season, season_type, week,
-        game_date, game_time, status,
-        home_team_id, home_team_key, home_team_name, home_score,
-        away_team_id, away_team_key, away_team_name, away_score,
-        stadium_name, winning_team_id, description
-      ) VALUES ${values};
-    `;
+        external_id, home_team_id, away_team_id, game_date, season, week, game_type,
+        status, home_score, away_score, sport, venue, weather, metadata
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+      ON CONFLICT (external_id) DO UPDATE SET
+        home_team_id = EXCLUDED.home_team_id,
+        away_team_id = EXCLUDED.away_team_id,
+        game_date = EXCLUDED.game_date,
+        season = EXCLUDED.season,
+        week = EXCLUDED.week,
+        game_type = EXCLUDED.game_type,
+        status = EXCLUDED.status,
+        home_score = EXCLUDED.home_score,
+        away_score = EXCLUDED.away_score,
+        sport = EXCLUDED.sport,
+        venue = EXCLUDED.venue,
+        weather = COALESCE(EXCLUDED.weather, games.weather),
+        metadata = EXCLUDED.metadata,
+        updated_at = NOW()
+      RETURNING id
+    `, [
+      game.externalId,
+      homeTeamId,
+      awayTeamId,
+      game.gameDate,
+      game.season,
+      game.week,
+      game.seasonType,
+      game.status,
+      game.home.score,
+      game.away.score,
+      game.sport,
+      game.venue?.name || null,
+      game.weather ? JSON.stringify(game.weather) : null,
+      JSON.stringify(metadata)
+    ]);
 
-    console.log(`Inserting batch ${i / BATCH_SIZE + 1} (${batch.length} games)...`);
-    await executeSQL(sql);
-  }
+    const gameId = upsertResult.rows[0].id;
+
+    if (stats.length > 0) {
+      await client.query('DELETE FROM game_stats WHERE game_id = $1 AND stat_category = $2', [gameId, 'score']);
+
+      const teamIdMap = new Map([
+        [game.home.externalId, homeTeamId],
+        [game.away.externalId, awayTeamId]
+      ]);
+
+      const params = [];
+      const insertValues = [];
+
+      stats.forEach((stat) => {
+        const teamId = teamIdMap.get(stat.teamExternalId);
+        if (!teamId) {
+          logger.warn('Skipping stat without resolved team', {
+            externalId: game.externalId,
+            teamExternalId: stat.teamExternalId
+          });
+          return;
+        }
+
+        const baseIndex = params.length;
+        params.push(
+          gameId,
+          teamId,
+          null,
+          stat.statType,
+          stat.statValue,
+          stat.statCategory,
+          null
+        );
+
+        const placeholders = Array.from({ length: 7 }, (_, offset) => `$${baseIndex + offset + 1}`);
+        insertValues.push(`(${placeholders.join(', ')})`);
+      });
+
+      if (insertValues.length > 0) {
+        await client.query(`
+          INSERT INTO game_stats (game_id, team_id, player_id, stat_type, stat_value, stat_category, period)
+          VALUES ${insertValues.join(', ')}
+        `, params);
+      }
+    }
+
+    await insertGameEvents(client, gameId, events, logger, { chunkSize: 200 });
+
+    logger.info('Game ingestion committed', {
+      externalId: game.externalId,
+      events: events.length,
+      stats: stats.length
+    });
+
+    return { gameId, externalId: game.externalId, eventCount: events.length };
+  });
 }
 
-/**
- * Main ingestion workflow
- */
-async function ingestLiveData() {
-  console.log('🔥 Blaze Sports Intel - Live Data Ingestion\n');
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-  const allGames = [];
+async function withRetry(task, { maxAttempts = 3, baseDelayMs = 750, identifier }) {
+  let attempt = 0;
+  let lastError = null;
+
+  while (attempt < maxAttempts) {
+    attempt += 1;
+    try {
+      logger.info('Attempting transactional ingest', { identifier, attempt });
+      const result = await task(attempt);
+      return result;
+    } catch (error) {
+      lastError = error;
+      logger.warn('Transactional ingest attempt failed', {
+        identifier,
+        attempt,
+        remaining: maxAttempts - attempt,
+        message: error.message
+      });
+
+      if (attempt < maxAttempts) {
+        const delay = baseDelayMs * Math.pow(2, attempt - 1);
+        await sleep(delay);
+      }
+    }
+  }
+
+  logger.error('All ingestion attempts failed', { identifier }, lastError);
+  throw lastError;
+}
+
+async function buildGamePackages(sportKey, rawGames) {
+  const normalizer = GAME_NORMALIZERS[sportKey];
+  if (!normalizer) return [];
+
+  const filtered = rawGames.filter((game) => {
+    if (!game.Status) return false;
+    return ['Final', 'Completed', 'InProgress', 'In Progress'].includes(game.Status);
+  });
+
+  const normalizedGames = filtered
+    .map(normalizer)
+    .filter(Boolean);
+
+  const packages = [];
+  for (const game of normalizedGames) {
+    const playByPlayFeed = await fetchPlayByPlay(sportKey, game);
+    const events = normalizePlayByPlay(sportKey, playByPlayFeed, game);
+    const stats = createGameStats(game);
+    packages.push({ game, events, stats });
+  }
+
+  return packages;
+}
+
+async function ingestLiveData() {
+  logger.info('Starting live data ingestion worker');
+
+  await database.testConnection();
+
+  const allPackages = [];
 
   try {
-    // 1. Note: Skipping delete since table is already empty
-    console.log('📊 Starting fresh data ingestion...\n');
-
-    // 2. Fetch and normalize NFL data (Week 5 games)
-    console.log('🏈 Fetching NFL data...');
-    const nflGames = await fetchAPI('NFL', API_ENDPOINTS.NFL.scores);
-    const normalizedNFL = nflGames
-      .filter(game => game.Status === 'Final' || game.Status === 'InProgress')
-      .map(normalizeNFLGame);
-
-    console.log(`✅ Found ${normalizedNFL.length} NFL games\n`);
-    allGames.push(...normalizedNFL);
-
-    // 3. Fetch and normalize MLB data (recent games)
-    console.log('⚾ Fetching MLB data...');
-    const mlbGames = await fetchAPI('MLB', API_ENDPOINTS.MLB.games);
-    const normalizedMLB = mlbGames
-      .filter(game => game.Status === 'Final' && game.Day >= '2024-09-01') // September games
-      .slice(0, 100) // Limit to 100 most recent
-      .map(normalizeMLBGame);
-
-    console.log(`✅ Found ${normalizedMLB.length} MLB games\n`);
-    allGames.push(...normalizedMLB);
-
-    // 4. Fetch and normalize CFB data
-    console.log('🏈 Fetching CFB data...');
-    try {
-      const cfbGames = await fetchAPI('CFB', API_ENDPOINTS.CFB.games);
-      const normalizedCFB = cfbGames
-        .filter(game => game.Status === 'Final' && game.Week <= 7) // Up to Week 7
-        .slice(0, 50) // Limit to 50 games
-        .map(normalizeCFBGame);
-
-      console.log(`✅ Found ${normalizedCFB.length} CFB games\n`);
-      allGames.push(...normalizedCFB);
-    } catch (error) {
-      console.warn('⚠️  CFB data unavailable:', error.message);
-    }
-
-    // 5. Fetch and normalize CBB data
-    console.log('🏀 Fetching CBB data...');
-    try {
-      const cbbGames = await fetchAPI('CBB', API_ENDPOINTS.CBB.games);
-      const normalizedCBB = cbbGames
-        .filter(game => game.Status === 'Final')
-        .slice(0, 50) // Limit to 50 games
-        .map(normalizeCBBGame);
-
-      console.log(`✅ Found ${normalizedCBB.length} CBB games\n`);
-      allGames.push(...normalizedCBB);
-    } catch (error) {
-      console.warn('⚠️  CBB data unavailable (season hasn\'t started):', error.message);
-    }
-
-    // 6. Insert all games into database
-    console.log(`📊 Inserting ${allGames.length} total games into database...`);
-    await insertGames(allGames);
-
-    console.log('\n✅ Live data ingestion complete!');
-    console.log(`\n📈 Summary:`);
-    console.log(`   - NFL: ${normalizedNFL.length} games`);
-    console.log(`   - MLB: ${normalizedMLB.length} games`);
-    console.log(`   - CFB: ${allGames.filter(g => g.sport === 'CFB').length} games`);
-    console.log(`   - CBB: ${allGames.filter(g => g.sport === 'CBB').length} games`);
-    console.log(`   - Total: ${allGames.length} games`);
-
-    console.log('\n🔄 Next steps:');
-    console.log('   1. Run embedding generation: node scripts/generate-embeddings.js');
-    console.log('   2. Test search: curl -X POST .../api/copilot/search -d \'{"query":"close nfl games"}\'');
-
+    logger.info('Fetching NFL scoreboard');
+    const nflGames = await fetchAPI('NFL', API_ENDPOINTS.NFL.games);
+    allPackages.push(...await buildGamePackages('NFL', nflGames));
   } catch (error) {
-    console.error('❌ Ingestion failed:', error);
-    throw error;
+    logger.warn('NFL feed unavailable', { message: error.message });
   }
+
+  try {
+    logger.info('Fetching MLB scoreboard');
+    const mlbGames = await fetchAPI('MLB', API_ENDPOINTS.MLB.games);
+    const recentGames = mlbGames
+      .filter((game) => game.Status === 'Final' || game.Status === 'Completed')
+      .slice(-50);
+    allPackages.push(...await buildGamePackages('MLB', recentGames));
+  } catch (error) {
+    logger.warn('MLB feed unavailable', { message: error.message });
+  }
+
+  try {
+    logger.info('Fetching CFB scoreboard');
+    const cfbGames = await fetchAPI('CFB', API_ENDPOINTS.CFB.games);
+    allPackages.push(...await buildGamePackages('CFB', cfbGames));
+  } catch (error) {
+    logger.warn('CFB feed unavailable', { message: error.message });
+  }
+
+  try {
+    logger.info('Fetching CBB scoreboard');
+    const cbbGames = await fetchAPI('CBB', API_ENDPOINTS.CBB.games);
+    allPackages.push(...await buildGamePackages('CBB', cbbGames));
+  } catch (error) {
+    logger.warn('CBB feed unavailable', { message: error.message });
+  }
+
+  logger.info('Prepared game packages', { count: allPackages.length });
+
+  for (const gamePackage of allPackages) {
+    await withRetry(
+      () => persistGamePackage(gamePackage),
+      {
+        identifier: gamePackage.game.externalId,
+        maxAttempts: 3,
+        baseDelayMs: 1000
+      }
+    );
+  }
+
+  logger.info('Live data ingestion completed', {
+    gamesProcessed: allPackages.length
+  });
 }
 
-// Run if executed directly
-ingestLiveData().catch(error => {
-  console.error('Fatal error:', error);
-  process.exit(1);
-});
+ingestLiveData()
+  .catch((error) => {
+    logger.error('Fatal ingestion error', {}, error);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await database.close();
+  });
 
 export { ingestLiveData };
