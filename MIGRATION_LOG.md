@@ -12,6 +12,7 @@
 ## Entries
 | Date | Category | Summary | Assets / Notes | Source |
 | --- | --- | --- | --- | --- |
+| 2025-10-13 | Schema | Added play-by-play game_events migrations and wired registry-driven execution. | `api/database/migrations/202510130930_create_game_events.sql`, `api/database/migrations/202510130931_drop_game_events.sql`, `scripts/setup-database.js` migration loader update. | Internal schema update request 2025-10-13 |
 | 2025-10-13 | Security | Rotated the live SportsDataIO Pages secret after removing the hard-coded key from deployment docs; invalidated previous key (`…df33`) in Cloudflare and synced the replacement via `API_KEYS_MASTER.js` + `npm run mcp:sync`. | Cloudflare Pages secret `SPORTSDATA_API_KEY`; `API_KEYS_MASTER.js` | Cloudflare Pages audit log 2025-10-13 |
 | 2025-10-13 | Archive | Confirmed that legacy demos, redundant deploy scripts, and old configs were relocated into the structured `BSI-archive/` tree to keep the active workspace clean for the pivot. | 14 demo HTML files → `BSI-archive/demo-visualizations/`; 5 deploy scripts → `BSI-archive/deprecated-deploys/`; 4 configs → `BSI-archive/old-configs/`. | BLAZE-REALITY-ENFORCER-REPORT.md (lines 524-543) |
 | 2025-09-30 | Decommission | Removed conflicting NCAA API handlers and repaired season extraction logic to stop 1970 data bleed-through in current integrations. | Deleted `functions/api/ncaa.js` and `functions/api/sports-data-real-ncaa.js`; updated `functions/api/ncaa/teams.js` season handling. | BLAZE-REALITY-ENFORCER-REPORT.md (lines 524-530) |
