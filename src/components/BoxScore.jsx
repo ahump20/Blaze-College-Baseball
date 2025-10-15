@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './BoxScore.css';
+import '../styles/BoxScore.css';
 
 function BoxScore({ game, onBack }) {
   const [activeTab, setActiveTab] = useState('batting');
@@ -17,9 +17,11 @@ function BoxScore({ game, onBack }) {
 
   const fetchBoxScore = async () => {
     try {
-      const response = await fetch(`/api/games/${game.id}/boxscore`);
+      const response = await fetch(`/api/college-baseball/boxscore?gameId=${game.id}`);
       const data = await response.json();
-      setBoxScoreData(data);
+      if (data.success) {
+        setBoxScoreData(data.data);
+      }
       setLoading(false);
     } catch (error) {
       console.error('Error fetching box score:', error);
@@ -31,15 +33,22 @@ function BoxScore({ game, onBack }) {
     return <div className="loading-state">Loading box score...</div>;
   }
 
+  if (!boxScoreData) {
+    return <div className="empty-state">No box score data available</div>;
+  }
+
   const renderLineScore = () => {
-    const innings = boxScoreData.lineScore.innings;
+    const awayLineScore = boxScoreData.awayTeam.lineScore || [];
+    const homeLineScore = boxScoreData.homeTeam.lineScore || [];
+    const maxInnings = Math.max(awayLineScore.length, homeLineScore.length);
+    
     return (
       <div className="line-score">
         <table>
           <thead>
             <tr>
               <th className="team-header"></th>
-              {innings.map((_, idx) => (
+              {Array.from({ length: maxInnings }, (_, idx) => (
                 <th key={idx}>{idx + 1}</th>
               ))}
               <th className="total-header">R</th>
@@ -49,22 +58,22 @@ function BoxScore({ game, onBack }) {
           </thead>
           <tbody>
             <tr>
-              <td className="team-name">{game.awayTeam.name}</td>
-              {boxScoreData.lineScore.away.innings.map((runs, idx) => (
-                <td key={idx} className="inning-score">{runs}</td>
+              <td className="team-name">{boxScoreData.awayTeam.team.shortName}</td>
+              {awayLineScore.map((runs, idx) => (
+                <td key={idx} className="inning-score">{runs || '-'}</td>
               ))}
-              <td className="total-score">{boxScoreData.lineScore.away.runs}</td>
-              <td className="total-score">{boxScoreData.lineScore.away.hits}</td>
-              <td className="total-score">{boxScoreData.lineScore.away.errors}</td>
+              <td className="total-score">{boxScoreData.awayTeam.score}</td>
+              <td className="total-score">{boxScoreData.awayTeam.hits}</td>
+              <td className="total-score">{boxScoreData.awayTeam.errors}</td>
             </tr>
             <tr>
-              <td className="team-name">{game.homeTeam.name}</td>
-              {boxScoreData.lineScore.home.innings.map((runs, idx) => (
-                <td key={idx} className="inning-score">{runs}</td>
+              <td className="team-name">{boxScoreData.homeTeam.team.shortName}</td>
+              {homeLineScore.map((runs, idx) => (
+                <td key={idx} className="inning-score">{runs || '-'}</td>
               ))}
-              <td className="total-score">{boxScoreData.lineScore.home.runs}</td>
-              <td className="total-score">{boxScoreData.lineScore.home.hits}</td>
-              <td className="total-score">{boxScoreData.lineScore.home.errors}</td>
+              <td className="total-score">{boxScoreData.homeTeam.score}</td>
+              <td className="total-score">{boxScoreData.homeTeam.hits}</td>
+              <td className="total-score">{boxScoreData.homeTeam.errors}</td>
             </tr>
           </tbody>
         </table>
@@ -76,7 +85,7 @@ function BoxScore({ game, onBack }) {
     return (
       <div className="batting-stats">
         <div className="team-stats">
-          <h3>{game.awayTeam.name}</h3>
+          <h3>{boxScoreData.awayTeam.team.shortName}</h3>
           <div className="stats-table-wrapper">
             <table className="stats-table">
               <thead>
@@ -92,19 +101,19 @@ function BoxScore({ game, onBack }) {
                 </tr>
               </thead>
               <tbody>
-                {boxScoreData.batting.away.map((player) => (
-                  <tr key={player.id}>
+                {boxScoreData.awayTeam.batting.map((player) => (
+                  <tr key={player.playerId}>
                     <td className="player-col">
-                      <span className="player-name">{player.name}</span>
+                      <span className="player-name">{player.playerName}</span>
                       <span className="player-pos">{player.position}</span>
                     </td>
-                    <td>{player.ab}</td>
-                    <td>{player.r}</td>
-                    <td>{player.h}</td>
+                    <td>{player.atBats}</td>
+                    <td>{player.runs}</td>
+                    <td>{player.hits}</td>
                     <td>{player.rbi}</td>
-                    <td>{player.bb}</td>
-                    <td>{player.k}</td>
-                    <td className="avg">{player.seasonAvg}</td>
+                    <td>{player.walks}</td>
+                    <td>{player.strikeouts}</td>
+                    <td className="avg">{player.avg.toFixed(3)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -113,7 +122,7 @@ function BoxScore({ game, onBack }) {
         </div>
 
         <div className="team-stats">
-          <h3>{game.homeTeam.name}</h3>
+          <h3>{boxScoreData.homeTeam.team.shortName}</h3>
           <div className="stats-table-wrapper">
             <table className="stats-table">
               <thead>
@@ -129,19 +138,19 @@ function BoxScore({ game, onBack }) {
                 </tr>
               </thead>
               <tbody>
-                {boxScoreData.batting.home.map((player) => (
-                  <tr key={player.id}>
+                {boxScoreData.homeTeam.batting.map((player) => (
+                  <tr key={player.playerId}>
                     <td className="player-col">
-                      <span className="player-name">{player.name}</span>
+                      <span className="player-name">{player.playerName}</span>
                       <span className="player-pos">{player.position}</span>
                     </td>
-                    <td>{player.ab}</td>
-                    <td>{player.r}</td>
-                    <td>{player.h}</td>
+                    <td>{player.atBats}</td>
+                    <td>{player.runs}</td>
+                    <td>{player.hits}</td>
                     <td>{player.rbi}</td>
-                    <td>{player.bb}</td>
-                    <td>{player.k}</td>
-                    <td className="avg">{player.seasonAvg}</td>
+                    <td>{player.walks}</td>
+                    <td>{player.strikeouts}</td>
+                    <td className="avg">{player.avg.toFixed(3)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -156,7 +165,7 @@ function BoxScore({ game, onBack }) {
     return (
       <div className="pitching-stats">
         <div className="team-stats">
-          <h3>{game.awayTeam.name}</h3>
+          <h3>{boxScoreData.awayTeam.team.shortName}</h3>
           <div className="stats-table-wrapper">
             <table className="stats-table">
               <thead>
@@ -173,22 +182,22 @@ function BoxScore({ game, onBack }) {
                 </tr>
               </thead>
               <tbody>
-                {boxScoreData.pitching.away.map((player) => (
-                  <tr key={player.id} className={player.decision ? 'decision-pitcher' : ''}>
+                {boxScoreData.awayTeam.pitching.map((player) => (
+                  <tr key={player.playerId} className={player.decision ? 'decision-pitcher' : ''}>
                     <td className="player-col">
-                      <span className="player-name">{player.name}</span>
+                      <span className="player-name">{player.playerName}</span>
                       {player.decision && (
                         <span className="decision">{player.decision}</span>
                       )}
                     </td>
-                    <td>{player.ip}</td>
-                    <td>{player.h}</td>
-                    <td>{player.r}</td>
-                    <td>{player.er}</td>
-                    <td>{player.bb}</td>
-                    <td>{player.k}</td>
+                    <td>{player.innings}</td>
+                    <td>{player.hits}</td>
+                    <td>{player.runs}</td>
+                    <td>{player.earnedRuns}</td>
+                    <td>{player.walks}</td>
+                    <td>{player.strikeouts}</td>
                     <td>{player.pitches}</td>
-                    <td className="era">{player.seasonEra}</td>
+                    <td className="era">{player.era.toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -197,7 +206,7 @@ function BoxScore({ game, onBack }) {
         </div>
 
         <div className="team-stats">
-          <h3>{game.homeTeam.name}</h3>
+          <h3>{boxScoreData.homeTeam.team.shortName}</h3>
           <div className="stats-table-wrapper">
             <table className="stats-table">
               <thead>
@@ -214,22 +223,22 @@ function BoxScore({ game, onBack }) {
                 </tr>
               </thead>
               <tbody>
-                {boxScoreData.pitching.home.map((player) => (
-                  <tr key={player.id} className={player.decision ? 'decision-pitcher' : ''}>
+                {boxScoreData.homeTeam.pitching.map((player) => (
+                  <tr key={player.playerId} className={player.decision ? 'decision-pitcher' : ''}>
                     <td className="player-col">
-                      <span className="player-name">{player.name}</span>
+                      <span className="player-name">{player.playerName}</span>
                       {player.decision && (
                         <span className="decision">{player.decision}</span>
                       )}
                     </td>
-                    <td>{player.ip}</td>
-                    <td>{player.h}</td>
-                    <td>{player.r}</td>
-                    <td>{player.er}</td>
-                    <td>{player.bb}</td>
-                    <td>{player.k}</td>
+                    <td>{player.innings}</td>
+                    <td>{player.hits}</td>
+                    <td>{player.runs}</td>
+                    <td>{player.earnedRuns}</td>
+                    <td>{player.walks}</td>
+                    <td>{player.strikeouts}</td>
                     <td>{player.pitches}</td>
-                    <td className="era">{player.seasonEra}</td>
+                    <td className="era">{player.era.toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -245,8 +254,8 @@ function BoxScore({ game, onBack }) {
       <div className="box-score-header">
         <button className="back-button" onClick={onBack}>← Back</button>
         <div className="game-info">
-          <h2>{game.awayTeam.name} at {game.homeTeam.name}</h2>
-          <span className="game-date">{game.date}</span>
+          <h2>{boxScoreData.awayTeam.team.name} at {boxScoreData.homeTeam.team.name}</h2>
+          <span className="game-date">{game.date || boxScoreData.lastUpdate}</span>
         </div>
       </div>
 

@@ -2,31 +2,39 @@ import React, { useState, useEffect } from 'react';
 import LiveGameTracker from './components/LiveGameTracker';
 import BoxScore from './components/BoxScore';
 import Standings from './components/Standings';
-import './App.css';
+import './styles/App.css';
 
 function App() {
   const [activeView, setActiveView] = useState('live');
   const [selectedGame, setSelectedGame] = useState(null);
   const [liveGames, setLiveGames] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedConference, setSelectedConference] = useState('all');
 
   useEffect(() => {
-    // Fetch live games on mount and set up polling
+    // Fetch games on mount and set up polling
     fetchLiveGames();
     const interval = setInterval(fetchLiveGames, 30000); // Poll every 30 seconds
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedConference]);
 
   const fetchLiveGames = async () => {
     try {
-      const response = await fetch('/api/games/live');
+      // Fetch all games (live, scheduled, and recent final games)
+      const conferenceParam = selectedConference !== 'all' ? `&conference=${selectedConference.toUpperCase()}` : '';
+      const response = await fetch(`/api/college-baseball/games${conferenceParam}`);
       const data = await response.json();
-      setLiveGames(data.games);
+      setLiveGames(data.success ? data.data : []);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching live games:', error);
       setLoading(false);
     }
+  };
+
+  const handleConferenceChange = (e) => {
+    setSelectedConference(e.target.value);
+    setLoading(true);
   };
 
   const handleGameSelect = (game) => {
@@ -65,7 +73,7 @@ function App() {
       <header className="app-header">
         <h1>College Baseball Live</h1>
         <div className="conference-filter">
-          <select>
+          <select value={selectedConference} onChange={handleConferenceChange}>
             <option value="all">All Conferences</option>
             <option value="sec">SEC</option>
             <option value="acc">ACC</option>

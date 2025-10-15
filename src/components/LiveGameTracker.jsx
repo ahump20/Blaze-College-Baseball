@@ -1,5 +1,5 @@
 import React from 'react';
-import './LiveGameTracker.css';
+import '../styles/LiveGameTracker.css';
 
 function LiveGameTracker({ games, onGameSelect, loading }) {
   if (loading) {
@@ -60,20 +60,28 @@ function LiveGameTracker({ games, onGameSelect, loading }) {
             </div>
 
             <div className="game-teams">
-              <div className={`team ${game.awayTeam.score > game.homeTeam.score ? 'leading' : ''}`}>
+              <div className={`team ${(game.awayTeam.score || 0) > (game.homeTeam.score || 0) ? 'leading' : ''}`}>
                 <div className="team-info">
-                  <span className="team-name">{game.awayTeam.name}</span>
-                  <span className="team-record">({game.awayTeam.record})</span>
+                  <span className="team-name">{game.awayTeam.name || game.awayTeam.shortName}</span>
+                  <span className="team-record">
+                    {game.awayTeam.record 
+                      ? `(${game.awayTeam.record.wins}-${game.awayTeam.record.losses})`
+                      : ''}
+                  </span>
                 </div>
-                <span className="team-score">{game.awayTeam.score}</span>
+                <span className="team-score">{game.awayTeam.score || '-'}</span>
               </div>
 
-              <div className={`team ${game.homeTeam.score > game.awayTeam.score ? 'leading' : ''}`}>
+              <div className={`team ${(game.homeTeam.score || 0) > (game.awayTeam.score || 0) ? 'leading' : ''}`}>
                 <div className="team-info">
-                  <span className="team-name">{game.homeTeam.name}</span>
-                  <span className="team-record">({game.homeTeam.record})</span>
+                  <span className="team-name">{game.homeTeam.name || game.homeTeam.shortName}</span>
+                  <span className="team-record">
+                    {game.homeTeam.record 
+                      ? `(${game.homeTeam.record.wins}-${game.homeTeam.record.losses})`
+                      : ''}
+                  </span>
                 </div>
-                <span className="team-score">{game.homeTeam.score}</span>
+                <span className="team-score">{game.homeTeam.score || '-'}</span>
               </div>
             </div>
 

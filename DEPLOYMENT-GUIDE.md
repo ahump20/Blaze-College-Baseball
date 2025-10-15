@@ -98,11 +98,11 @@ preview_id = "preview456def789"  # Preview namespace
 
 ## Step 4: Set API Secrets
 
+> **Note:** Populate the real SportsDataIO key in `src/config/API_KEYS_MASTER.js` (replace with your actual path if different), then run `npm run mcp:sync` to sync the key from `API_KEYS_MASTER.js` into your local environment (e.g., `.env` file) before executing the secret command below. The `wrangler pages secret put` prompt should always receive the synced key, not a hard-coded value in this guide.
+
 ```bash
 # Set SportsDataIO API key
 wrangler pages secret put SPORTSDATA_API_KEY --project-name blazesportsintel
-# When prompted, enter: YOUR_SPORTSDATAIO_KEY (pull the actual value from secure storage)
-
 # Set Anthropic API key (for chat assistant)
 wrangler pages secret put ANTHROPIC_API_KEY --project-name blazesportsintel
 # When prompted, enter your Claude API key
