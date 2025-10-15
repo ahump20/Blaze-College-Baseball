@@ -12,6 +12,7 @@ Blaze Sports Intel uses a comprehensive data model architecture designed for hig
 erDiagram
     TEAMS ||--o{ PLAYERS : has
     TEAMS ||--o{ GAMES : "home/away"
+    GAMES ||--o{ GAME_EVENTS : logs
     PLAYERS ||--o{ POSE_DATA : generates
     PLAYERS ||--o{ BIOMECH_ANALYSIS : analyzed
     GAMES ||--o{ GAME_STATS : contains
@@ -216,6 +217,66 @@ CREATE INDEX idx_games_season ON games(season);
 CREATE INDEX idx_games_status ON games(status);
 CREATE INDEX idx_games_external_id ON games(external_id);
 ```
+
+### Game Events Model
+
+**Table:** `game_events`
+
+Stores the pitch-by-pitch or play-by-play ledger for a game. Events are written in the order received from our ingestion worker and provide downstream services with a stable, append-only timeline.
+
+```sql
+CREATE TABLE game_events (
+    id BIGSERIAL PRIMARY KEY,
+    game_id INTEGER REFERENCES games(id) ON DELETE CASCADE,
+    event_sequence INTEGER NOT NULL,
+    event_timestamp TIMESTAMPTZ NOT NULL,
+    source_event_id VARCHAR(120),
+    event_type VARCHAR(50) NOT NULL,
+    event_subtype VARCHAR(50),
+    inning INTEGER,
+    half_inning VARCHAR(5) CHECK (half_inning IN ('top', 'bottom')),
+    outs INTEGER,
+    balls INTEGER,
+    strikes INTEGER,
+    base_state JSONB,
+    score_delta JSONB,
+    description TEXT,
+    normalization_hash UUID,
+    raw_payload JSONB,
+    ingestion_source VARCHAR(50) DEFAULT 'highlightly',
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    ingested_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_game_event_sequence UNIQUE (game_id, event_sequence),
+    CONSTRAINT uq_game_event_source UNIQUE (game_id, source_event_id)
+);
+
+-- Supporting indexes for fast retrieval
+CREATE INDEX idx_game_events_game_id ON game_events(game_id);
+CREATE INDEX idx_game_events_desc_timestamp ON game_events(game_id, event_timestamp DESC);
+CREATE INDEX idx_game_events_normalization_hash ON game_events(normalization_hash);
+```
+
+**Column Overview**
+
+- `event_sequence` maintains a monotonic counter per game, enabling deterministic replay and conflict detection.
+- `event_timestamp` captures the provider timestamp and, together with the descending index, accelerates “latest event” queries.
+- `source_event_id` stores the upstream identifier so we can idempotently merge replays or corrections.
+- `normalization_hash` records the digest produced by our ingestion normalizer for deduplication across sources.
+- `raw_payload` holds the original event JSON, ensuring we can rehydrate vendor-specific context without mutating canonical fields.
+
+**Ordering & Uniqueness Rules**
+
+- Events must be inserted in ascending `event_sequence` order within a transaction. Services should never gap the sequence; replay pipelines will fail fast if a `sequence - 1` record is missing.
+- `event_timestamp` can arrive slightly out of order from vendors. The combination of `event_sequence` and the descending timestamp index ensures we can serve the “latest official state” without re-sorting large windows.
+- Duplicate deliveries from the same provider are rejected by `uq_game_event_source`. Cross-provider duplicates are filtered through `normalization_hash` comparisons before commit.
+
+**Ingestion Expectations**
+
+- **Transactions:** Each batch of events per game is wrapped in a single transaction (`BEGIN ... COMMIT`). This guarantees that partial replays are never surfaced if an upstream feed drops mid-frame.
+- **COPY Usage:** Bulk ingest jobs load events via `COPY game_events (columns ...)` into a staging table, run normalization, then upsert into the main table inside the same transaction. Realtime trickle traffic uses `INSERT ... ON CONFLICT` with the unique constraints above.
+- **Normalization Fields:** Ingestion services must populate `event_sequence`, `event_timestamp`, `source_event_id`, and `normalization_hash`. These four fields drive deduplication, chronological ordering, and reconciliation when vendors send retroactive corrections.
+- **Downstream Guidance:** Consumers should request events ordered by `event_sequence` and rely on the descending timestamp index when only the newest slice is needed (for example, live UI refreshes or alerting jobs).
 
 ### Pose Data Model
 
