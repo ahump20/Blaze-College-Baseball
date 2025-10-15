@@ -103,7 +103,7 @@ preview_id = "preview456def789"  # Preview namespace
 ```bash
 # Set SportsDataIO API key
 wrangler pages secret put SPORTSDATA_API_KEY --project-name blazesportsintel
-# When prompted, enter: <YOUR_SPORTSDATA_API_KEY>
+# When prompted, enter your SportsDataIO API key
 
 # Set Anthropic API key (for chat assistant)
 wrangler pages secret put ANTHROPIC_API_KEY --project-name blazesportsintel
