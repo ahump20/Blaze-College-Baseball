@@ -15,8 +15,50 @@
  */
 
 const SPORTSDATA_API_KEY = process.env.SPORTSDATA_API_KEY || '6ca2adb39404482da5406f0a6cd7aa37';
-const WRANGLER_PATH = process.env.WRANGLER_PATH || '/Users/AustinHumphrey/.npm-global/bin/wrangler';
-const DATABASE_NAME = 'blazesports-db';
+
+let servicesPromise = null;
+
+async function initializeServices() {
+  if (!servicesPromise) {
+    servicesPromise = (async () => {
+      const [databaseModule, loggerModule] = await Promise.all([
+        import('../api/database/connection-service.js'),
+        import('../api/services/logger-service.js')
+      ]);
+
+      const LoggerService = loggerModule.default;
+      const DatabaseConnectionService = databaseModule.default;
+
+      const logger = new LoggerService({
+        level: process.env.LOG_LEVEL || 'info',
+        environment: process.env.NODE_ENV || 'development',
+        service: 'live-data-ingest',
+        version: '1.0.0'
+      });
+
+      const database = new DatabaseConnectionService({
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+        database: process.env.DB_NAME || 'blaze_sports_intel',
+        user: process.env.DB_USER || 'postgres',
+        password: process.env.DB_PASSWORD,
+        ssl: process.env.DB_SSL ? process.env.DB_SSL === 'true' : process.env.NODE_ENV === 'production',
+        maxConnections: 5,
+        minConnections: 1,
+        connectionTimeout: 10000,
+        queryTimeout: 30000
+      }, logger);
+
+      if (database.ready) {
+        await database.ready;
+      }
+
+      return { database, logger };
+    })();
+  }
+
+  return servicesPromise;
+}
 
 // Current season years
 const CURRENT_SEASON = {
@@ -249,78 +291,225 @@ function normalizeCBBGame(game) {
   };
 }
 
-/**
- * Execute SQL command via wrangler
- */
-async function executeSQL(sql) {
-  const { execSync } = await import('child_process');
+function toISOStringSafe(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
 
-  // Escape SQL for shell
-  const escapedSQL = sql.replace(/'/g, "'\\''");
+function normalizeGameWithEvents(game, normalizer) {
+  const normalizedGame = normalizer(game);
+  const events = normalizeGameEvents(game, normalizedGame);
+  return { game: normalizedGame, events };
+}
 
-  const command = `${WRANGLER_PATH} d1 execute ${DATABASE_NAME} --remote --command='${escapedSQL}'`;
+function normalizeGameEvents(rawGame, normalizedGame) {
+  if (!normalizedGame) return [];
 
-  try {
-    const output = execSync(command, { encoding: 'utf-8' });
-    return output;
-  } catch (error) {
-    console.error('SQL execution failed:', error.message);
-    throw error;
+  const sport = normalizedGame.sport;
+  const fallbackGameId = normalizedGame.game_id ?? rawGame.GameID ?? rawGame.GameKey ?? rawGame.ScoreID ?? rawGame.GameId;
+  const gameId = fallbackGameId != null ? String(fallbackGameId) : null;
+
+  if (!gameId) {
+    return [];
   }
+
+  const events = [];
+  const seen = new Set();
+
+  const pushEvent = (play) => {
+    if (!play || typeof play !== 'object') {
+      return;
+    }
+
+    const rawEventId = play.PlayID ?? play.PlayId ?? play.ScoringPlayID ?? play.EventId ?? play.EventID ?? play.Id ?? play.ID;
+    const period = play.Quarter ?? play.Inning ?? play.Period ?? play.Half ?? play.PeriodNumber ?? null;
+    const clock = play.TimeRemaining ?? play.GameClock ?? play.Clock ?? play.Time ?? play.DisplayClock ?? play.DisplayTime ?? null;
+    const description = play.Description ?? play.PlayDescription ?? play.Details ?? play.Comment ?? '';
+
+    const dedupeKey = rawEventId
+      ? String(rawEventId)
+      : `${period || 'NA'}-${clock || '00:00'}-${description}`.toLowerCase();
+
+    if (seen.has(dedupeKey)) {
+      return;
+    }
+
+    seen.add(dedupeKey);
+
+    const sequence = play.Sequence ?? play.SequenceNumber ?? play.PlaySequence ?? play.PlaySequenceNumber ?? play.EventNumber ?? (events.length + 1);
+
+    events.push({
+      sport,
+      game_id: gameId,
+      event_id: rawEventId ? String(rawEventId) : dedupeKey,
+      sequence,
+      period: period != null ? String(period) : null,
+      clock: clock || null,
+      team_key: play.Team ?? play.TeamKey ?? play.TeamAbbr ?? play.OffenseTeam ?? play.OffenseTeamAbbr ?? play.EventTeam ?? null,
+      team_id: play.TeamID ?? play.TeamId ?? play.OffenseTeamID ?? play.DefenseTeamID ?? play.EventTeamID ?? null,
+      event_type: play.PlayType ?? play.PlayTypeID ?? play.EventType ?? play.Type ?? play.Category ?? null,
+      description,
+      home_score: play.HomeScore ?? play.HomeTeamScore ?? play.HomeTeamRuns ?? play.Score?.Home ?? null,
+      away_score: play.AwayScore ?? play.AwayTeamScore ?? play.AwayTeamRuns ?? play.Score?.Away ?? null,
+      raw: play
+    });
+  };
+
+  const addCollection = (collection) => {
+    if (Array.isArray(collection)) {
+      collection.forEach(pushEvent);
+    }
+  };
+
+  addCollection(rawGame.ScoringPlays);
+  addCollection(rawGame.ScoringDetails);
+  addCollection(rawGame.Plays);
+  addCollection(rawGame.PlayEvents);
+  addCollection(rawGame.GamePlays);
+  addCollection(rawGame.Events);
+
+  if (rawGame.PlayByPlay) {
+    addCollection(rawGame.PlayByPlay.Plays);
+
+    if (Array.isArray(rawGame.PlayByPlay.Quarters)) {
+      rawGame.PlayByPlay.Quarters.forEach((quarter) => addCollection(quarter?.Plays));
+    }
+
+    if (Array.isArray(rawGame.PlayByPlay.Innings)) {
+      rawGame.PlayByPlay.Innings.forEach((inning) => addCollection(inning?.Plays));
+    }
+
+    if (Array.isArray(rawGame.PlayByPlay.Halves)) {
+      rawGame.PlayByPlay.Halves.forEach((half) => addCollection(half?.Plays));
+    }
+  }
+
+  return events
+    .map((event, index) => ({
+      ...event,
+      sequence: event.sequence ?? index + 1
+    }))
+    .sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
 }
 
 /**
- * Insert games in batches (D1 has query limits)
+ * Insert games and their play-by-play events in transactional batches
  */
-async function insertGames(games) {
-  const BATCH_SIZE = 10; // Reduced for wrangler command length limits
+async function insertGames(database, logger, games) {
+  const BATCH_SIZE = 25;
 
   for (let i = 0; i < games.length; i += BATCH_SIZE) {
     const batch = games.slice(i, i + BATCH_SIZE);
 
-    const values = batch.map(game => {
-      const description = generateGameDescription(game, game.sport);
+    await database.transaction(async (client) => {
+      const params = [];
+      const values = [];
+      let paramIndex = 1;
+      const eventsPayload = [];
 
-      // Ensure stadium_name is a string before processing
-      const stadiumName = game.stadium_name && typeof game.stadium_name === 'string'
-        ? game.stadium_name.replace(/'/g, "''")
-        : null;
+      for (const entry of batch) {
+        const game = entry.game;
+        const description = generateGameDescription(game, game.sport);
+        const isoDate = toISOStringSafe(game.game_date) ?? game.game_date ?? null;
 
-      return `(
-        '${game.sport}',
-        '${game.game_id}',
-        ${game.season},
-        '${game.season_type}',
-        ${game.week || 'NULL'},
-        '${game.game_date}',
-        ${game.game_time ? `'${game.game_time}'` : 'NULL'},
-        '${game.status}',
-        ${game.home_team_id},
-        '${game.home_team_key}',
-        '${game.home_team_name.replace(/'/g, "''")}',
-        ${game.home_score || 'NULL'},
-        ${game.away_team_id},
-        '${game.away_team_key}',
-        '${game.away_team_name.replace(/'/g, "''")}',
-        ${game.away_score || 'NULL'},
-        ${stadiumName ? `'${stadiumName}'` : 'NULL'},
-        ${game.winning_team_id || 'NULL'},
-        '${description.replace(/'/g, "''")}'
-      )`;
-    }).join(',\n');
+        values.push(`(
+          $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++},
+          $${paramIndex++}, $${paramIndex++}, $${paramIndex++},
+          $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++},
+          $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++},
+          $${paramIndex++}, $${paramIndex++}, $${paramIndex++}
+        )`);
 
-    const sql = `
-      INSERT INTO games (
-        sport, game_id, season, season_type, week,
-        game_date, game_time, status,
-        home_team_id, home_team_key, home_team_name, home_score,
-        away_team_id, away_team_key, away_team_name, away_score,
-        stadium_name, winning_team_id, description
-      ) VALUES ${values};
-    `;
+        params.push(
+          game.sport,
+          String(game.game_id),
+          game.season,
+          game.season_type,
+          game.week ?? null,
+          isoDate,
+          game.game_time || null,
+          game.status,
+          game.home_team_id,
+          game.home_team_key,
+          game.home_team_name,
+          game.home_score ?? null,
+          game.away_team_id,
+          game.away_team_key,
+          game.away_team_name,
+          game.away_score ?? null,
+          game.stadium_name || null,
+          game.winning_team_id ?? null,
+          description
+        );
 
-    console.log(`Inserting batch ${i / BATCH_SIZE + 1} (${batch.length} games)...`);
-    await executeSQL(sql);
+        if (Array.isArray(entry.events) && entry.events.length > 0) {
+          const normalizedEvents = entry.events.map((event, index) => ({
+            sport: game.sport,
+            game_id: String(game.game_id),
+            event_id: event.event_id ? String(event.event_id) : `${game.game_id}-${event.sequence ?? index + 1}`,
+            sequence: event.sequence ?? index + 1,
+            period: event.period ?? null,
+            clock: event.clock ?? null,
+            team_key: event.team_key ?? null,
+            team_id: event.team_id ? String(event.team_id) : null,
+            event_type: event.event_type ?? null,
+            description: event.description ?? '',
+            metadata: {
+              homeScore: event.home_score ?? null,
+              awayScore: event.away_score ?? null,
+              raw: event.raw || event
+            }
+          }));
+
+          eventsPayload.push(...normalizedEvents);
+        }
+      }
+
+      if (values.length === 0) {
+        return;
+      }
+
+      const sql = `
+        INSERT INTO games (
+          sport, game_id, season, season_type, week,
+          game_date, game_time, status,
+          home_team_id, home_team_key, home_team_name, home_score,
+          away_team_id, away_team_key, away_team_name, away_score,
+          stadium_name, winning_team_id, description
+        ) VALUES ${values.join(', ')}
+        ON CONFLICT (sport, game_id) DO UPDATE SET
+          season = EXCLUDED.season,
+          season_type = EXCLUDED.season_type,
+          week = EXCLUDED.week,
+          game_date = EXCLUDED.game_date,
+          game_time = EXCLUDED.game_time,
+          status = EXCLUDED.status,
+          home_team_id = EXCLUDED.home_team_id,
+          home_team_key = EXCLUDED.home_team_key,
+          home_team_name = EXCLUDED.home_team_name,
+          home_score = EXCLUDED.home_score,
+          away_team_id = EXCLUDED.away_team_id,
+          away_team_key = EXCLUDED.away_team_key,
+          away_team_name = EXCLUDED.away_team_name,
+          away_score = EXCLUDED.away_score,
+          stadium_name = EXCLUDED.stadium_name,
+          winning_team_id = EXCLUDED.winning_team_id,
+          description = EXCLUDED.description,
+          updated_at = CURRENT_TIMESTAMP
+      `;
+
+      await client.query(sql, params);
+
+      if (eventsPayload.length > 0) {
+        await database.insertGameEvents(client, eventsPayload);
+      }
+
+      logger.debug('Game batch persisted', {
+        games: batch.length,
+        events: eventsPayload.length
+      });
+    });
   }
 }
 
@@ -328,84 +517,114 @@ async function insertGames(games) {
  * Main ingestion workflow
  */
 async function ingestLiveData() {
+  const { database, logger } = await initializeServices();
+
   console.log('🔥 Blaze Sports Intel - Live Data Ingestion\n');
+  logger.info('Starting live data ingestion run');
 
   const allGames = [];
+  let totalEvents = 0;
 
   try {
-    // 1. Note: Skipping delete since table is already empty
     console.log('📊 Starting fresh data ingestion...\n');
 
-    // 2. Fetch and normalize NFL data (Week 5 games)
     console.log('🏈 Fetching NFL data...');
+    logger.info('Fetching NFL play-by-play feed', { sport: 'NFL' });
     const nflGames = await fetchAPI('NFL', API_ENDPOINTS.NFL.scores);
     const normalizedNFL = nflGames
       .filter(game => game.Status === 'Final' || game.Status === 'InProgress')
-      .map(normalizeNFLGame);
+      .map(game => normalizeGameWithEvents(game, normalizeNFLGame));
 
     console.log(`✅ Found ${normalizedNFL.length} NFL games\n`);
+    logger.debug('NFL normalization complete', { count: normalizedNFL.length });
     allGames.push(...normalizedNFL);
 
-    // 3. Fetch and normalize MLB data (recent games)
     console.log('⚾ Fetching MLB data...');
+    logger.info('Fetching MLB play-by-play feed', { sport: 'MLB' });
     const mlbGames = await fetchAPI('MLB', API_ENDPOINTS.MLB.games);
     const normalizedMLB = mlbGames
-      .filter(game => game.Status === 'Final' && game.Day >= '2024-09-01') // September games
-      .slice(0, 100) // Limit to 100 most recent
-      .map(normalizeMLBGame);
+      .filter(game => game.Status === 'Final' && game.Day >= '2024-09-01')
+      .slice(0, 100)
+      .map(game => normalizeGameWithEvents(game, normalizeMLBGame));
 
     console.log(`✅ Found ${normalizedMLB.length} MLB games\n`);
+    logger.debug('MLB normalization complete', { count: normalizedMLB.length });
     allGames.push(...normalizedMLB);
 
-    // 4. Fetch and normalize CFB data
     console.log('🏈 Fetching CFB data...');
+    logger.info('Fetching CFB play-by-play feed', { sport: 'CFB' });
     try {
       const cfbGames = await fetchAPI('CFB', API_ENDPOINTS.CFB.games);
       const normalizedCFB = cfbGames
-        .filter(game => game.Status === 'Final' && game.Week <= 7) // Up to Week 7
-        .slice(0, 50) // Limit to 50 games
-        .map(normalizeCFBGame);
+        .filter(game => game.Status === 'Final' && game.Week <= 7)
+        .slice(0, 50)
+        .map(game => normalizeGameWithEvents(game, normalizeCFBGame));
 
       console.log(`✅ Found ${normalizedCFB.length} CFB games\n`);
+      logger.debug('CFB normalization complete', { count: normalizedCFB.length });
       allGames.push(...normalizedCFB);
     } catch (error) {
       console.warn('⚠️  CFB data unavailable:', error.message);
+      logger.warn('CFB feed unavailable, continuing without updates', { error: error.message });
     }
 
-    // 5. Fetch and normalize CBB data
     console.log('🏀 Fetching CBB data...');
+    logger.info('Fetching CBB play-by-play feed', { sport: 'CBB' });
     try {
       const cbbGames = await fetchAPI('CBB', API_ENDPOINTS.CBB.games);
       const normalizedCBB = cbbGames
         .filter(game => game.Status === 'Final')
-        .slice(0, 50) // Limit to 50 games
-        .map(normalizeCBBGame);
+        .slice(0, 50)
+        .map(game => normalizeGameWithEvents(game, normalizeCBBGame));
 
       console.log(`✅ Found ${normalizedCBB.length} CBB games\n`);
+      logger.debug('CBB normalization complete', { count: normalizedCBB.length });
       allGames.push(...normalizedCBB);
     } catch (error) {
       console.warn('⚠️  CBB data unavailable (season hasn\'t started):', error.message);
+      logger.warn('CBB feed unavailable, continuing without updates', { error: error.message });
     }
 
-    // 6. Insert all games into database
     console.log(`📊 Inserting ${allGames.length} total games into database...`);
-    await insertGames(allGames);
+    logger.info('Persisting games and events', { totalGames: allGames.length });
+    await insertGames(database, logger, allGames);
+
+    totalEvents = allGames.reduce((sum, entry) => sum + (entry.events?.length || 0), 0);
+
+    const gameCounts = allGames.reduce((acc, entry) => {
+      const sport = entry.game.sport;
+      acc[sport] = (acc[sport] || 0) + 1;
+      return acc;
+    }, {});
+
+    const eventCounts = allGames.reduce((acc, entry) => {
+      const sport = entry.game.sport;
+      acc[sport] = (acc[sport] || 0) + (entry.events?.length || 0);
+      return acc;
+    }, {});
 
     console.log('\n✅ Live data ingestion complete!');
     console.log(`\n📈 Summary:`);
-    console.log(`   - NFL: ${normalizedNFL.length} games`);
-    console.log(`   - MLB: ${normalizedMLB.length} games`);
-    console.log(`   - CFB: ${allGames.filter(g => g.sport === 'CFB').length} games`);
-    console.log(`   - CBB: ${allGames.filter(g => g.sport === 'CBB').length} games`);
-    console.log(`   - Total: ${allGames.length} games`);
+    console.log(`   - NFL: ${gameCounts.NFL || 0} games (${eventCounts.NFL || 0} events)`);
+    console.log(`   - MLB: ${gameCounts.MLB || 0} games (${eventCounts.MLB || 0} events)`);
+    console.log(`   - CFB: ${gameCounts.CFB || 0} games (${eventCounts.CFB || 0} events)`);
+    console.log(`   - CBB: ${gameCounts.CBB || 0} games (${eventCounts.CBB || 0} events)`);
+    console.log(`   - Total: ${allGames.length} games / ${totalEvents} events`);
 
     console.log('\n🔄 Next steps:');
     console.log('   1. Run embedding generation: node scripts/generate-embeddings.js');
     console.log('   2. Test search: curl -X POST .../api/copilot/search -d \'{"query":"close nfl games"}\'');
 
+    logger.info('Live data ingestion completed successfully', {
+      totalGames: allGames.length,
+      totalEvents
+    });
   } catch (error) {
     console.error('❌ Ingestion failed:', error);
+    logger.error('Live data ingestion failed', { error: error.message }, error);
     throw error;
+  } finally {
+    await database.close().catch(() => {});
   }
 }
 

@@ -39,6 +39,7 @@ class DatabaseConnectionService {
 
         this.pool = null;
         this.healthStatus = 'unknown';
+        this.healthCheckInterval = null;
         this.metrics = {
             totalQueries: 0,
             successfulQueries: 0,
@@ -51,7 +52,10 @@ class DatabaseConnectionService {
         this.queryTimes = [];
         this.maxQueryTimeHistory = 1000;
 
-        this.initialize();
+        this.ensuredTables = new Set();
+
+        this.ready = this.initialize();
+
     }
 
     async initialize() {
@@ -387,7 +391,11 @@ class DatabaseConnectionService {
      * Health monitoring
      */
     startHealthMonitoring() {
-        setInterval(async () => {
+        if (this.healthCheckInterval) {
+            clearInterval(this.healthCheckInterval);
+        }
+
+        this.healthCheckInterval = setInterval(async () => {
             try {
                 await this.healthCheck();
             } catch (error) {
@@ -490,6 +498,139 @@ class DatabaseConnectionService {
             this.pool = null;
             this.healthStatus = 'closed';
         }
+
+        if (this.healthCheckInterval) {
+            clearInterval(this.healthCheckInterval);
+            this.healthCheckInterval = null;
+        }
+    }
+
+    /**
+     * Ensure the game events table exists
+     */
+    async ensureGameEventsTable(client, tableName = 'game_events') {
+        const safeName = tableName;
+
+        if (!/^[a-zA-Z0-9_]+$/.test(safeName)) {
+            throw new Error(`Invalid table name provided: ${tableName}`);
+        }
+
+        if (this.ensuredTables.has(safeName)) {
+            return;
+        }
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS ${safeName} (
+                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                sport VARCHAR(20) NOT NULL,
+                game_id VARCHAR(100) NOT NULL,
+                event_id VARCHAR(120) NOT NULL,
+                sequence INTEGER NOT NULL,
+                period VARCHAR(20),
+                clock VARCHAR(20),
+                team_key VARCHAR(20),
+                team_id VARCHAR(100),
+                event_type VARCHAR(50),
+                description TEXT,
+                metadata JSONB DEFAULT '{}'::jsonb,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                UNIQUE (sport, game_id, event_id)
+            )
+        `);
+
+        await client.query(`
+            CREATE INDEX IF NOT EXISTS idx_${safeName}_game_sequence
+            ON ${safeName} (sport, game_id, sequence)
+        `);
+
+        this.ensuredTables.add(safeName);
+        this.logger.debug('Ensured game events table exists', { tableName: safeName });
+    }
+
+    /**
+     * Insert or update game events in bulk
+     */
+    async insertGameEvents(client, events, options = {}) {
+        if (!client) {
+            throw new Error('Database client is required to insert game events');
+        }
+
+        if (!Array.isArray(events) || events.length === 0) {
+            return { insertedCount: 0 };
+        }
+
+        const tableName = options.tableName || 'game_events';
+        const batchSize = options.batchSize || 500;
+
+        await this.ensureGameEventsTable(client, tableName);
+
+        let totalInserted = 0;
+
+        for (let i = 0; i < events.length; i += batchSize) {
+            const batch = events.slice(i, i + batchSize);
+
+            const columns = [
+                'sport',
+                'game_id',
+                'event_id',
+                'sequence',
+                'period',
+                'clock',
+                'team_key',
+                'team_id',
+                'event_type',
+                'description',
+                'metadata'
+            ];
+
+            const values = [];
+            const params = [];
+            let paramIndex = 1;
+
+            for (const event of batch) {
+                values.push(`($${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++})`);
+
+                params.push(
+                    event.sport,
+                    event.game_id,
+                    event.event_id,
+                    event.sequence,
+                    event.period ?? null,
+                    event.clock ?? null,
+                    event.team_key ?? null,
+                    event.team_id ?? null,
+                    event.event_type ?? null,
+                    event.description ?? null,
+                    JSON.stringify(event.metadata || {})
+                );
+            }
+
+            const query = `
+                INSERT INTO ${tableName} (${columns.join(', ')})
+                VALUES ${values.join(', ')}
+                ON CONFLICT (sport, game_id, event_id) DO UPDATE SET
+                    sequence = EXCLUDED.sequence,
+                    period = EXCLUDED.period,
+                    clock = EXCLUDED.clock,
+                    team_key = EXCLUDED.team_key,
+                    team_id = EXCLUDED.team_id,
+                    event_type = EXCLUDED.event_type,
+                    description = EXCLUDED.description,
+                    metadata = EXCLUDED.metadata,
+                    updated_at = NOW()
+            `;
+
+            const result = await client.query(query, params);
+            totalInserted += result.rowCount;
+        }
+
+        this.logger.debug('Game events persisted', {
+            totalInserted,
+            batches: Math.ceil(events.length / batchSize)
+        });
+
+        return { insertedCount: totalInserted };
     }
 }
 
