@@ -1,0 +1,310 @@
+---
+title: College Baseball Game Center Spec
+lastUpdated: 2025-10-13
+status: Draft
+owner: product-intel
+---
+
+import { Callout } from "@/components/Callout";
+
+# College Baseball Game Center
+
+## Purpose
+
+Build a mobile-first, dark-mode game center that delivers MLB-grade coverage for NCAA Division I baseball while remaining extensible to D2, D3, JUCO, and NAIA games. The game center must connect preview intelligence, live win probability, and automated storytelling without forcing users to leave the flow.
+
+## Success Metrics
+
+- **Engagement:** 60% of logged-in users interact with at least two tabs (Preview, Live, Recap) per session during the first month.
+- **Retention:** Daily active users who open a game center return the next day at a 40% rate.
+- **Speed:** 95th percentile initial load < 2.5s on 4G; live updates < 5s latency from data provider.
+- **Data completeness:** 98% of Division I games reach “coverage complete” (preview + live ingest + recap) within 10 minutes of final pitch.
+
+## User Jobs-To-Be-Done
+
+1. **Beat Writer:** Needs projected matchups, lineup intel, and previous meeting notes to publish quickly.
+2. **Player/Family:** Wants trustworthy, mobile access to pitch counts, velocity bands, and highlight plays.
+3. **Scout:** Requires performance trends, prospect flags, and context on opponent strength.
+
+## Experience Overview
+
+The game center lives at `/baseball/ncaab/games/[gameId]` with three persistent tabs:
+
+1. **Preview** – data-rich briefing available as soon as a matchup is scheduled.
+2. **Live** – real-time scoreboard, pitch visualization, and win probability graph.
+3. **Recap** – instant automated story that unlocks coach quotes and highlights postgame.
+
+A floating bottom navigation (“Scores · Teams · Search · Account”) anchors the mobile experience.
+
+## Preview Module
+
+### Data Schema
+
+```ts
+export interface GamePreview {
+  gameId: string; // UUID
+  competitionLevel: "D1" | "D2" | "D3" | "JUCO" | "NAIA";
+  league: string; // e.g., "SEC", "Sun Belt"
+  venue: {
+    name: string;
+    city: string;
+    state: string;
+    surfaceType: "Natural" | "Turf";
+    parkFactor: number; // normalized vs NCAA avg
+  };
+  schedule: {
+    firstPitchIso: string; // ISO8601
+    broadcast: string | null;
+    weather: {
+      temperatureF: number;
+      windMph: number;
+      windDirection: string;
+      precipitationChance: number;
+    } | null;
+  };
+  teams: [TeamPreview, TeamPreview];
+  umpireCrew: string[];
+  storyline: PreviewStoryline;
+  analytics: {
+    expectedWinProb: number; // pregame win probability for home team
+    strengthOfScheduleRank: number;
+    travelFatigueScore: number; // 0-100
+    bullpenHealthIndex: number; // 0-100
+    giantKillerAlert: boolean;
+  };
+  recentMeetings: RecentMeeting[];
+  watchList: ProspectFlag[];
+}
+
+export interface TeamPreview {
+  id: string;
+  name: string;
+  nickname: string;
+  record: {
+    overall: string; // "21-8"
+    conference: string;
+    lastTen: string;
+  };
+  probables: PitcherOutlook[];
+  lineupNote: string;
+  rpi: number;
+  lastGameResult: string;
+  travelDistanceMiles: number;
+}
+```
+
+Supporting types (`PreviewStoryline`, `RecentMeeting`, `ProspectFlag`, `PitcherOutlook`) will live inside `@blaze/data-models/baseball.ts` and reuse sport-agnostic primitives where possible.
+
+### Content Rules
+
+- Generate **"This Field Tilts"** section summarizing leverage matchups (e.g., lefty-heavy lineup vs. right-handed starter) in ≤120 words.
+- Include a **Bullpen Temperature** meter using bullpen health index and recent workload.
+- Highlight **Prospect Radar** cards for players with MLB Draft grades ≥ 45 (internal scale).
+
+### Acceptance Criteria
+
+- Preview tab loads < 1.5s on mobile for cached data.
+- Weather block hides gracefully when no forecast is available.
+- Users can share a deep link with pre-populated game metadata for social cards.
+
+### Analytics Events
+
+| Event | Trigger | Properties |
+| --- | --- | --- |
+| `preview_viewed` | User opens Preview tab | `{ gameId, userTier, conference, device }` |
+| `preview_share` | User taps Share | `{ gameId, shareSurface }` |
+| `prospect_card_expand` | User expands Prospect Radar | `{ gameId, playerId }` |
+
+## Live Module
+
+### Live Data Ingest
+
+- **Sources:** Highlightly (primary), NCAA XML (fallback), manual scorer app (HS/JUCO).
+- **Flow:**
+  1. Cloudflare Worker pulls play-by-play JSON every 20s during active innings.
+  2. Worker validates payload hash and stores in Redis (TTL: 60s) + S3 archival.
+  3. Next.js Edge function at `/api/v1/games/[gameId]/live` serves merged payload with cache-control `s-maxage=15`.
+  4. Client subscribes via Server-Sent Events (SSE) for push updates when available; otherwise polls every 20s.
+- **Idempotency:** Each play carries a monotonically increasing `sequence` and `ingestFingerprint`. Duplicate or out-of-order plays are discarded server-side.
+
+### Event Schema
+
+```ts
+export interface LiveGameState {
+  gameId: string;
+  status: "scheduled" | "in_progress" | "delayed" | "final";
+  inning: {
+    number: number;
+    half: "top" | "bottom";
+  };
+  score: {
+    home: number;
+    away: number;
+    inningByInning: number[][]; // [team][inning]
+  };
+  baseState: {
+    outs: 0 | 1 | 2;
+    runners: {
+      first: RunnerState | null;
+      second: RunnerState | null;
+      third: RunnerState | null;
+    };
+    pitchCount: number;
+  };
+  currentMatchup: {
+    batterId: string;
+    pitcherId: string;
+    batterHand: "L" | "R" | "S";
+    pitcherHand: "L" | "R";
+  };
+  winProbability: LiveWinProbability[];
+  events: PlayEvent[]; // sorted descending by sequence
+  velocityBands?: VelocityBandSnapshot;
+}
+```
+
+Key derived metrics (leverage index, run expectancy delta) are computed in the API layer to minimize client work.
+
+### UX Requirements
+
+- **Tabs:** `Box Score`, `Plays`, `Team Trends`.
+- **Field Viz:** SVG diamond showing base state, outs, and pitch type color-coded.
+- **Win Probability Chart:** Minimal 4px line with tooltips; highlights swings ≥ 25%.
+- **Micro-Motion Overlay (Phase 2):** placeholder tile summarizing mechanical notes fed by video analysis.
+
+### Acceptance Criteria
+
+- Live tab auto-refreshes without page reload; state transitions are animated within 250ms.
+- When latency > 60s, show a "verification pending" toast using accent gold.
+- Box score supports pinch-to-zoom on mobile for advanced columns (EV, CSW%).
+
+### Analytics Events
+
+| Event | Trigger | Properties |
+| --- | --- | --- |
+| `live_tab_opened` | User opens Live tab | `{ gameId, networkStatus }` |
+| `play_highlight_shared` | User shares a specific play | `{ gameId, playId, medium }` |
+| `win_prob_hover` | User hovers/taps on win probability chart | `{ gameId, inning, wp }` |
+
+## Recap Module
+
+### Automated Story Workflow
+
+1. **Trigger:** Game status transitions to `final`.
+2. **Data Snapshot:** Freeze final box score, play-by-play, and notable events (lead changes, streaks).
+3. **LLM Draft:** Generate recap via `RecapLLM v2` using structured JSON prompt.
+4. **Verifier:** Cross-check each numeric fact against frozen data. If mismatch, fall back to templated narrative.
+5. **Distribution:** Publish to `/api/v1/games/[gameId]/recap` and render in Recap tab.
+
+### Recap Template Skeleton
+
+```mdx
+### Final: {awayTeam.nickname} {awayScore}, {homeTeam.nickname} {homeScore}
+
+- **Turning Point:** {turningPointPlay}
+- **Player of the Game:** {pog.name} ({pog.line})
+- **Pitching Duel Meter:** {pitchingDuelScore}/100
+
+{leadParagraph}
+
+<Callout variant="gold">
+  {giantKillerBlurb}
+</Callout>
+
+#### Stat Nuggets
+- {nuggetOne}
+- {nuggetTwo}
+- {nuggetThree}
+
+#### Prospect Heatmap
+Displays top-3 MLB prospects with EV/velo deltas week-over-week.
+```
+
+### Acceptance Criteria
+
+- Recap tab becomes available ≤ 120s after final pitch.
+- All facts include inline provenance links (box score rows, play IDs).
+- Coach quotes added later appear as expandable accordions tagged by source.
+
+### Analytics Events
+
+| Event | Trigger | Properties |
+| --- | --- | --- |
+| `recap_viewed` | Tab view | `{ gameId, recapMode: "llm" | "template" }` |
+| `quote_expanded` | User expands coach quote | `{ gameId, coachId }` |
+| `heatmap_download` | User exports prospect heatmap | `{ gameId, format }` |
+
+## Sample Screen Flows
+
+### Mobile Preview (Dark Mode)
+
+```
+┌──────────────────────────────┐
+│ BACK   Fri · 6:30p CST       │
+│ LSU Tigers at UAB Blazers    │
+├─────────────┬───────────────┤
+│ Win Prob    │ Weather        │
+│ 64% LSU     │ 72°F · 6mph    │
+├─────────────┴───────────────┤
+│ This Field Tilts → LSU bats vs │
+│ UAB RHP (55% GB rate)...     │
+├──────────────────────────────┤
+│ Bullpen Temperature          │
+│ ●●●○○  LSU (68)              │
+│ ●●○○○  UAB (42)              │
+├──────────────────────────────┤
+│ Prospect Radar               │
+│ [ ] Tommy White · 55 grade   │
+└──────────────────────────────┘
+```
+
+### Mobile Live
+
+```
+┌──────────────────────────────┐
+│ BACK   TOP 7 ▴ LSU 5 · UAB 4 │
+├──────────────────────────────┤
+│   ●      ◯                   │
+│ 1st   2nd  3rd  Outs: ●●○    │
+│ Pitch: 94mph 4SFB (21)       │
+├──────────────────────────────┤
+│ Win Probability Graph        │
+│ /‾\__/‾‾‾                │
+├──────────────────────────────┤
+│ Box Score | Plays | Trends   │
+│ [Plays]  6: LSU  - Thompson  │
+│ Single to LF (EV 102)        │
+└──────────────────────────────┘
+```
+
+### Mobile Recap
+
+```
+┌──────────────────────────────┐
+│ FINAL   LSU 7 · UAB 6        │
+├──────────────────────────────┤
+│ Turning Point                │
+│ Thompson's 2RBI double in 8th│
+├──────────────────────────────┤
+│ Player of the Game           │
+│ Thatcher Hurd · 6.1 IP, 9 K  │
+├──────────────────────────────┤
+│ Stat Nuggets                 │
+│ • LSU 12 hard-hit balls      │
+│ • UAB pen threw 142 pitches  │
+└──────────────────────────────┘
+```
+
+## Technical Dependencies
+
+- **Design System:** Extend Tailwind tokens for diamond gold (`#FBBF24`) and crimson (`#DC2626`).
+- **Charts:** Use `@visx/visx` for win probability graph with SSR-safe rendering.
+- **State Management:** React Server Components for initial payload; client-side hydration via Zustand store for live updates.
+- **Testing:** Playwright scripts covering tab transitions, SSE fallback, and recap provenance links.
+
+## Open Questions
+
+1. Should video micro-expression analysis be a premium (Diamond Pro) feature from launch?
+2. How do we visualize pitch sequencing history within the live tab without crowding mobile view?
+3. What thresholds should trigger arm-care alerts during live play for HS/JUCO once those tiers onboard?
+
