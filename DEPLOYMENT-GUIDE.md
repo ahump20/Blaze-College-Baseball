@@ -35,7 +35,7 @@ This guide walks you through deploying the complete SportsDataIO integration sys
    ```bash
    npm install -g wrangler
    ```
-3. **SportsDataIO API Key**: You have `d34e00995322470fb49b6d02a8a4df33`
+3. **SportsDataIO API Key**: You have `YOUR_SPORTSDATAIO_KEY` (retrieve the real value from the secure secrets manager)
 4. **Git Repository**: Pushed to GitHub (ahump20/BSI)
 
 ## Step 1: Create D1 Database
@@ -101,7 +101,7 @@ preview_id = "preview456def789"  # Preview namespace
 ```bash
 # Set SportsDataIO API key
 wrangler pages secret put SPORTSDATA_API_KEY --project-name blazesportsintel
-# When prompted, enter: d34e00995322470fb49b6d02a8a4df33
+# When prompted, enter: YOUR_SPORTSDATAIO_KEY (pull the actual value from secure storage)
 
 # Set Anthropic API key (for chat assistant)
 wrangler pages secret put ANTHROPIC_API_KEY --project-name blazesportsintel
