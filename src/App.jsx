@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import LiveGameTracker from './components/LiveGameTracker';
 import BoxScore from './components/BoxScore';
 import Standings from './components/Standings';
-import './App.css';
+import './styles/App.css';
 
 function App() {
   const [activeView, setActiveView] = useState('live');
@@ -19,9 +19,9 @@ function App() {
 
   const fetchLiveGames = async () => {
     try {
-      const response = await fetch('/api/games/live');
+      const response = await fetch('/api/college-baseball/games?status=live');
       const data = await response.json();
-      setLiveGames(data.games);
+      setLiveGames(data.success ? data.data : []);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching live games:', error);
