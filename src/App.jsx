@@ -72,7 +72,17 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-content">
-          <h1>College Baseball Live</h1>
+          <div className="brand">
+            <img
+              src="/blaze-sports-intel-logo.svg"
+              alt="Blaze Sports Intel emblem"
+              className="brand-mark"
+            />
+            <div className="brand-copy">
+              <h1>Blaze Sports Intel</h1>
+              <p>College Baseball Intelligence. Live. Precise. Relentless.</p>
+            </div>
+          </div>
           <a href="/college-baseball.html" className="info-link">
             ℹ️ Why Blaze? See what makes us different
           </a>

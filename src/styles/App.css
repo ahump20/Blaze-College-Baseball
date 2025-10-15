@@ -1,12 +1,13 @@
 :root {
-  --primary-color: #1a1a1a;
-  --secondary-color: #2d2d2d;
-  --accent-color: #00a86b;
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
-  --live-indicator: #ff3b30;
-  --border-color: #404040;
-  --card-bg: #1e1e1e;
+  --primary-color: #1a202c;
+  --secondary-color: #2d3748;
+  --accent-color: #fbbf24;
+  --accent-warm: #f97316;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --live-indicator: #dc2626;
+  --border-color: #3f4c63;
+  --card-bg: #1f2937;
 }
 
 * {
@@ -16,8 +17,8 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -36,10 +37,11 @@ body {
 .app-header {
   position: sticky;
   top: 0;
-  background-color: var(--secondary-color);
+  background: linear-gradient(135deg, rgba(31, 41, 55, 0.94), rgba(26, 32, 44, 0.98));
   padding: 16px;
   border-bottom: 1px solid var(--border-color);
   z-index: 100;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.6);
 }
 
 .app-header .header-content {
@@ -47,8 +49,39 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
+
+.brand-mark {
+  width: 72px;
+  height: auto;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 12px rgba(249, 115, 22, 0.35));
+  border-radius: 16px;
+}
+
+.brand-copy h1 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.brand-copy p {
+  margin-top: 2px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
 
 .app-header h1 {
   font-size: 20px;
@@ -61,16 +94,18 @@ body {
   text-decoration: none;
   font-size: 12px;
   white-space: nowrap;
-  padding: 6px 10px;
-  background: rgba(0, 168, 107, 0.1);
-  border-radius: 6px;
-  border: 1px solid rgba(0, 168, 107, 0.3);
+  padding: 6px 12px;
+  background: rgba(251, 191, 36, 0.12);
+  border-radius: 999px;
+  border: 1px solid rgba(251, 191, 36, 0.35);
   transition: all 0.2s;
+  font-weight: 600;
 }
 
 .app-header .info-link:hover {
-  background: rgba(0, 168, 107, 0.2);
+  background: rgba(251, 191, 36, 0.2);
   border-color: var(--accent-color);
+  color: var(--text-primary);
 }
 
 .conference-filter select {
@@ -119,6 +154,7 @@ body {
 
 .bottom-nav button.active {
   color: var(--accent-color);
+  font-weight: 600;
 }
 
 .bottom-nav button:active {
@@ -177,6 +213,18 @@ body {
 @media (min-width: 768px) {
   .app-header h1 {
     font-size: 24px;
+  }
+
+  .brand {
+    gap: 16px;
+  }
+
+  .brand-mark {
+    width: 88px;
+  }
+
+  .brand-copy p {
+    font-size: 13px;
   }
 
   .app-content {
