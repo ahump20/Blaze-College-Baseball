@@ -1,0 +1,34 @@
+<svg width="320" height="400" viewBox="0 0 320 400" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logoTitle logoDesc">
+  <title id="logoTitle">Blaze Sports Intel Primary Emblem</title>
+  <desc id="logoDesc">Stylized black and copper hound dog cradling a baseball with flames above the head for Blaze Sports Intel College Baseball.</desc>
+  <defs>
+    <linearGradient id="bgGradient" x1="160" y1="0" x2="160" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2D3748" />
+      <stop offset="1" stop-color="#1A202C" />
+    </linearGradient>
+    <linearGradient id="flameGradient" x1="160" y1="40" x2="160" y2="140" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F97316" />
+      <stop offset="1" stop-color="#FBBF24" />
+    </linearGradient>
+    <radialGradient id="furHighlight" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(160 210) rotate(90) scale(120 100)">
+      <stop offset="0" stop-color="#3A2F2A" />
+      <stop offset="1" stop-color="#1F1B1A" />
+    </radialGradient>
+  </defs>
+  <rect width="320" height="400" rx="28" fill="url(#bgGradient)" />
+  <path d="M97 120C94 104 104 80 120 72C140 62 158 74 160 96C162 74 180 62 200 72C216 80 226 104 223 120" fill="#1F1B1A" stroke="#FBBF24" stroke-width="6" stroke-linecap="round" />
+  <path d="M80 206C80 160 112 120 160 120C208 120 240 160 240 206C240 260 208 300 160 300C112 300 80 260 80 206Z" fill="url(#furHighlight)" stroke="#FBBF24" stroke-width="6" />
+  <path d="M108 186C108 164 126 148 148 148C159 148 170 152 178 160" stroke="#F97316" stroke-width="6" stroke-linecap="round" />
+  <path d="M212 186C212 164 194 148 172 148C161 148 150 152 142 160" stroke="#F97316" stroke-width="6" stroke-linecap="round" />
+  <ellipse cx="140" cy="198" rx="12" ry="16" fill="#0D0C0C" />
+  <ellipse cx="180" cy="198" rx="12" ry="16" fill="#0D0C0C" />
+  <path d="M160 228C166 228 178 234 180 242C172 250 148 250 140 242C142 234 154 228 160 228Z" fill="#0D0C0C" stroke="#F97316" stroke-width="4" stroke-linejoin="round" />
+  <circle cx="160" cy="306" r="66" fill="#F6E8D0" stroke="#F97316" stroke-width="8" />
+  <path d="M120 286C140 296 180 296 200 286" stroke="#8B4513" stroke-width="6" stroke-linecap="round" />
+  <path d="M120 326C140 336 180 336 200 326" stroke="#8B4513" stroke-width="6" stroke-linecap="round" />
+  <path d="M160 240V360" stroke="#8B4513" stroke-width="6" stroke-linecap="round" />
+  <path d="M86 126C104 100 124 90 140 88C120 66 120 40 140 24C160 8 188 16 200 44C208 30 222 22 238 26C246 28 252 36 254 46C256 58 252 70 244 80C272 78 288 118 264 134C280 166 242 186 226 166" fill="none" stroke="url(#flameGradient)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M50 340H270L250 380H70L50 340Z" fill="#1F2937" stroke="#F97316" stroke-width="6" stroke-linejoin="round" />
+  <text x="160" y="362" text-anchor="middle" font-family="'Inter', 'Segoe UI', sans-serif" font-size="24" font-weight="700" fill="#FBBF24">BLAZE</text>
+  <text x="160" y="386" text-anchor="middle" font-family="'Inter', 'Segoe UI', sans-serif" font-size="14" letter-spacing="2" font-weight="600" fill="#E2E8F0">SPORTS INTEL</text>
+</svg>
