@@ -14,15 +14,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 // Configuration
-const { WRANGLER_PATH } = process.env;
-
-if (!WRANGLER_PATH) {
+const requiredEnvVars = ['WRANGLER_PATH'];
+const missingEnvVars = requiredEnvVars.filter((name) => !process.env[name]);
+if (missingEnvVars.length > 0) {
   console.error(
-    'Missing required environment variable: WRANGLER_PATH. Provide the Wrangler CLI path (e.g., via API_KEYS_MASTER.js → npm run mcp:sync or manual export) before running generate-embeddings.'
+    `Missing required environment variable(s): ${missingEnvVars.join(', ')}. Please set them before running generate-embeddings.`
   );
   process.exit(1);
 }
-const DATABASE_NAME = 'blazesports-db';
+const { WRANGLER_PATH } = process.env;
 const VECTORIZE_INDEX = 'sports-scouting-index';
 const BATCH_SIZE = 10; // Process 10 games at a time
 const EMBEDDING_MODEL = '@cf/baai/bge-base-en-v1.5'; // 768-dimensional embeddings
