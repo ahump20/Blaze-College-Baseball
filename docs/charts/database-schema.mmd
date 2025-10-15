@@ -8,7 +8,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     PLAYERS {
         int id PK
         int team_id FK
@@ -19,7 +19,7 @@ erDiagram
         decimal weight_kg
         timestamp created_at
     }
-    
+
     GAMES {
         int id PK
         int home_team_id FK
@@ -31,7 +31,23 @@ erDiagram
         int attendance
         jsonb weather_data
     }
-    
+
+    GAME_EVENTS {
+        bigint id PK
+        int game_id FK
+        int sequence
+        string event_code
+        string event_type
+        string event_subtype
+        int inning
+        string half
+        int outs
+        int player_id FK
+        int assisting_player_id FK
+        timestamptz event_time
+        timestamptz source_timestamp
+    }
+
     GAME_STATS {
         int id PK
         int game_id FK
@@ -40,7 +56,7 @@ erDiagram
         decimal minutes_played
         timestamp recorded_at
     }
-    
+
     ANALYTICS {
         int id PK
         int team_id FK
@@ -51,7 +67,7 @@ erDiagram
         timestamp calculation_date
         string data_source
     }
-    
+
     POSE_DATA {
         int id PK
         int player_id FK
@@ -61,7 +77,7 @@ erDiagram
         string action_type
         decimal confidence_score
     }
-    
+
     BIOMECH_ANALYSIS {
         int id PK
         int pose_data_id FK
@@ -71,7 +87,7 @@ erDiagram
         decimal overall_score
         timestamp analyzed_at
     }
-    
+
     INJURIES {
         int id PK
         int player_id FK
@@ -82,7 +98,7 @@ erDiagram
         string severity
         text description
     }
-    
+
     PREDICTIONS {
         int id PK
         int player_id FK
@@ -93,7 +109,7 @@ erDiagram
         date target_date
         boolean is_realized
     }
-    
+
     LIVE_SCORES {
         int id PK
         int game_id FK
@@ -103,7 +119,7 @@ erDiagram
         timestamp last_update
         jsonb event_data
     }
-    
+
     API_CACHE {
         int id PK
         string cache_key UK
@@ -112,20 +128,22 @@ erDiagram
         timestamp expires_at
         int hit_count
     }
-    
+
     %% Relationships
     TEAMS ||--o{ PLAYERS : has
     TEAMS ||--o{ GAMES : "home team"
     TEAMS ||--o{ GAMES : "away team"
     TEAMS ||--o{ ANALYTICS : generates
-    
+
     PLAYERS ||--o{ GAME_STATS : plays
     PLAYERS ||--o{ POSE_DATA : generates
     PLAYERS ||--o{ BIOMECH_ANALYSIS : analyzed
     PLAYERS ||--o{ INJURIES : suffers
     PLAYERS ||--o{ PREDICTIONS : subject_of
-    
+    PLAYERS ||--o{ GAME_EVENTS : participates
+
     GAMES ||--o{ GAME_STATS : contains
     GAMES ||--o{ LIVE_SCORES : tracked
-    
+    GAMES ||--o{ GAME_EVENTS : logs
+
     POSE_DATA ||--|| BIOMECH_ANALYSIS : analyzed_from
