@@ -4762,6 +4762,101 @@
                             <MonteCarloView />
                         ) : (
                             <>
+                                {/* College Baseball Featured Banner */}
+                                <div style={{
+                                    background: 'linear-gradient(135deg, var(--blaze-burnt-orange) 0%, var(--blaze-ember) 100%)',
+                                    borderRadius: '16px',
+                                    padding: '20px',
+                                    marginBottom: '24px',
+                                    border: '2px solid var(--blaze-copper)',
+                                    boxShadow: '0 8px 24px rgba(191, 87, 0, 0.3)',
+                                    position: 'relative',
+                                    overflow: 'hidden'
+                                }}>
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '10px',
+                                        right: '10px',
+                                        background: 'rgba(255, 255, 255, 0.2)',
+                                        padding: '4px 10px',
+                                        borderRadius: '20px',
+                                        fontSize: '11px',
+                                        fontWeight: '700',
+                                        backdropFilter: 'blur(10px)'
+                                    }}>
+                                        ⭐ FEATURED
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                                        <div style={{ fontSize: '48px' }}>⚾</div>
+                                        <div style={{ flex: 1, minWidth: '200px' }}>
+                                            <h3 style={{ 
+                                                fontSize: '24px', 
+                                                fontWeight: '800', 
+                                                marginBottom: '8px',
+                                                color: 'white'
+                                            }}>
+                                                College Baseball - The Coverage ESPN Won't Give You
+                                            </h3>
+                                            <p style={{ 
+                                                fontSize: '15px', 
+                                                marginBottom: '16px',
+                                                color: 'rgba(255, 255, 255, 0.95)',
+                                                lineHeight: '1.5'
+                                            }}>
+                                                Live scores, full box scores, and mobile-first experience built for passionate fans. 
+                                                2.82M viewers can't be wrong - college baseball deserves better.
+                                            </p>
+                                            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                                <a 
+                                                    href="/college-baseball.html"
+                                                    style={{
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px',
+                                                        padding: '12px 20px',
+                                                        background: 'white',
+                                                        color: 'var(--blaze-burnt-orange)',
+                                                        borderRadius: '8px',
+                                                        fontWeight: '600',
+                                                        textDecoration: 'none',
+                                                        fontSize: '14px',
+                                                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                >
+                                                    <i className="fas fa-info-circle"></i>
+                                                    Learn More
+                                                </a>
+                                                <a 
+                                                    href="/college-baseball-demo.html"
+                                                    style={{
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px',
+                                                        padding: '12px 20px',
+                                                        background: 'rgba(255, 255, 255, 0.2)',
+                                                        color: 'white',
+                                                        borderRadius: '8px',
+                                                        border: '2px solid white',
+                                                        fontWeight: '600',
+                                                        textDecoration: 'none',
+                                                        fontSize: '14px',
+                                                        backdropFilter: 'blur(10px)',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                    onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)'}
+                                                    onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
+                                                >
+                                                    <i className="fas fa-play"></i>
+                                                    Try Live Demo
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {/* Sport Selection */}
                                 <div className="sport-tabs">
                                     <button
