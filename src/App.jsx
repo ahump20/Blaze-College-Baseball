@@ -71,7 +71,12 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>College Baseball Live</h1>
+        <div className="header-content">
+          <h1>College Baseball Live</h1>
+          <a href="/college-baseball.html" className="info-link">
+            ℹ️ Why Blaze? See what makes us different
+          </a>
+        </div>
         <div className="conference-filter">
           <select value={selectedConference} onChange={handleConferenceChange}>
             <option value="all">All Conferences</option>
