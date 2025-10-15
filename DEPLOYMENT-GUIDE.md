@@ -98,7 +98,7 @@ preview_id = "preview456def789"  # Preview namespace
 
 ## Step 4: Set API Secrets
 
-> **Note:** Populate the real SportsDataIO key in `API_KEYS_MASTER.js` and run `npm run mcp:sync` to propagate the value locally before executing the secret command below. The `wrangler pages secret put` prompt should always receive the synced key, not a hard-coded value in this guide.
+> **Note:** Populate the real SportsDataIO key in `src/config/API_KEYS_MASTER.js` (replace with your actual path if different), then run `npm run mcp:sync` to sync the key from `API_KEYS_MASTER.js` into your local environment (e.g., `.env` file) before executing the secret command below. The `wrangler pages secret put` prompt should always receive the synced key, not a hard-coded value in this guide.
 
 ```bash
 # Set SportsDataIO API key
