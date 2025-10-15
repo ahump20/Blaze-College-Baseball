@@ -117,6 +117,10 @@ wrangler pages secret list --project-name blazesportsintel
 # ANTHROPIC_API_KEY
 ```
 
+> **Local ingestion prerequisite**
+>
+> Before running any ingestion or synchronization scripts (`scripts/ingest-live-data.js`, `scripts/sync-sports-data.js`, `scripts/migrate-database.js`, `scripts/populate-sample-data.js`, `scripts/setup-database.js`, etc.), ensure the required environment variables are loaded locally. Run `node API_KEYS_MASTER.js` followed by `npm run mcp:sync` to pull the latest secrets (including `SPORTSDATA_API_KEY`, `WRANGLER_PATH`, and the PostgreSQL `DB_*` values) into your environment, or export them manually. The scripts will now exit early with a clear error if any required variable is missing.
+
 ## Step 5: Deploy to Cloudflare Pages
 
 ```bash

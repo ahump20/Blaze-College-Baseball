@@ -6,12 +6,29 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const requiredDbEnvVars = ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'];
+const missingDbEnvVars = requiredDbEnvVars.filter((name) => !process.env[name]);
+
+if (missingDbEnvVars.length > 0) {
+  console.error(
+    `Missing required database environment variable(s): ${missingDbEnvVars.join(', ')}. Populate these values via your secrets sync (e.g., API_KEYS_MASTER.js → npm run mcp:sync) or export them manually before executing populate-sample-data.`
+  );
+  process.exit(1);
+}
+
+const DB_PORT = process.env.DB_PORT ? Number.parseInt(process.env.DB_PORT, 10) : 5432;
+
+if (Number.isNaN(DB_PORT)) {
+  console.error('Invalid DB_PORT environment variable. Please provide a numeric value.');
+  process.exit(1);
+}
+
 const db = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME || 'blazesportsintel',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres'
+  host: process.env.DB_HOST,
+  port: DB_PORT,
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD
 });
 
 async function populateAnalytics() {

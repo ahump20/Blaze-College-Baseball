@@ -14,8 +14,21 @@
  * - Prepares data for embedding generation
  */
 
-const SPORTSDATA_API_KEY = process.env.SPORTSDATA_API_KEY || '6ca2adb39404482da5406f0a6cd7aa37';
-const WRANGLER_PATH = process.env.WRANGLER_PATH || '/Users/AustinHumphrey/.npm-global/bin/wrangler';
+const { SPORTSDATA_API_KEY = '', WRANGLER_PATH = '' } = process.env;
+
+if (!SPORTSDATA_API_KEY) {
+  console.error(
+    'Missing required environment variable: SPORTSDATA_API_KEY. Use API_KEYS_MASTER.js followed by "npm run mcp:sync" to load credentials before running ingest-live-data.'
+  );
+  process.exit(1);
+}
+
+if (!WRANGLER_PATH) {
+  console.error(
+    'Missing required environment variable: WRANGLER_PATH. Provide the Wrangler CLI path (e.g., via API_KEYS_MASTER.js → npm run mcp:sync or manual export) before running ingest-live-data.'
+  );
+  process.exit(1);
+}
 const DATABASE_NAME = 'blazesports-db';
 
 // Current season years
