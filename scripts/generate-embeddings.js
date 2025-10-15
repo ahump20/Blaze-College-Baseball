@@ -14,7 +14,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 // Configuration
-const WRANGLER_PATH = process.env.WRANGLER_PATH || '/Users/AustinHumphrey/.npm-global/bin/wrangler';
+const { WRANGLER_PATH } = process.env;
+
+if (!WRANGLER_PATH) {
+  console.error(
+    'Missing required environment variable: WRANGLER_PATH. Provide the Wrangler CLI path (e.g., via API_KEYS_MASTER.js → npm run mcp:sync or manual export) before running generate-embeddings.'
+  );
+  process.exit(1);
+}
 const DATABASE_NAME = 'blazesports-db';
 const VECTORIZE_INDEX = 'sports-scouting-index';
 const BATCH_SIZE = 10; // Process 10 games at a time
