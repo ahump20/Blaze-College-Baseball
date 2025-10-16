@@ -11,6 +11,11 @@ id = "a53c3726fc3044be82e79d2d1e371d26"
 # Environment variables
 [vars]
 ENVIRONMENT = "production"
+HIGHLIGHTLY_BASE_URL = "https://baseball.highlightly.net"
+HIGHLIGHTLY_HOST = "baseball.highlightly.net"
+
+# Secrets (configure with `wrangler secret put <NAME>`)
+# - HIGHLIGHTLY_API_KEY
 
 # D1 database for storing historical stats (optional)
 # [[d1_databases]]

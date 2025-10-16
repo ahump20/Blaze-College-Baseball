@@ -22,6 +22,11 @@ if ! wrangler whoami &> /dev/null; then
     wrangler login
 fi
 
+echo ""
+echo "🔑 Ensuring Highlightly credentials are configured..."
+echo "   Run: wrangler secret put HIGHLIGHTLY_API_KEY"
+echo "   (Optional) Update wrangler.toml vars for HIGHLIGHTLY_BASE_URL / HIGHLIGHTLY_HOST if using a custom endpoint."
+
 # Create KV namespace if it doesn't exist
 echo ""
 echo "📦 Setting up KV namespace for caching..."
