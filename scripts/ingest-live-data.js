@@ -381,7 +381,7 @@ function generateGameDescription(game) {
     const margin = Math.abs(game.home.score - game.away.score);
     if (margin <= 3) {
       parts.push('Decided by one possession');
-    } else if (margin >= 10 && game.sport === 'mlb') {
+    } else if (margin >= 10 && game.sport.toUpperCase() === 'MLB') {
       parts.push('Run-rule margin');
     }
   } else if (game.status === 'in_progress') {
