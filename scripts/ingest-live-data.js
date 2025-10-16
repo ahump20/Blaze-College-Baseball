@@ -56,7 +56,8 @@ const API_ENDPOINTS = {
 const PLAY_BY_PLAY_ENDPOINTS = {
   NFL: (game) => {
     if (!game.week || !game.home?.abbreviation) return null;
-    return `/nfl/stats/json/PlayByPlay/${game.season}/${game.seasonType === 'postseason' ? 'POST' : 'REG'}/${game.week}/${game.home.abbreviation}`;
+    // seasonType: 1 = Preseason, 2 = Regular, 3 = Postseason (per SportsDataIO docs)
+    return `/nfl/stats/json/PlayByPlay/${game.season}/${game.seasonType === 3 ? 'POST' : 'REG'}/${game.week}/${game.home.abbreviation}`;
   },
   MLB: (game) => `/mlb/stats/json/PlayByPlay/${game.externalId}`,
   CFB: (game) => {
