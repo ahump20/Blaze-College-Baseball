@@ -9,7 +9,7 @@ Blaze Intelligence ("Company," "we," "us," or "our") operates blazesportsintel.c
 
 We are committed to transparency and compliance with:
 - General Data Protection Regulation (GDPR) - for users in the European Economic Area
-- California Consumer Privacy Act (CCPA) - for California residents
+- California Consumer Privacy Act (CCPA), as amended by the California Privacy Rights Act (CPRA) - for California residents
 - Children's Online Privacy Protection Act (COPPA) - for users under 13
 - Family Educational Rights and Privacy Act (FERPA) - for educational data
 
