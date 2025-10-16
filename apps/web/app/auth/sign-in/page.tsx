@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { SignIn } from '@clerk/nextjs';
 
 export default function SignInPage() {
   return (
@@ -7,18 +10,12 @@ export default function SignInPage() {
         <span className="di-kicker">Diamond Insights · Auth</span>
         <h1 className="di-page-title">Sign In</h1>
         <p className="di-page-subtitle">
-          Clerk integration is in progress. While we finish hooking up the auth provider, this placeholder keeps the route,
-          messaging, and responsive design intact.
+          Authenticate with Clerk to sync your Diamond Pro subscription, alert preferences, and personalized dashboards.
         </p>
         <div className="di-card-grid">
           <article className="di-card">
-            <h2>Next Steps</h2>
-            <p>Diamond Pro members will authenticate here to access premium scouting tools.</p>
-            <ul className="di-list">
-              <li>Secure magic links and passkeys.</li>
-              <li>Multi-factor enrollment for staff accounts.</li>
-              <li>Session management synced across devices.</li>
-            </ul>
+            <h2>Access Diamond Insights</h2>
+            <SignIn appearance={{ elements: { card: 'di-card' } }} routing="hash" redirectUrl="/baseball/ncaab/dashboard" />
           </article>
           <article className="di-card">
             <h2>Need an Account?</h2>
@@ -30,8 +27,8 @@ export default function SignInPage() {
                 </Link>
               </li>
               <li>
-                <Link className="di-inline-link" href="/account">
-                  Return to Account Center
+                <Link className="di-inline-link" href="/diamond-pro">
+                  Explore Diamond Pro benefits
                 </Link>
               </li>
             </ul>
