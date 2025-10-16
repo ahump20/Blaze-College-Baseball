@@ -777,7 +777,7 @@ async function ingestLiveData() {
     logger.info('Fetching MLB scoreboard');
     const mlbGames = await fetchAPI('MLB', API_ENDPOINTS.MLB.games);
     const recentGames = mlbGames
-      .filter((game) => game.Status === 'Final' || game.Status === 'Completed')
+      .filter((game) => game.Status === 'Final' || game.Status === 'Completed' || game.Status === 'InProgress')
       .slice(-50);
     allPackages.push(...await buildGamePackages('MLB', recentGames));
   } catch (error) {
