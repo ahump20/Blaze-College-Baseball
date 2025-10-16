@@ -27,6 +27,9 @@
   },
   "include": [
     "lib/**/*.ts",
+    "etl/**/*.ts",
+    "functions/api/college-baseball/**/*.ts",
+    "prisma/**/*.ts",
     "context7-enhanced/src/**/*.ts"
   ],
   "exclude": [

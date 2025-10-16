@@ -1,0 +1,161 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum GameStatus {
+  SCHEDULED
+  LIVE
+  FINAL
+  POSTPONED
+  CANCELLED
+}
+
+enum InningHalf {
+  TOP
+  BOTTOM
+}
+
+enum StandingType {
+  OVERALL
+  CONFERENCE
+  DIVISION
+}
+
+model Conference {
+  id          String      @id @default(cuid())
+  slug        String
+  name        String
+  division    String?
+  sport       String      @default("baseball")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  teams       Team[]
+  standings   Standing[]
+  games       Game[]      @relation("conferenceGames")
+
+  @@unique([sport, slug])
+  @@index([sport])
+}
+
+model Team {
+  id            String       @id @default(cuid())
+  slug          String
+  displayName   String
+  shortName     String?
+  nickname      String?
+  location      String?
+  logo          String?
+  sport         String       @default("baseball")
+  conferenceId  String?
+  conference    Conference?  @relation(fields: [conferenceId], references: [id])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  players       Player[]
+  homeGames     Game[]       @relation("homeTeam")
+  awayGames     Game[]       @relation("awayTeam")
+  standings     Standing[]
+
+  @@unique([sport, slug])
+  @@index([conferenceId])
+}
+
+model Player {
+  id          String   @id @default(cuid())
+  teamId      String
+  team        Team     @relation(fields: [teamId], references: [id])
+  firstName   String
+  lastName    String
+  fullName    String
+  position    String?
+  jerseyNumber Int?
+  classYear   String?
+  sport       String   @default("baseball")
+  provider    String?
+  providerId  String?
+  hometown    String?
+  height      String?
+  weight      Int?
+  bats        String?
+  throws      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([sport, provider, providerId])
+  @@index([teamId])
+}
+
+model Game {
+  id             String       @id @default(cuid())
+  sport          String       @default("baseball")
+  season         Int
+  startTime      DateTime
+  status         GameStatus   @default(SCHEDULED)
+  venue          String?
+  neutralSite    Boolean      @default(false)
+  provider       String?
+  providerGameId String?
+  conferenceId   String?
+  conference     Conference?  @relation("conferenceGames", fields: [conferenceId], references: [id])
+  homeTeamId     String
+  homeTeam       Team         @relation("homeTeam", fields: [homeTeamId], references: [id])
+  awayTeamId     String
+  awayTeam       Team         @relation("awayTeam", fields: [awayTeamId], references: [id])
+  homeScore      Int          @default(0)
+  awayScore      Int          @default(0)
+  inning         Int?
+  inningHalf     InningHalf?
+  lastPlay       String?
+  boxscoreHash   String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  events         GameEvent[]
+
+  @@index([startTime])
+  @@unique([sport, provider, providerGameId])
+}
+
+model GameEvent {
+  id             String      @id @default(cuid())
+  gameId         String
+  game           Game        @relation(fields: [gameId], references: [id])
+  sequenceNumber Int
+  description    String
+  eventType      String
+  inning         Int?
+  inningHalf     InningHalf?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@unique([gameId, sequenceNumber])
+  @@index([gameId])
+}
+
+model Standing {
+  id            String        @id @default(cuid())
+  sport         String        @default("baseball")
+  season        Int
+  type          StandingType  @default(CONFERENCE)
+  teamId        String
+  team          Team          @relation(fields: [teamId], references: [id])
+  conferenceId  String?
+  conference    Conference?   @relation(fields: [conferenceId], references: [id])
+  wins          Int           @default(0)
+  losses        Int           @default(0)
+  ties          Int           @default(0)
+  winPct        Decimal       @default(0) @db.Decimal(5, 3)
+  streak        String?
+  lastTen       String?
+  provider      String?
+  providerId    String?
+  fetchedAt     DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([sport, season, type, teamId])
+  @@index([conferenceId])
+}
