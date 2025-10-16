@@ -1,0 +1,18 @@
+{
+  "migrations": [
+    {
+      "id": "202510130930",
+      "name": "create_game_events",
+      "file": "202510130930_create_game_events.sql",
+      "description": "Create the game_events table with covering indexes for NCAA baseball play-by-play ingestion."
+    }
+  ],
+  "rollbacks": [
+    {
+      "id": "202510130931",
+      "name": "drop_game_events",
+      "file": "202510130931_drop_game_events.sql",
+      "reverts": "202510130930"
+    }
+  ]
+}

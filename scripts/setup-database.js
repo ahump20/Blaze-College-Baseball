@@ -50,6 +50,7 @@ class DatabaseSetup {
         };
 
         this.schemaPath = path.join(__dirname, '..', 'api', 'database', 'schema.sql');
+        this.migrationsDir = path.join(__dirname, '..', 'api', 'database', 'migrations');
     }
 
     async run() {
@@ -150,8 +151,74 @@ class DatabaseSetup {
 
             console.log(`   ✓ Schema applied (${statements.length} statements)`);
 
+            await this.applyMigrations(client);
+
         } finally {
             await client.end();
+        }
+    }
+
+    async applyMigrations(client) {
+        try {
+            await fs.access(this.migrationsDir);
+        } catch (error) {
+            if (error.code === 'ENOENT') {
+                console.log('   ℹ No additional migrations directory found; skipping.');
+                return;
+            }
+            throw error;
+        }
+
+        const registryPath = path.join(this.migrationsDir, 'registry.json');
+        let registry;
+
+        try {
+            const registryRaw = await fs.readFile(registryPath, 'utf8');
+            registry = JSON.parse(registryRaw);
+        } catch (error) {
+            if (error.code === 'ENOENT') {
+                console.log('   ℹ No migration registry found; skipping additional migrations.');
+                return;
+            }
+            throw error;
+        }
+
+        const migrations = Array.isArray(registry?.migrations) ? registry.migrations : [];
+
+        if (migrations.length === 0) {
+            console.log('   ℹ Migration registry is empty; skipping additional migrations.');
+            return;
+        }
+
+        for (const migrationEntry of migrations) {
+            const fileName = typeof migrationEntry === 'string' ? migrationEntry : migrationEntry.file;
+            if (!fileName) {
+                continue;
+            }
+
+            const migrationPath = path.join(this.migrationsDir, fileName);
+
+            try {
+                const sql = await fs.readFile(migrationPath, 'utf8');
+                await client.query(sql);
+                console.log(`   ✓ Migration applied: ${fileName}`);
+            } catch (error) {
+                if (error.code === 'ENOENT') {
+                    console.log(`   ⚠ Migration file missing: ${fileName}`);
+                    continue;
+                }
+
+                if (
+                    error.message.includes('already exists') ||
+                    error.message.includes('duplicate key value violates unique constraint') ||
+                    error.message.includes('relation "game_events" already exists')
+                ) {
+                    console.log(`   ℹ Migration already applied or safe to ignore: ${fileName}`);
+                    continue;
+                }
+
+                throw error;
+            }
         }
     }
 
