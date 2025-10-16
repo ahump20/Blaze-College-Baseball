@@ -1,63 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import LiveGameTracker from './components/LiveGameTracker';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import BoxScore from './components/BoxScore';
+import LiveGameTracker from './components/LiveGameTracker';
 import Standings from './components/Standings';
+import { ApiResponse, LiveGame } from './types/baseball';
 import './styles/App.css';
 
-function App() {
-  const [activeView, setActiveView] = useState('live');
-  const [selectedGame, setSelectedGame] = useState(null);
-  const [liveGames, setLiveGames] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedConference, setSelectedConference] = useState('all');
+type ActiveView = 'live' | 'boxscore' | 'standings';
+type ConferenceFilter = 'all' | 'sec' | 'acc' | 'big12' | 'pac12' | 'big10';
 
-  useEffect(() => {
-    // Fetch games on mount and set up polling
-    fetchLiveGames();
-    const interval = setInterval(fetchLiveGames, 30000); // Poll every 30 seconds
-    return () => clearInterval(interval);
-  }, [selectedConference]);
+const App = (): JSX.Element => {
+  const [activeView, setActiveView] = useState<ActiveView>('live');
+  const [selectedGame, setSelectedGame] = useState<LiveGame | null>(null);
+  const [liveGames, setLiveGames] = useState<LiveGame[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedConference, setSelectedConference] = useState<ConferenceFilter>('all');
 
-  const fetchLiveGames = async () => {
+  const fetchLiveGames = useCallback(async () => {
     try {
-      // Fetch all games (live, scheduled, and recent final games)
-      const conferenceParam = selectedConference !== 'all' ? `&conference=${selectedConference.toUpperCase()}` : '';
+      const conferenceParam =
+        selectedConference !== 'all' ? `&conference=${selectedConference.toUpperCase()}` : '';
       const response = await fetch(`/api/college-baseball/games${conferenceParam}`);
-      const data = await response.json();
-      setLiveGames(data.success ? data.data : []);
+      const data: ApiResponse<LiveGame[]> = await response.json();
+
+      if (data.success && Array.isArray(data.data)) {
+        setLiveGames(data.data);
+      } else {
+        setLiveGames([]);
+      }
       setLoading(false);
     } catch (error) {
       console.error('Error fetching live games:', error);
+      setLiveGames([]);
       setLoading(false);
     }
-  };
+  }, [selectedConference]);
 
-  const handleConferenceChange = (e) => {
-    setSelectedConference(e.target.value);
+  useEffect(() => {
+    fetchLiveGames();
+    const intervalId = window.setInterval(fetchLiveGames, 30000);
+    return () => window.clearInterval(intervalId);
+  }, [fetchLiveGames]);
+
+  const handleConferenceChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    setSelectedConference(event.target.value as ConferenceFilter);
     setLoading(true);
   };
 
-  const handleGameSelect = (game) => {
+  const handleGameSelect = useCallback((game: LiveGame) => {
     setSelectedGame(game);
     setActiveView('boxscore');
-  };
+  }, []);
 
-  const renderView = () => {
+  const activeViewContent = useMemo(() => {
     switch (activeView) {
       case 'live':
         return (
-          <LiveGameTracker 
-            games={liveGames} 
-            onGameSelect={handleGameSelect}
-            loading={loading}
-          />
+          <LiveGameTracker games={liveGames} loading={loading} onGameSelect={handleGameSelect} />
         );
       case 'boxscore':
         return selectedGame ? (
-          <BoxScore 
-            game={selectedGame} 
-            onBack={() => setActiveView('live')}
-          />
+          <BoxScore game={selectedGame} onBack={() => setActiveView('live')} />
         ) : (
           <div className="empty-state">Select a game to view details</div>
         );
@@ -66,7 +68,7 @@ function App() {
       default:
         return null;
     }
-  };
+  }, [activeView, liveGames, loading, selectedGame, handleGameSelect]);
 
   return (
     <div className="app">
@@ -90,21 +92,21 @@ function App() {
       </header>
 
       <nav className="bottom-nav">
-        <button 
+        <button
           className={activeView === 'live' ? 'active' : ''}
           onClick={() => setActiveView('live')}
         >
           <span className="nav-icon">⚾</span>
           Live
         </button>
-        <button 
+        <button
           className={activeView === 'boxscore' ? 'active' : ''}
           onClick={() => setActiveView('boxscore')}
         >
           <span className="nav-icon">📊</span>
           Box Score
         </button>
-        <button 
+        <button
           className={activeView === 'standings' ? 'active' : ''}
           onClick={() => setActiveView('standings')}
         >
@@ -113,11 +115,9 @@ function App() {
         </button>
       </nav>
 
-      <main className="app-content">
-        {renderView()}
-      </main>
+      <main className="app-content">{activeViewContent}</main>
     </div>
   );
-}
+};
 
 export default App;
