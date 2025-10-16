@@ -73,7 +73,7 @@ function App() {
       <header className="app-header">
         <div className="header-content">
           <h1>College Baseball Live</h1>
-          <a href="/college-baseball.html" className="info-link">
+          <a href="college-baseball.html" className="info-link">
             ℹ️ Why Blaze? See what makes us different
           </a>
         </div>
