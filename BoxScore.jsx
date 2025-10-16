@@ -36,6 +36,7 @@ function BoxScore({ game, onBack }) {
 
   const handleRefresh = () => {
     setLoading(true);
+    setError(null);
     fetchBoxScore();
   };
 
