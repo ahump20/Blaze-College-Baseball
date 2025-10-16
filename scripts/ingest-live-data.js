@@ -14,7 +14,11 @@ import DatabaseConnectionService from '../api/database/connection-service.js';
 import LoggerService from '../api/services/logger-service.js';
 import { insertGameEvents } from '../api/database/game-events-helper.js';
 
-const SPORTSDATA_API_KEY = process.env.SPORTSDATA_API_KEY || '6ca2adb39404482da5406f0a6cd7aa37';
+const SPORTSDATA_API_KEY = process.env.SPORTSDATA_API_KEY;
+if (!SPORTSDATA_API_KEY) {
+  console.error('Error: The SPORTSDATA_API_KEY environment variable must be set.');
+  process.exit(1);
+}
 
 const DATABASE_CONFIG = {
   host: process.env.DB_HOST || 'localhost',
