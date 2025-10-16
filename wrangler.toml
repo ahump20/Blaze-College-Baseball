@@ -11,6 +11,10 @@ id = "a53c3726fc3044be82e79d2d1e371d26"
 # Environment variables
 [vars]
 ENVIRONMENT = "production"
+HIGHLIGHTLY_API_BASE_URL = "https://api.highlightly.com"
+HIGHLIGHTLY_API_KEY = "set-me-in-dashboard"
+NCAA_API_BASE_URL = "https://data.ncaa.com"
+NCAA_API_KEY = "optional-ncaa-key"
 
 # D1 database for storing historical stats (optional)
 # [[d1_databases]]

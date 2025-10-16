@@ -24,6 +24,19 @@ docker-compose up -d
 # API Docs: http://localhost:8000/docs
 ```
 
+## Cloudflare Worker Environment Variables
+
+Configure the NCAA live data worker with the following variables (set via `wrangler.toml` or the Cloudflare dashboard):
+
+| Variable | Purpose |
+| --- | --- |
+| `HIGHLIGHTLY_API_BASE_URL` | Base URL for Highlightly's college baseball API. |
+| `HIGHLIGHTLY_API_KEY` | Bearer token issued by Highlightly for authenticated requests. |
+| `NCAA_API_BASE_URL` | Optional override for NCAA data endpoints (defaults to `https://data.ncaa.com`). |
+| `NCAA_API_KEY` | Optional key for authenticated NCAA feeds where required. |
+
+These values enable the worker to hydrate live games, box scores, and standings while caching normalized payloads in Cloudflare KV for sub-minute refreshes.
+
 ## Architecture
 
 ### Core Pipeline

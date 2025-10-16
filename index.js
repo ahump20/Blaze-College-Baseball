@@ -1,6 +1,10 @@
 // Cloudflare Worker - Backend API for College Baseball Tracker
 
-import { mockLiveGames, mockBoxScore, mockStandings } from './mockData';
+import {
+  getLiveGames,
+  getGameBoxScore,
+  getConferenceStandings,
+} from './lib/ingest/ncaa/index.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -42,7 +46,7 @@ export default {
       return new Response('Not Found', { status: 404 });
 
     } catch (error) {
-      console.error('API Error:', error);
+      logError('Unhandled API error', error, { path });
       return jsonResponse(
         { error: error.message },
         corsHeaders,
@@ -62,68 +66,47 @@ function jsonResponse(data, headers = {}, status = 200) {
   });
 }
 
-// Fetch live games from NCAA or D1Baseball
 async function fetchLiveGames(env) {
-  // TODO: Implement actual data fetching from NCAA.com or D1Baseball
-  // For now, return mock data
-  
-  // Example real implementation would scrape:
-  // - NCAA.com live scoreboard
-  // - D1Baseball live scores
-  // - Individual conference websites
-  
-  // Cache in KV for 30 seconds to reduce API calls
-  const cached = await env.KV?.get('live-games', 'json');
-  if (cached) return cached;
-
-  const games = mockLiveGames;
-  
-  await env.KV?.put('live-games', JSON.stringify(games), {
-    expirationTtl: 30,
-  });
-
-  return games;
+  try {
+    return await getLiveGames(env);
+  } catch (error) {
+    logError('fetchLiveGames failed', error);
+    throw error;
+  }
 }
 
 // Fetch detailed box score for a game
 async function fetchBoxScore(gameId, env) {
-  // TODO: Implement actual data fetching
-  // Would scrape from:
-  // - NCAA game detail page
-  // - Team athletic department sites
-  // - Stats services
-  
-  const cached = await env.KV?.get(`boxscore-${gameId}`, 'json');
-  if (cached) return cached;
-
-  const boxScore = mockBoxScore;
-  
-  await env.KV?.put(`boxscore-${gameId}`, JSON.stringify(boxScore), {
-    expirationTtl: 15, // Cache for 15 seconds during live games
-  });
-
-  return boxScore;
+  try {
+    return await getGameBoxScore(gameId, env);
+  } catch (error) {
+    logError('fetchBoxScore failed', error, { gameId });
+    throw error;
+  }
 }
 
 // Fetch conference standings
 async function fetchStandings(conference, env) {
-  // TODO: Implement actual data fetching
-  // Would aggregate from:
-  // - Conference websites
-  // - Warren Nolan RPI data
-  // - Boyd's World statistics
-  // - NCAA official standings
-  
-  const cached = await env.KV?.get(`standings-${conference}`, 'json');
-  if (cached) return cached;
+  try {
+    return await getConferenceStandings(conference, env);
+  } catch (error) {
+    logError('fetchStandings failed', error, { conference });
+    throw error;
+  }
+}
 
-  const standings = mockStandings;
-  
-  await env.KV?.put(`standings-${conference}`, JSON.stringify(standings), {
-    expirationTtl: 300, // Cache for 5 minutes
-  });
-
-  return standings;
+function logError(message, error, context = {}) {
+  console.error(
+    JSON.stringify({
+      level: 'error',
+      message,
+      context,
+      error: error
+        ? { message: error.message, stack: error.stack }
+        : undefined,
+      timestamp: new Date().toISOString(),
+    })
+  );
 }
 
 // Helper function to scrape NCAA.com (example)
