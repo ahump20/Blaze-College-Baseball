@@ -63,6 +63,38 @@ CREATE TABLE games (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Game events - ordered play-by-play feed for each game
+CREATE TABLE game_events (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    game_id UUID NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+    sequence INTEGER NOT NULL, -- strictly increasing per game
+    batter_id UUID REFERENCES players(id),
+    pitcher_id UUID REFERENCES players(id),
+    event_ts TIMESTAMP WITH TIME ZONE NOT NULL,
+    half_inning VARCHAR(10), -- top/bottom indicators for baseball use cases
+    inning SMALLINT,
+    event_type VARCHAR(50) NOT NULL, -- pitch, play, substitution, etc.
+    event_subtype VARCHAR(50), -- optional finer granularity
+    result_description TEXT, -- human readable summary
+    pitch_count INTEGER,
+    outs INTEGER,
+    bases_state JSONB DEFAULT '{}', -- runner occupancy and advancement details
+    metrics JSONB DEFAULT '{}', -- velocity, exit velo, win probability, etc.
+    metadata JSONB DEFAULT '{}', -- provider raw payload for auditing
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(game_id, sequence)
+);
+
+-- NOTE: This table is designed for TimescaleDB deployments; promote to a hypertable on event_ts when the extension is available.
+-- SELECT create_hypertable('game_events', 'event_ts', if_not_exists => TRUE);
+
+-- Indexes for efficient retrieval of ordered events, batter/pitcher lookups, and recency queries
+CREATE INDEX idx_game_events_game_id_sequence ON game_events (game_id, sequence);
+CREATE INDEX idx_game_events_batter_id ON game_events (batter_id);
+CREATE INDEX idx_game_events_pitcher_id ON game_events (pitcher_id);
+CREATE INDEX idx_game_events_event_ts_desc ON game_events (event_ts DESC);
+
 -- Game statistics - detailed box score data
 CREATE TABLE game_stats (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
