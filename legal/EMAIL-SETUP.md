@@ -363,14 +363,15 @@ After setup, verify:
 - **Cons**: Forwarding only (cannot send FROM these addresses without additional setup)
 
 ### Gmail Business (Alternative)
-- **Cost**: $6/user/month (Google Workspace)
+- **Cost**: ~$6/user/month (Google Workspace)  
+  _[Verify current pricing at [Google Workspace Pricing](https://workspace.google.com/pricing/)]_
 - **Pros**: Full email hosting, send/receive, 30GB storage, professional
-- **Cons**: Monthly recurring cost ($72/year for 1 user)
+- **Cons**: Monthly recurring cost (approx. $72/year for 1 user)
 
-### Microsoft 365 Business Basic (Alternative)
-- **Cost**: $6/user/month
+- **Cost**: ~$6/user/month (Microsoft 365 Business Basic)  
+  _[Verify current pricing at [Microsoft 365 Pricing](https://www.microsoft.com/en-us/microsoft-365/business/compare-all-microsoft-365-business-products)]_
 - **Pros**: Outlook integration, OneDrive, Teams
-- **Cons**: Monthly recurring cost ($72/year)
+- **Cons**: Monthly recurring cost (approx. $72/year)
 
 **Recommendation**: Start with **free Cloudflare Email Routing** and upgrade to Google Workspace or Microsoft 365 only if you need to send emails FROM these addresses frequently.
 
