@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  @apply bg-background text-text;
+}
+
+body {
+  @apply min-h-screen bg-background text-text antialiased;
+}
+
+a {
+  @apply text-accent transition-colors duration-150 hover:text-crimson;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(15, 23, 42, 0.7);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+
+::selection {
+  background: rgba(251, 191, 36, 0.2);
+}
