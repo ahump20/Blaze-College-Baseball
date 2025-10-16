@@ -79,7 +79,7 @@ const logger = new LoggerService({
 const database = new DatabaseConnectionService(DATABASE_CONFIG, logger);
 
 function normalizeSeasonType(seasonType) {
-  if (!seasonType && seasonType !== 0) return 'regular';
+  if (seasonType === null || seasonType === undefined) return 'regular';
   const code = Number(seasonType);
   if (code === 3) return 'postseason';
   return 'regular';
