@@ -72,9 +72,13 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-content">
-          <h1>College Baseball Live</h1>
+          <div>
+            <h1>🔥 BLAZE SPORTS INTEL</h1>
+            <p className="tagline">Practice to Play. Blaze Data Wins the Day.</p>
+            <p className="subtitle">Deep South Sports Authority • College Baseball</p>
+          </div>
           <a href="college-baseball.html" className="info-link">
-            ℹ️ Why Blaze? See what makes us different
+            ℹ️ Why Blaze?
           </a>
         </div>
         <div className="conference-filter">
