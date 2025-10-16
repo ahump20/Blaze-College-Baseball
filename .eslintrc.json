@@ -41,6 +41,7 @@
     "*.config.js",
     "*.config.ts",
     "functions/**/*.js",
-    "public/**/*.js"
+    "public/**/*.js",
+    "apps/**"
   ]
 }
