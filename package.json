@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && wrangler pages deploy dist"
+    "deploy": "npm run build && wrangler pages deploy dist",
+    "mcp:sync": "node ./scripts/apply-mcp-keys.js"
   },
   "dependencies": {
     "react": "^18.2.0",
