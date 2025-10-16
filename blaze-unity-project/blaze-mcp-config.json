@@ -5,11 +5,11 @@
       "args": [
         "run",
         "--directory",
-        "/Users/AustinHumphrey/BSI-1/mcp-unity/UnityMcpBridge/UnityMcpServer~/src",
+        "./relative/path/to/UnityMcpBridge/UnityMcpServer~/src",
         "server.py"
       ],
       "env": {
-        "BLAZE_PROJECT_PATH": "/Users/AustinHumphrey/BSI-1/blaze-unity-project",
+        "BLAZE_PROJECT_PATH": ".",
         "BLAZE_ANALYTICS_ENABLED": "true",
         "BLAZE_SPORTS_MODE": "true",
         "MCP_WEBSOCKET_PORT": "5010",
