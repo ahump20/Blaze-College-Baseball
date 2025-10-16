@@ -12,9 +12,11 @@ Blaze Sports Intel uses a comprehensive data model architecture designed for hig
 erDiagram
     TEAMS ||--o{ PLAYERS : has
     TEAMS ||--o{ GAMES : "home/away"
+    GAMES ||--o{ GAME_EVENTS : logs
     PLAYERS ||--o{ POSE_DATA : generates
     PLAYERS ||--o{ BIOMECH_ANALYSIS : analyzed
     GAMES ||--o{ GAME_STATS : contains
+    PLAYERS ||--o{ GAME_EVENTS : participates_in
     POSE_DATA ||--|| BIOMECH_ANALYSIS : analyzed_from
 ```
 
@@ -216,6 +218,104 @@ CREATE INDEX idx_games_season ON games(season);
 CREATE INDEX idx_games_status ON games(status);
 CREATE INDEX idx_games_external_id ON games(external_id);
 ```
+
+### Game Events Model
+
+**Table:** `game_events`
+
+Captures the atomic sequence of on-field actions (pitches, plays, substitutions, review outcomes) for each game. Designed to power real-time feeds, analytics, and replay reconstruction.
+
+```sql
+CREATE TABLE game_events (
+    id BIGSERIAL PRIMARY KEY,
+    game_id INTEGER NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+    sequence INTEGER NOT NULL,
+    event_code VARCHAR(50) NOT NULL,
+    event_type VARCHAR(100) NOT NULL,
+    event_subtype VARCHAR(100),
+    description TEXT,
+    inning INTEGER,
+    half VARCHAR(10) CHECK (half IN ('top', 'bottom')), -- Baseball-specific period context
+    outs INTEGER CHECK (outs BETWEEN 0 AND 3),
+    home_score INTEGER,
+    away_score INTEGER,
+    player_id INTEGER REFERENCES players(id) ON DELETE SET NULL,
+    assisting_player_id INTEGER REFERENCES players(id) ON DELETE SET NULL,
+    baserunners JSONB,          -- {first: player_id, second: player_id, ...}
+    pitch_metrics JSONB,        -- velocity, spin, location, etc.
+    context JSONB,              -- count, weather snapshot, video locator, etc.
+    event_time TIMESTAMPTZ NOT NULL,
+    source_timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    ingest_batch_id UUID,
+    metadata JSONB,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT uq_game_events_sequence UNIQUE (game_id, sequence)
+)
+PARTITION BY RANGE (event_time);
+
+-- Example monthly partitions
+CREATE TABLE game_events_y2025m02 PARTITION OF game_events
+    FOR VALUES FROM ('2025-02-01') TO ('2025-03-01');
+```
+
+**Indexes**
+
+```sql
+CREATE INDEX idx_game_events_game_time ON game_events (game_id, event_time);
+CREATE INDEX idx_game_events_player ON game_events (player_id);
+CREATE INDEX idx_game_events_event_type ON game_events (event_type);
+CREATE INDEX idx_game_events_assisting_player ON game_events (assisting_player_id);
+CREATE INDEX idx_game_events_ingest_batch ON game_events (ingest_batch_id);
+```
+
+**TypeScript Interface:**
+
+```typescript
+interface GameEvent {
+  id: number;
+  gameId: number;
+  sequence: number;
+  eventCode: string;
+  eventType: string;
+  eventSubtype?: string;
+  description?: string;
+  inning?: number;
+  half?: 'top' | 'bottom';
+  outs?: number;
+  homeScore?: number;
+  awayScore?: number;
+  playerId?: number;
+  assistingPlayerId?: number;
+  baserunners?: {
+    first?: number;
+    second?: number;
+    third?: number;
+    [key: string]: number | undefined;
+  };
+  pitchMetrics?: Record<string, unknown>;
+  context?: Record<string, unknown>;
+  eventTime: string;          // ISO8601 string with timezone
+  sourceTimestamp: string;    // ISO8601 ingestion timestamp
+  ingestBatchId?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+}
+```
+
+**Relationships**
+
+* `game_id` (required) ties each event back to its parent `games` row. Cascading deletes ensure event logs cannot orphan.
+* `player_id` captures the primary participant. Use `assisting_player_id` for double plays, assists, or catcher involvement. Both reference `players` with `ON DELETE SET NULL` semantics by default; override per ingestion pipeline if strict integrity is required.
+* `sequence` enforces a deterministic order per game and provides an easy cursor for downstream consumers.
+
+**Ingestion Contract & Ordering**
+
+* **Sequence Ordering:** Events must be inserted in ascending `sequence` per `game_id`. The ingestion worker is responsible for idempotent upserts keyed by `(game_id, sequence)` so replays simply update the existing row instead of duplicating it.
+* **Timestamp Semantics:** `event_time` represents the provider-issued, timezone-aware moment of the play (always stored as `TIMESTAMPTZ`). `source_timestamp` tracks when we first received the payload. Downstream systems should rely on `event_time` for timelines and `source_timestamp` for latency analysis.
+* **Partitioning:** `game_events` is range-partitioned by `event_time` (monthly partitions by default). New partitions must be created by the ingestion scheduler before the first event of a new month to keep writes hot and prune cold data efficiently.
+* **Idempotency:** The ingestion job should `INSERT ... ON CONFLICT (game_id, sequence) DO UPDATE` to guarantee deterministic replay when upstream corrections arrive.
+* **Batching:** `ingest_batch_id` groups events received together to simplify reconciliation and auditing.
 
 ### Pose Data Model
 
