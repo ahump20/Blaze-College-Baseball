@@ -489,7 +489,19 @@ erDiagram
         int attendance
         jsonb weather_data
     }
-    
+
+    GAME_EVENTS {
+        bigint id PK
+        int game_id FK
+        int event_sequence
+        timestamptz event_timestamp
+        string event_type
+        string event_subtype
+        jsonb raw_payload
+        uuid normalization_hash
+        timestamptz created_at
+    }
+
     GAME_STATS {
         int id PK
         int game_id FK
@@ -584,6 +596,7 @@ erDiagram
     PLAYERS ||--o{ PREDICTIONS : subject_of
     
     GAMES ||--o{ GAME_STATS : contains
+    GAMES ||--o{ GAME_EVENTS : logs
     GAMES ||--o{ LIVE_SCORES : tracked
     
     POSE_DATA ||--|| BIOMECH_ANALYSIS : analyzed_from
