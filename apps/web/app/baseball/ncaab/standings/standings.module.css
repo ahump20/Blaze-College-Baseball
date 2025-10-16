@@ -1,0 +1,51 @@
+.page {
+  padding-bottom: 4rem;
+}
+
+.headerRow {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.selectorGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  align-items: flex-start;
+}
+
+.selectorLabel {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--di-text-muted);
+}
+
+.select {
+  background: var(--di-surface);
+  border: 1px solid var(--di-border);
+  border-radius: var(--di-radius);
+  padding: 0.65rem 1rem;
+  color: var(--di-text);
+  font-weight: 600;
+}
+
+.metaBar {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  color: var(--di-text-muted);
+  font-size: 0.85rem;
+}
+
+@media (min-width: 768px) {
+  .headerRow {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .selectorGroup {
+    align-items: center;
+  }
+}

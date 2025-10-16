@@ -1,0 +1,54 @@
+.page {
+  padding-bottom: 4rem;
+}
+
+.headerRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.metaBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  color: var(--di-text-muted);
+  font-size: 0.85rem;
+}
+
+.refreshButton {
+  align-self: stretch;
+  background: rgba(251, 191, 36, 0.16);
+  color: var(--di-accent);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: 999px;
+  padding: 0.55rem 1.25rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.refreshButton:hover,
+.refreshButton:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px rgba(251, 191, 36, 0.22);
+}
+
+.statusLink {
+  color: var(--di-accent);
+  font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .headerRow {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .refreshButton {
+    align-self: center;
+  }
+}

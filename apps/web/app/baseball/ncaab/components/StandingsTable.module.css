@@ -1,0 +1,83 @@
+.wrapper {
+  overflow-x: auto;
+  border-radius: var(--di-radius);
+  border: 1px solid var(--di-border);
+  background: var(--di-surface);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.35);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 540px;
+}
+
+.table thead {
+  background: var(--di-surface-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+}
+
+.table th,
+.table td {
+  padding: 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.table tbody tr:last-of-type td,
+.table tbody tr:last-of-type th {
+  border-bottom: none;
+}
+
+.teamCell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.rank {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.16);
+  color: var(--di-accent);
+  font-weight: 700;
+}
+
+.teamName {
+  display: block;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.teamShort {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--di-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.desktopOnly {
+  display: table-cell;
+}
+
+@media (max-width: 767px) {
+  .table {
+    min-width: 100%;
+  }
+
+  .desktopOnly {
+    display: none;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.75rem 0.65rem;
+  }
+}
