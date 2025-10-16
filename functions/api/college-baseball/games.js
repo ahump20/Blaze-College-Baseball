@@ -1,10 +1,13 @@
 /**
  * College Baseball Games API
  * Returns live and scheduled games with real-time updates
- * 
- * Caching: 30s for live games, 5m for scheduled games
- * Data sources: D1Baseball, NCAA Stats (with fallback)
+ *
+ * Phase 5: Highlightly Baseball API Integration
+ * Caching: 60s for live games, 5m for scheduled games (KV requires min 60s TTL)
+ * Data sources: Highlightly NCAA Baseball API (primary), sample data (fallback)
  */
+
+import { getDayScoreboard } from '../../../lib/api/highlightly.js';
 
 const CACHE_KEY_PREFIX = 'college-baseball:games';
 
@@ -49,14 +52,14 @@ export async function onRequest(context) {
           headers: {
             ...corsHeaders,
             'Content-Type': 'application/json',
-            'Cache-Control': 'public, max-age=30, stale-while-revalidate=15'
+            'Cache-Control': 'public, max-age=60, stale-while-revalidate=30'
           }
         });
       }
     }
 
     // Fetch games from data sources
-    const games = await fetchGames(date, { conference, status, team });
+    const games = await fetchGames(date, { conference, status, team }, env);
     
     // Store in cache
     const cacheData = {
@@ -66,8 +69,9 @@ export async function onRequest(context) {
     };
     
     // Determine TTL based on game status
+    // Note: Cloudflare KV requires minimum 60s TTL
     const hasLiveGames = games.some(g => g.status === 'live');
-    const cacheTTL = hasLiveGames ? 30 : 300; // 30s for live, 5m for scheduled
+    const cacheTTL = hasLiveGames ? 60 : 300; // 60s for live, 5m for scheduled
     
     if (env.CACHE) {
       await env.CACHE.put(cacheKey, JSON.stringify(cacheData), {
@@ -111,10 +115,80 @@ export async function onRequest(context) {
 
 /**
  * Fetch games from available data sources
- * Implements fallback strategy and data reconciliation
+ * Implements fallback strategy: Highlightly → NCAA Stats fallback
  */
-async function fetchGames(date, filters = {}) {
-  // Sample data for MVP - will be replaced with actual scraper/API
+async function fetchGames(date, filters = {}, env) {
+  // Try Highlightly API first
+  try {
+    if (env?.HIGHLIGHTLY_API_KEY) {
+      const response = await getDayScoreboard(env, date);
+      const matches = response.data?.data || [];
+
+      // Transform Highlightly format to app format
+      let games = matches.map(match => ({
+        id: `game-${match.id}`,
+        date: match.date,
+        time: new Date(match.date).toLocaleTimeString('en-US', {
+          timeZone: 'America/Chicago',
+          hour: 'numeric',
+          minute: '2-digit',
+          timeZoneName: 'short'
+        }),
+        status: match.status || 'scheduled', // 'live', 'final', 'scheduled'
+        inning: match.inning,
+        homeTeam: {
+          id: match.home_team?.id || match.home_team?.abbreviation,
+          name: match.home_team?.name || 'Unknown',
+          shortName: match.home_team?.abbreviation || match.home_team?.name,
+          conference: match.home_team?.conference || 'Unknown',
+          score: match.home_score || 0,
+          record: {
+            wins: match.home_team?.wins || 0,
+            losses: match.home_team?.losses || 0
+          }
+        },
+        awayTeam: {
+          id: match.away_team?.id || match.away_team?.abbreviation,
+          name: match.away_team?.name || 'Unknown',
+          shortName: match.away_team?.abbreviation || match.away_team?.name,
+          conference: match.away_team?.conference || 'Unknown',
+          score: match.away_score || 0,
+          record: {
+            wins: match.away_team?.wins || 0,
+            losses: match.away_team?.losses || 0
+          }
+        },
+        venue: match.venue?.name || match.venue || 'TBD',
+        tv: match.broadcast?.network || match.broadcast || ''
+      }));
+
+      // Apply filters
+      if (filters.conference) {
+        const confFilter = filters.conference.toUpperCase();
+        games = games.filter(g =>
+          g.homeTeam.conference === confFilter ||
+          g.awayTeam.conference === confFilter
+        );
+      }
+
+      if (filters.status) {
+        games = games.filter(g => g.status === filters.status);
+      }
+
+      if (filters.team) {
+        games = games.filter(g =>
+          g.homeTeam.id === filters.team ||
+          g.awayTeam.id === filters.team
+        );
+      }
+
+      return games;
+    }
+  } catch (error) {
+    console.warn('Highlightly API failed, falling back to sample data:', error.message);
+  }
+
+  // Fallback to sample data (will be replaced with NCAA Stats API)
   const sampleGames = [
     {
       id: 'game-001',

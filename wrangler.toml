@@ -2,10 +2,11 @@ name = "college-baseball-tracker"
 pages_build_output_dir = "dist"
 compatibility_date = "2025-01-01"
 
-# KV namespace for caching (existing CACHE namespace from blazesportsintel)
-kv_namespaces = [
-  { binding = "KV", id = "a53c3726fc3044be82e79d2d1e371d26" }
-]
+# KV namespace for caching (shared CACHE namespace from blazesportsintel)
+# ID: a53c3726fc3044be82e79d2d1e371d26
+[[kv_namespaces]]
+binding = "CACHE"
+id = "a53c3726fc3044be82e79d2d1e371d26"
 
 # Environment variables
 [vars]

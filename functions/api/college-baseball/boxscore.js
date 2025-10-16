@@ -1,9 +1,13 @@
 /**
  * College Baseball Box Score API
  * Returns detailed box scores with batting/pitching stats
- * 
- * Caching: 15s for live games, 1 hour for final games
+ *
+ * Phase 5: Highlightly Baseball API Integration
+ * Caching: 60s for live games, 1 hour for final games (KV requires min 60s TTL)
+ * Data sources: Highlightly NCAA Baseball API (primary), sample data (fallback)
  */
+
+import { getMatchDetail } from '../../../lib/api/highlightly.js';
 
 const CACHE_KEY_PREFIX = 'college-baseball:boxscore';
 
@@ -52,17 +56,18 @@ export async function onRequest(context) {
           headers: {
             ...corsHeaders,
             'Content-Type': 'application/json',
-            'Cache-Control': 'public, max-age=15, stale-while-revalidate=10'
+            'Cache-Control': 'public, max-age=60, stale-while-revalidate=30'
           }
         });
       }
     }
 
     // Fetch box score
-    const boxscore = await fetchBoxScore(gameId);
+    const boxscore = await fetchBoxScore(gameId, env);
     
     // Cache with appropriate TTL
-    const cacheTTL = boxscore.status === 'final' ? 3600 : 15;
+    // Note: Cloudflare KV requires minimum 60s TTL
+    const cacheTTL = boxscore.status === 'final' ? 3600 : 60;
     const cacheData = {
       boxscore,
       timestamp: new Date().toISOString()
@@ -102,8 +107,105 @@ export async function onRequest(context) {
   }
 }
 
-async function fetchBoxScore(gameId) {
-  // Sample box score data - will be replaced with actual scraper/API
+async function fetchBoxScore(gameId, env) {
+  // Try Highlightly API first
+  try {
+    if (env?.HIGHLIGHTLY_API_KEY) {
+      const response = await getMatchDetail(env, gameId);
+      const match = response.data?.data;
+
+      if (match) {
+        // Transform Highlightly match detail to box score format
+        return {
+          gameId: match.id,
+          status: match.status || 'scheduled',
+          inning: match.inning || null,
+          inningHalf: match.inning_half || null,
+          lastUpdate: new Date().toISOString(),
+          homeTeam: {
+            team: {
+              id: match.home_team?.id || match.home_team?.abbreviation,
+              name: match.home_team?.name || 'Unknown',
+              shortName: match.home_team?.abbreviation || match.home_team?.name,
+              conference: match.home_team?.conference || 'Unknown'
+            },
+            score: match.home_score || 0,
+            hits: match.home_hits || 0,
+            errors: match.home_errors || 0,
+            lineScore: match.home_line_score || [],
+            batting: (match.home_batting || []).map(player => ({
+              playerId: player.player_id,
+              playerName: player.player_name,
+              position: player.position,
+              battingOrder: player.batting_order,
+              atBats: player.at_bats || 0,
+              runs: player.runs || 0,
+              hits: player.hits || 0,
+              rbi: player.rbi || 0,
+              walks: player.walks || 0,
+              strikeouts: player.strikeouts || 0,
+              avg: player.batting_average || 0
+            })),
+            pitching: (match.home_pitching || []).map(pitcher => ({
+              playerId: pitcher.player_id,
+              playerName: pitcher.player_name,
+              innings: pitcher.innings_pitched || 0,
+              hits: pitcher.hits || 0,
+              runs: pitcher.runs || 0,
+              earnedRuns: pitcher.earned_runs || 0,
+              walks: pitcher.walks || 0,
+              strikeouts: pitcher.strikeouts || 0,
+              pitches: pitcher.pitches || 0,
+              era: pitcher.era || 0,
+              decision: pitcher.decision || ''
+            }))
+          },
+          awayTeam: {
+            team: {
+              id: match.away_team?.id || match.away_team?.abbreviation,
+              name: match.away_team?.name || 'Unknown',
+              shortName: match.away_team?.abbreviation || match.away_team?.name,
+              conference: match.away_team?.conference || 'Unknown'
+            },
+            score: match.away_score || 0,
+            hits: match.away_hits || 0,
+            errors: match.away_errors || 0,
+            lineScore: match.away_line_score || [],
+            batting: (match.away_batting || []).map(player => ({
+              playerId: player.player_id,
+              playerName: player.player_name,
+              position: player.position,
+              battingOrder: player.batting_order,
+              atBats: player.at_bats || 0,
+              runs: player.runs || 0,
+              hits: player.hits || 0,
+              rbi: player.rbi || 0,
+              walks: player.walks || 0,
+              strikeouts: player.strikeouts || 0,
+              avg: player.batting_average || 0
+            })),
+            pitching: (match.away_pitching || []).map(pitcher => ({
+              playerId: pitcher.player_id,
+              playerName: pitcher.player_name,
+              innings: pitcher.innings_pitched || 0,
+              hits: pitcher.hits || 0,
+              runs: pitcher.runs || 0,
+              earnedRuns: pitcher.earned_runs || 0,
+              walks: pitcher.walks || 0,
+              strikeouts: pitcher.strikeouts || 0,
+              pitches: pitcher.pitches || 0,
+              era: pitcher.era || 0,
+              decision: pitcher.decision || ''
+            }))
+          }
+        };
+      }
+    }
+  } catch (error) {
+    console.warn('Highlightly API failed, falling back to sample data:', error.message);
+  }
+
+  // Fallback to sample box score data
   return {
     gameId,
     status: 'live',

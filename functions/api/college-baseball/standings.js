@@ -1,9 +1,13 @@
 /**
  * College Baseball Standings API
  * Returns conference standings with RPI, SOS data
- * 
+ *
+ * Phase 5: Highlightly Baseball API Integration
  * Caching: 5 minutes
+ * Data sources: Highlightly NCAA Baseball API (primary), sample data (fallback)
  */
+
+import { getStandings } from '../../../lib/api/highlightly.js';
 
 const CACHE_KEY_PREFIX = 'college-baseball:standings';
 
@@ -50,7 +54,7 @@ export async function onRequest(context) {
     }
 
     // Fetch standings
-    const standings = await fetchStandings(conference, division);
+    const standings = await fetchStandings(conference, division, env);
     
     const cacheData = {
       standings,
@@ -95,8 +99,53 @@ export async function onRequest(context) {
   }
 }
 
-async function fetchStandings(conference, division) {
-  // Sample standings data for SEC
+async function fetchStandings(conference, division, env) {
+  // Try Highlightly API first
+  try {
+    if (env?.HIGHLIGHTLY_API_KEY) {
+      const year = new Date().getFullYear();
+      const response = await getStandings(env, year);
+      const conferences = response.data?.data || [];
+
+      // Find the requested conference
+      const confData = conferences.find(c =>
+        c.conference_abbreviation?.toUpperCase() === conference?.toUpperCase() ||
+        c.conference_name?.toUpperCase().includes(conference?.toUpperCase())
+      );
+
+      if (confData) {
+        // Transform to app format
+        const standings = (confData.teams || []).map((team, index) => ({
+          rank: index + 1,
+          team: {
+            id: team.team_id,
+            name: team.team_name,
+            shortName: team.team_abbreviation || team.team_name,
+            conference: confData.conference_abbreviation
+          },
+          overallRecord: {
+            wins: team.wins || 0,
+            losses: team.losses || 0
+          },
+          conferenceRecord: {
+            wins: team.conference_wins || 0,
+            losses: team.conference_losses || 0
+          },
+          streakType: team.streak?.startsWith('W') ? 'W' : team.streak?.startsWith('L') ? 'L' : '-',
+          streakCount: parseInt(team.streak?.match(/\d+/)?.[0] || '0'),
+          last10: team.last_10 || 'N/A',
+          rpi: team.rpi || 0,
+          sos: team.strength_of_schedule || 0
+        }));
+
+        return standings;
+      }
+    }
+  } catch (error) {
+    console.warn('Highlightly standings API failed, falling back to sample data:', error.message);
+  }
+
+  // Fallback to sample standings data for SEC
   return [
     {
       rank: 1,
