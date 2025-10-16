@@ -10,8 +10,36 @@
  * - ML feature store integration
  */
 
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import pkg from 'pg';
 const { Pool } = pkg;
+
+const GAME_EVENT_COLUMN_PRIORITY = [
+    'game_id',
+    'event_id',
+    'event_index',
+    'sequence',
+    'event_type',
+    'event_time',
+    'inning',
+    'half_inning',
+    'outs',
+    'description',
+    'home_score',
+    'away_score',
+    'rbi',
+    'runner_on_first',
+    'runner_on_second',
+    'runner_on_third',
+    'batter_id',
+    'pitcher_id',
+    'pitch_sequence',
+    'result',
+    'created_at',
+    'updated_at',
+    'metadata'
+];
 
 class DatabaseConnectionService {
     constructor(config, logger) {
@@ -179,6 +207,266 @@ class DatabaseConnectionService {
         } finally {
             client.release();
         }
+    }
+
+    /**
+     * Insert game events using COPY streaming when available, or fall back to batch inserts.
+     */
+    async insertGameEvents(events, options = {}) {
+        if (!Array.isArray(events) || events.length === 0) {
+            this.logger.warn('No game events provided for insert operation');
+            return { insertedCount: 0, method: null };
+        }
+
+        const {
+            tableName = 'game_events',
+            columns: explicitColumns,
+            onConflict = 'DO NOTHING',
+            batchSize = 1000,
+            client: externalClient = null,
+            useCopy = true,
+            returning = null
+        } = options;
+
+        const columns = this.prepareGameEventColumns(events, explicitColumns);
+        if (!columns.length) {
+            throw new Error('Unable to determine column order for game event insert');
+        }
+
+        const rows = this.normalizeGameEventRows(events, columns);
+        const shouldRelease = !externalClient;
+        const client = externalClient || await this.pool.connect();
+        let methodUsed = null;
+
+        try {
+            const canUseCopy = useCopy !== false && this.canUseCopyStrategy(onConflict, client);
+
+            if (canUseCopy) {
+                try {
+                    await this.executeCopyInsert(client, tableName, columns, rows);
+                    methodUsed = 'copy';
+                    this.logger.info('Game events inserted via COPY stream', {
+                        table: tableName,
+                        rows: rows.length,
+                        method: methodUsed
+                    });
+                    return { insertedCount: rows.length, method: methodUsed };
+                } catch (copyError) {
+                    this.logger.warn('COPY stream insert failed, falling back to batch inserts', {
+                        table: tableName,
+                        reason: copyError.message
+                    }, copyError);
+                }
+            }
+
+            const insertedCount = await this.executeGameEventBatchInsert(client, tableName, columns, rows, {
+                onConflict,
+                batchSize,
+                returning
+            });
+
+            methodUsed = 'batch';
+            this.logger.info('Game events inserted via batch insert', {
+                table: tableName,
+                rows: rows.length,
+                method: methodUsed,
+                batches: Math.ceil(rows.length / batchSize)
+            });
+
+            return { insertedCount, method: methodUsed };
+
+        } catch (error) {
+            this.logger.error('Failed to insert game events', {
+                table: tableName,
+                method: methodUsed
+            }, error);
+            throw error;
+        } finally {
+            if (shouldRelease) {
+                client.release();
+            }
+        }
+    }
+
+    prepareGameEventColumns(events, explicitColumns) {
+        if (Array.isArray(explicitColumns) && explicitColumns.length > 0) {
+            return explicitColumns;
+        }
+
+        if (!Array.isArray(events) || events.length === 0) {
+            return [];
+        }
+
+        if (Array.isArray(events[0])) {
+            return explicitColumns || [];
+        }
+
+        const seen = new Set();
+        const ordered = [];
+
+        const hasColumn = (column) => events.some(event => Object.prototype.hasOwnProperty.call(event, column));
+
+        GAME_EVENT_COLUMN_PRIORITY.forEach((column) => {
+            if (!seen.has(column) && hasColumn(column)) {
+                ordered.push(column);
+                seen.add(column);
+            }
+        });
+
+        events.forEach((event) => {
+            Object.keys(event).forEach((key) => {
+                if (!seen.has(key)) {
+                    ordered.push(key);
+                    seen.add(key);
+                }
+            });
+        });
+
+        return ordered;
+    }
+
+    normalizeGameEventRows(events, columns) {
+        if (!Array.isArray(events) || events.length === 0) {
+            return [];
+        }
+
+        if (Array.isArray(events[0])) {
+            return events.map((row) => row.map((value) => this.normalizeGameEventValue(value)));
+        }
+
+        return events.map((event) =>
+            columns.map((column) => this.normalizeGameEventValue(event[column]))
+        );
+    }
+
+    normalizeGameEventValue(value) {
+        if (value === undefined || value === null) {
+            return null;
+        }
+
+        if (value instanceof Date) {
+            return value.toISOString();
+        }
+
+        if (typeof Buffer !== 'undefined' && value instanceof Buffer) {
+            return value;
+        }
+
+        if (typeof value === 'object') {
+            try {
+                return JSON.stringify(value);
+            } catch (error) {
+                this.logger.warn('Failed to stringify game event value; storing as null', {
+                    error: error.message
+                });
+                return null;
+            }
+        }
+
+        return value;
+    }
+
+    formatCopyValue(value) {
+        if (value === undefined || value === null) {
+            return '\\N';
+        }
+
+        if (value instanceof Date) {
+            return value.toISOString();
+        }
+
+        if (typeof Buffer !== 'undefined' && value instanceof Buffer) {
+            return value.toString('base64');
+        }
+
+        const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
+
+        return stringValue
+            .replace(/\\/g, '\\\\')
+            .replace(/\t/g, '\\t')
+            .replace(/\n/g, '\\n')
+            .replace(/\r/g, '\\r');
+    }
+
+    canUseCopyStrategy(onConflict, client) {
+        if (!client || typeof client.query !== 'function') {
+            return false;
+        }
+
+        const conflictClause = (onConflict || '').trim();
+        if (!conflictClause) {
+            return true;
+        }
+
+        const normalized = conflictClause.toUpperCase();
+        return normalized === 'DO NOTHING' || normalized === 'ON CONFLICT DO NOTHING';
+    }
+
+    async executeCopyInsert(client, tableName, columns, rows) {
+        let copyFrom;
+        try {
+            const copyStreams = await import('pg-copy-streams');
+            copyFrom = copyStreams.default?.from || copyStreams.from;
+        } catch (error) {
+            throw new Error(`pg-copy-streams module is not available: ${error.message}`);
+        }
+
+        if (typeof copyFrom !== 'function') {
+            throw new Error('pg-copy-streams.from is not a function');
+        }
+
+        const copyCommand = `COPY ${tableName} (${columns.join(', ')}) FROM STDIN WITH (FORMAT text, DELIMITER E'\\t', NULL '\\\\N')`;
+        const destination = client.query(copyFrom(copyCommand));
+        const source = Readable.from(rows.map((row) =>
+            row.map((value) => this.formatCopyValue(value)).join('\t') + '\n'
+        ));
+
+        await pipeline(source, destination);
+    }
+
+    async executeGameEventBatchInsert(client, tableName, columns, rows, options) {
+        const {
+            onConflict = 'DO NOTHING',
+            batchSize = 1000,
+            returning = null
+        } = options || {};
+
+        let insertedCount = 0;
+        const normalizedConflict = (onConflict || '').trim();
+        const conflictClause = normalizedConflict
+            ? (normalizedConflict.toUpperCase().startsWith('ON CONFLICT') ? normalizedConflict : `ON CONFLICT ${normalizedConflict}`)
+            : '';
+
+        for (let i = 0; i < rows.length; i += batchSize) {
+            const batch = rows.slice(i, i + batchSize);
+            const values = batch.map((_, rowIndex) => {
+                const placeholders = columns.map((__, colIndex) => `$${rowIndex * columns.length + colIndex + 1}`).join(', ');
+                return `(${placeholders})`;
+            }).join(', ');
+
+            const query = [
+                `INSERT INTO ${tableName} (${columns.join(', ')})`,
+                `VALUES ${values}`,
+                conflictClause,
+                returning ? `RETURNING ${returning}` : ''
+            ].filter(Boolean).join(' ');
+
+            const params = batch.flat();
+            const startTime = Date.now();
+            const result = await client.query(query, params);
+            const duration = Date.now() - startTime;
+
+            this.logger.debug('Executed game event batch insert', {
+                table: tableName,
+                batchSize: batch.length,
+                duration_ms: duration,
+                rowCount: result.rowCount
+            });
+
+            insertedCount += result.rowCount;
+        }
+
+        return insertedCount;
     }
 
     /**
