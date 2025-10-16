@@ -573,11 +573,20 @@ async function ensureTeam(client, team) {
   return result.rows[0].id;
 }
 
+/**
+ * Determines the winning team for a game.
+ * @param {Object} game - The game object with home and away scores.
+ * @param {number|string} homeTeamId - The ID of the home team.
+ * @param {number|string} awayTeamId - The ID of the away team.
+ * @returns {number|string|Object|null} - Returns the winning team ID, 
+ *   an object { tie: [homeTeamId, awayTeamId] } if tied, or null if incomplete.
+ */
 function determineWinningTeamId(game, homeTeamId, awayTeamId) {
   if (game.home.score === null || game.away.score === null) return null;
   if (game.home.score > game.away.score) return homeTeamId;
   if (game.away.score > game.home.score) return awayTeamId;
-  return null;
+  // Explicitly handle tie games
+  return { tie: [homeTeamId, awayTeamId] };
 }
 
 async function persistGamePackage(gamePackage) {
