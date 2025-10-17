@@ -7,9 +7,10 @@
  * Data sources: Highlightly NCAA Baseball API (primary), sample data (fallback)
  */
 
-import { getDayScoreboard } from '../../../lib/api/highlightly.js';
+import { createHighlightlyClient, HighlightlyError } from '../../../lib/highlightly.js';
 
 const CACHE_KEY_PREFIX = 'college-baseball:games';
+const HIGHLIGHTLY_TIMEZONE = 'America/Chicago';
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -46,28 +47,31 @@ export async function onRequest(context) {
           data: data.games,
           cached: true,
           cacheTime: data.timestamp,
-          source: 'cache'
+          source: 'cache',
+          meta: data.rateLimit
         }), {
           status: 200,
           headers: {
             ...corsHeaders,
             'Content-Type': 'application/json',
-            'Cache-Control': 'public, max-age=60, stale-while-revalidate=30'
+            'Cache-Control': 'public, max-age=60, stale-while-revalidate=30',
+            ...buildRateLimitHeaders(data.rateLimit)
           }
         });
       }
     }
 
-    // Fetch games from data sources
-    const games = await fetchGames(date, { conference, status, team }, env);
-    
+    // Fetch games from Highlightly
+    const { games, rateLimit } = await fetchGames(date, { conference, status, team }, env);
+
     // Store in cache
     const cacheData = {
       games,
       timestamp: new Date().toISOString(),
-      filters: { date, conference, status, team }
+      filters: { date, conference, status, team },
+      rateLimit
     };
-    
+
     // Determine TTL based on game status
     // Note: Cloudflare KV requires minimum 60s TTL
     const hasLiveGames = games.some(g => g.status === 'live');
@@ -85,29 +89,36 @@ export async function onRequest(context) {
       count: games.length,
       cached: false,
       timestamp: new Date().toISOString(),
-      source: 'live'
+      source: 'live',
+      meta: rateLimit
     }), {
       status: 200,
       headers: {
         ...corsHeaders,
         'Content-Type': 'application/json',
-        'Cache-Control': `public, max-age=${cacheTTL}, stale-while-revalidate=${Math.floor(cacheTTL / 2)}`
+        'Cache-Control': `public, max-age=${cacheTTL}, stale-while-revalidate=${Math.floor(cacheTTL / 2)}`,
+        ...buildRateLimitHeaders(rateLimit)
       }
     });
 
   } catch (error) {
     console.error('College baseball games API error:', error);
-    
+
+    const rateLimitHeaders =
+      error instanceof HighlightlyError ? buildRateLimitHeaders(error.meta.rateLimit, error.meta.requestId) : {};
+    const status = error instanceof HighlightlyError ? error.status : 500;
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return new Response(JSON.stringify({
       success: false,
       error: 'Failed to fetch college baseball games',
-      message: error.message,
+      message,
       timestamp: new Date().toISOString()
     }), {
-      status: 500,
+      status,
       headers: {
         ...corsHeaders,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        ...rateLimitHeaders
       }
     });
   }
@@ -118,201 +129,161 @@ export async function onRequest(context) {
  * Implements fallback strategy: Highlightly → NCAA Stats fallback
  */
 async function fetchGames(date, filters = {}, env) {
-  // Try Highlightly API first
-  try {
-    if (env?.HIGHLIGHTLY_API_KEY) {
-      const response = await getDayScoreboard(env, date);
-      const matches = response.data?.data || [];
+  const client = createHighlightlyClient(env);
 
-      // Transform Highlightly format to app format
-      let games = matches.map(match => ({
-        id: `game-${match.id}`,
-        date: match.date,
-        time: new Date(match.date).toLocaleTimeString('en-US', {
-          timeZone: 'America/Chicago',
-          hour: 'numeric',
-          minute: '2-digit',
-          timeZoneName: 'short'
-        }),
-        status: match.status || 'scheduled', // 'live', 'final', 'scheduled'
-        inning: match.inning,
-        homeTeam: {
-          id: match.home_team?.id || match.home_team?.abbreviation,
-          name: match.home_team?.name || 'Unknown',
-          shortName: match.home_team?.abbreviation || match.home_team?.name,
-          conference: match.home_team?.conference || 'Unknown',
-          score: match.home_score || 0,
-          record: {
-            wins: match.home_team?.wins || 0,
-            losses: match.home_team?.losses || 0
-          }
-        },
-        awayTeam: {
-          id: match.away_team?.id || match.away_team?.abbreviation,
-          name: match.away_team?.name || 'Unknown',
-          shortName: match.away_team?.abbreviation || match.away_team?.name,
-          conference: match.away_team?.conference || 'Unknown',
-          score: match.away_score || 0,
-          record: {
-            wins: match.away_team?.wins || 0,
-            losses: match.away_team?.losses || 0
-          }
-        },
-        venue: match.venue?.name || match.venue || 'TBD',
-        tv: match.broadcast?.network || match.broadcast || ''
-      }));
+  const searchParams = {
+    league: 'NCAA',
+    date,
+    timezone: HIGHLIGHTLY_TIMEZONE,
+    limit: 200,
+    ...(filters.status ? { status: filters.status } : {}),
+    ...(filters.conference ? { conference: filters.conference } : {}),
+    ...(filters.team ? { team: filters.team } : {}),
+  };
 
-      // Apply filters
-      if (filters.conference) {
-        const confFilter = filters.conference.toUpperCase();
-        games = games.filter(g =>
-          g.homeTeam.conference === confFilter ||
-          g.awayTeam.conference === confFilter
-        );
-      }
+  const response = await client.getMatches(searchParams);
+  const matches = Array.isArray(response.data?.data) ? response.data.data : [];
 
-      if (filters.status) {
-        games = games.filter(g => g.status === filters.status);
-      }
+  let games = matches.map(mapMatchToGame);
 
-      if (filters.team) {
-        games = games.filter(g =>
-          g.homeTeam.id === filters.team ||
-          g.awayTeam.id === filters.team
-        );
-      }
-
-      return games;
-    }
-  } catch (error) {
-    console.warn('Highlightly API failed, falling back to sample data:', error.message);
-  }
-
-  // Fallback to sample data (will be replaced with NCAA Stats API)
-  const sampleGames = [
-    {
-      id: 'game-001',
-      date: date,
-      time: '7:00 PM ET',
-      status: 'live',
-      inning: 5,
-      homeTeam: {
-        id: 'lsu',
-        name: 'LSU Tigers',
-        shortName: 'LSU',
-        conference: 'SEC',
-        score: 4,
-        record: { wins: 15, losses: 3 }
-      },
-      awayTeam: {
-        id: 'tennessee',
-        name: 'Tennessee Volunteers',
-        shortName: 'TENN',
-        conference: 'SEC',
-        score: 2,
-        record: { wins: 18, losses: 2 }
-      },
-      venue: 'Alex Box Stadium',
-      tv: 'SEC Network'
-    },
-    {
-      id: 'game-002',
-      date: date,
-      time: '6:30 PM ET',
-      status: 'scheduled',
-      homeTeam: {
-        id: 'texas',
-        name: 'Texas Longhorns',
-        shortName: 'TEX',
-        conference: 'SEC',
-        record: { wins: 16, losses: 4 }
-      },
-      awayTeam: {
-        id: 'arkansas',
-        name: 'Arkansas Razorbacks',
-        shortName: 'ARK',
-        conference: 'SEC',
-        record: { wins: 14, losses: 5 }
-      },
-      venue: 'Disch-Falk Field',
-      tv: 'ESPN+'
-    },
-    {
-      id: 'game-003',
-      date: date,
-      time: '7:00 PM ET',
-      status: 'scheduled',
-      homeTeam: {
-        id: 'vanderbilt',
-        name: 'Vanderbilt Commodores',
-        shortName: 'VANDY',
-        conference: 'SEC',
-        record: { wins: 17, losses: 3 }
-      },
-      awayTeam: {
-        id: 'florida',
-        name: 'Florida Gators',
-        shortName: 'FLA',
-        conference: 'SEC',
-        record: { wins: 13, losses: 6 }
-      },
-      venue: 'Hawkins Field',
-      tv: 'SEC Network+'
-    },
-    {
-      id: 'game-004',
-      date: date,
-      time: '2:00 PM ET',
-      status: 'final',
-      homeTeam: {
-        id: 'stanford',
-        name: 'Stanford Cardinal',
-        shortName: 'STAN',
-        conference: 'Pac-12',
-        score: 8,
-        record: { wins: 12, losses: 5 }
-      },
-      awayTeam: {
-        id: 'oregon-st',
-        name: 'Oregon State Beavers',
-        shortName: 'ORE ST',
-        conference: 'Pac-12',
-        score: 5,
-        record: { wins: 14, losses: 4 }
-      },
-      venue: 'Klein Field at Sunken Diamond',
-      tv: 'Pac-12 Network'
-    }
-  ];
-  
-  // Apply filters
-  let filteredGames = sampleGames;
-  
   if (filters.conference) {
-    filteredGames = filteredGames.filter(g => 
-      g.homeTeam.conference === filters.conference || 
-      g.awayTeam.conference === filters.conference
+    const target = filters.conference.toLowerCase();
+    games = games.filter(game =>
+      game.homeTeam.conference?.toLowerCase() === target ||
+      game.awayTeam.conference?.toLowerCase() === target
     );
   }
-  
+
   if (filters.status) {
-    filteredGames = filteredGames.filter(g => g.status === filters.status);
+    const desiredStatus = filters.status.toLowerCase();
+    games = games.filter(game => game.status === desiredStatus);
   }
-  
+
   if (filters.team) {
-    filteredGames = filteredGames.filter(g => 
-      g.homeTeam.id === filters.team || 
-      g.awayTeam.id === filters.team
-    );
+    const targetTeam = filters.team.toString().toLowerCase();
+    games = games.filter(game => {
+      const homeId = game.homeTeam.id?.toString().toLowerCase();
+      const awayId = game.awayTeam.id?.toString().toLowerCase();
+      return homeId === targetTeam || awayId === targetTeam;
+    });
   }
-  
-  return filteredGames;
+
+  return {
+    games,
+    rateLimit: {
+      ...response.meta.rateLimit,
+      requestId: response.meta.requestId || undefined
+    }
+  };
 }
 
 /**
  * Get today's date in YYYY-MM-DD format
  */
 function getTodayDate() {
-  const today = new Date();
-  return today.toISOString().split('T')[0];
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: HIGHLIGHTLY_TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+
+  const parts = formatter.formatToParts(new Date());
+  const year = parts.find(part => part.type === 'year')?.value ?? '0000';
+  const month = parts.find(part => part.type === 'month')?.value ?? '01';
+  const day = parts.find(part => part.type === 'day')?.value ?? '01';
+  return `${year}-${month}-${day}`;
+}
+
+function mapMatchToGame(match) {
+  const startDate = match.date || match.game_date || match.start_time || null;
+  const status = normalizeStatus(match.status || match.state);
+  const scheduled = startDate ? new Date(startDate) : null;
+  const inning = match.inning || match.current_inning || null;
+
+  return {
+    id: `game-${match.id ?? match.match_id ?? generateRandomId()}`,
+    date: startDate || new Date().toISOString(),
+    time: scheduled
+      ? scheduled.toLocaleTimeString('en-US', {
+          timeZone: HIGHLIGHTLY_TIMEZONE,
+          hour: 'numeric',
+          minute: '2-digit',
+          timeZoneName: 'short'
+        })
+      : '',
+    status,
+    inning: typeof inning === 'number' ? inning : undefined,
+    homeTeam: normalizeTeam(match.home_team, match.home_score),
+    awayTeam: normalizeTeam(match.away_team, match.away_score),
+    venue: match.venue?.name || match.venue || 'TBD',
+    tv: match.broadcast?.network || match.broadcast?.channel || match.broadcast || ''
+  };
+}
+
+function generateRandomId() {
+  try {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+  } catch (error) {
+    // noop - fall back to Math.random below
+  }
+
+  return Math.random().toString(36).slice(2, 10);
+}
+
+function normalizeStatus(rawStatus) {
+  const value = (rawStatus || '').toString().toLowerCase();
+
+  if (['live', 'in_progress', 'in-progress', 'progress', 'midgame'].includes(value)) {
+    return 'live';
+  }
+
+  if (['final', 'completed', 'complete', 'finished'].includes(value)) {
+    return 'final';
+  }
+
+  return 'scheduled';
+}
+
+function normalizeTeam(team = {}, score = 0) {
+  const record = team.record || team.stats || {};
+  const wins = record.wins ?? record.win ?? team.wins ?? 0;
+  const losses = record.losses ?? record.loss ?? team.losses ?? 0;
+  const numericScore = Number(score ?? 0);
+
+  return {
+    id: team.id ?? team.abbreviation ?? team.code ?? team.slug ?? team.name,
+    name: team.name || team.full_name || 'Unknown',
+    shortName: team.abbreviation || team.short_name || team.name || 'UNK',
+    conference: team.conference || team.conferenceName || team.league || '',
+    score: Number.isFinite(numericScore) ? numericScore : 0,
+    record: {
+      wins: Number.isFinite(Number(wins)) ? Number(wins) : 0,
+      losses: Number.isFinite(Number(losses)) ? Number(losses) : 0
+    }
+  };
+}
+
+function buildRateLimitHeaders(rateLimit = {}, requestId) {
+  const headers = {};
+
+  if (rateLimit.limit !== undefined) {
+    headers['X-Highlightly-RateLimit-Limit'] = String(rateLimit.limit);
+  }
+  if (rateLimit.remaining !== undefined) {
+    headers['X-Highlightly-RateLimit-Remaining'] = String(rateLimit.remaining);
+  }
+  if (rateLimit.reset !== undefined) {
+    headers['X-Highlightly-RateLimit-Reset'] = String(rateLimit.reset);
+  }
+  if (rateLimit.retryAfter !== undefined) {
+    headers['Retry-After'] = String(rateLimit.retryAfter);
+  }
+  if (rateLimit.requestId || requestId) {
+    headers['X-Highlightly-Request-Id'] = String(rateLimit.requestId || requestId);
+  }
+
+  return headers;
 }
