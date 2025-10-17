@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { SignUp } from '@clerk/nextjs';
 
 export default function SignUpPage() {
   return (
@@ -7,18 +10,12 @@ export default function SignUpPage() {
         <span className="di-kicker">Diamond Insights · Auth</span>
         <h1 className="di-page-title">Create Account</h1>
         <p className="di-page-subtitle">
-          Registration flows are nearly online. This placeholder maintains the URL structure and dark-mode design while we hook
-          Clerk onboarding, Stripe trials, and paywall states.
+          Launch your personalized college baseball feed, configure alerts, and unlock Diamond Pro once you complete sign-up.
         </p>
         <div className="di-card-grid">
           <article className="di-card">
-            <h2>Diamond Pro Access</h2>
-            <p>Expect gated content, staff collaboration spaces, and live alert configuration post sign-up.</p>
-            <ul className="di-list">
-              <li>Choose between Free and Diamond Pro tiers.</li>
-              <li>Invite teammates with shared permissions.</li>
-              <li>Sync saved boards to mobile devices.</li>
-            </ul>
+            <h2>Register</h2>
+            <SignUp appearance={{ elements: { card: 'di-card' } }} routing="hash" afterSignUpUrl="/baseball/ncaab/dashboard" />
           </article>
           <article className="di-card">
             <h2>Already have an account?</h2>
@@ -30,8 +27,8 @@ export default function SignUpPage() {
                 </Link>
               </li>
               <li>
-                <Link className="di-inline-link" href="/account">
-                  Manage existing settings
+                <Link className="di-inline-link" href="/diamond-pro">
+                  View Diamond Pro roadmap
                 </Link>
               </li>
             </ul>

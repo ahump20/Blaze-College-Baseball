@@ -201,6 +201,31 @@ a:focus-visible {
   gap: 0.9rem;
 }
 
+.di-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.di-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.di-locked {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  color: var(--di-text-muted);
+}
+
+.di-strong {
+  font-weight: 600;
+  color: var(--di-text);
+}
+
 .di-card h2,
 .di-card h3 {
   font-family: var(--di-font-heading);
@@ -219,6 +244,10 @@ a:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+.di-text-muted {
+  color: var(--di-text-muted);
 }
 
 .di-inline-link::after {
